@@ -1,3 +1,4 @@
+import 'package:conference_system/main_wrapper.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/features/conference_panel/conference_screen.dart';
@@ -90,11 +91,13 @@ class Wide extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.purple,
                       fontWeight: FontWeight.w500,
-                      fontSize: 35
+                      fontSize: 35,
                     ),
                   ),
                   SizedBox(height: 50),
                   HallLists(),
+                  SizedBox(height: 50),
+                  ShowMoreButton(),
                 ],
               ),
             ),
@@ -171,19 +174,15 @@ class Narrow extends StatelessWidget {
                   Text(
                     AppTexts.hall,
                     style: TextStyle(
-                        color: Colors.purple,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 24
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 24,
                     ),
                   ),
                   SizedBox(height: 50),
                   HallLists(),
                   SizedBox(height: 50),
-                  ElevatedButton(
-                      onPressed: (){
-                        ;
-                      }, child: null,
-                  ),
+                  ShowMoreButton(),
                 ],
               ),
             ),
@@ -194,3 +193,29 @@ class Narrow extends StatelessWidget {
   }
 }
 
+class ShowMoreButton extends StatelessWidget {
+  const ShowMoreButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) =>
+                MainWrapper(page: PageType.halls),
+            transitionDuration: Duration.zero,
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.purple,
+      ),
+      child: Text(
+        AppTexts.showAll,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+}

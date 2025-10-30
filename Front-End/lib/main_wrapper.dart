@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:conference_system/features/home_page/home_screen.dart';
+import 'package:conference_system/features/home/home_screen.dart';
 import 'package:conference_system/features/conference_panel/conference_screen.dart';
 import 'package:conference_system/features/courses_list/courses_list_screen.dart';
 import 'package:conference_system/features/about_us_page/about_us_screen.dart';
