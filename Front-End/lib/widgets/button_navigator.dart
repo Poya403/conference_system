@@ -18,12 +18,20 @@ class ButtonNavigator extends StatelessWidget {
       currentIndex: selectedIndex,
       items: [
         BottomNavigationBarItem(
-          label: AppTexts.home,
-          icon: Icon(Icons.home_outlined),
+          label: AppTexts.aboutUs,
+          icon: Icon(Icons.contact_support_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: AppTexts.courses,
+          icon: Icon(Icons.school_outlined),
         ),
         BottomNavigationBarItem(
           label: AppTexts.hall,
-          icon: Icon(Icons.library_books_outlined),
+          icon: Icon(Icons.event_available_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: AppTexts.home,
+          icon: Icon(Icons.home_outlined),
         ),
       ],
       selectedItemColor: Colors.purple,

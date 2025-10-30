@@ -73,4 +73,4 @@ class _MainAppScreenState extends State<MainAppScreen> {
   }
 }
 
-enum PageType { home, hall, courses, aboutUs }
+enum PageType { aboutUs, courses, hall, home }

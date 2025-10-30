@@ -17,12 +17,12 @@ class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(250);
+  Size get preferredSize => const Size.fromHeight(200);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 30),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/hamayesh1.jpg'),
@@ -47,28 +47,28 @@ class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       _buildMenuItem(
                         text: AppTexts.home,
-                        index: 0,
+                        index: 3,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
                       const SizedBox(width: 30),
                       _buildMenuItem(
                         text: AppTexts.hall,
-                        index: 1,
-                        selectedIndex: selectedIndex,
-                        onTap: onItemSelected,
-                      ),
-                      const SizedBox(width: 30),
-                      _buildMenuItem(
-                        text: AppTexts.courses,
                         index: 2,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
                       const SizedBox(width: 30),
                       _buildMenuItem(
+                        text: AppTexts.courses,
+                        index: 1,
+                        selectedIndex: selectedIndex,
+                        onTap: onItemSelected,
+                      ),
+                      const SizedBox(width: 30),
+                      _buildMenuItem(
                         text: AppTexts.aboutUs,
-                        index: 3,
+                        index: 0,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
