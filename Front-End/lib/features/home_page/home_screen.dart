@@ -1,5 +1,6 @@
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
+import 'package:conference_system/features/conference_panel/conference_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,9 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: <Widget>[
           SizedBox(height: 30),
-          Expanded(
-              child: isDesktop ? Wide() : Narrow(),
-          ),
+          Expanded(child: isDesktop ? Wide() : Narrow()),
         ],
       ),
     );
@@ -30,49 +29,73 @@ class Wide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          color: Colors.grey[200],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: Image(
-                  image: AssetImage('assets/images/hamayesh2.jpg'),
-                  fit: BoxFit.fitHeight,
-                ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                color: Colors.grey[200],
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppTexts.aboutUs,
-                      style: TextStyle(
-                        color: Colors.purple,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: Image(
+                        image: AssetImage('assets/images/hamayesh2.jpg'),
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
-                    SizedBox(height: 30),
-                    Text(
-                      textDirection: TextDirection.rtl,
-                      AppTexts.about,
-                      style: TextStyle(fontSize: 16, height: 2),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppTexts.aboutUs,
+                            style: TextStyle(
+                              color: Colors.purple,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Text(
+                            textDirection: TextDirection.rtl,
+                            AppTexts.about,
+                            style: TextStyle(fontSize: 16, height: 2),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    AppTexts.hall,
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 35
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                  HallLists(),
+                ],
               ),
             ),
           ],
@@ -90,58 +113,84 @@ class Narrow extends StatelessWidget {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            color: Colors.grey[200],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image(
-                      image: AssetImage('assets/images/hamayesh2.jpg'),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                color: Colors.grey[200],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image(
+                          image: AssetImage('assets/images/hamayesh2.jpg'),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        AppTexts.aboutUs,
+                        style: TextStyle(
+                          color: Colors.purple,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Expanded(
+                      child: Text(
+                        textDirection: TextDirection.rtl,
+                        AppTexts.about,
+                        style: TextStyle(fontSize: 15, height: 2),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    AppTexts.aboutUs,
+            ),
+            SizedBox(height: 23),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    AppTexts.hall,
                     style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w500,
+                        color: Colors.purple,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 24
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Expanded(
-                  child: Text(
-                    textDirection: TextDirection.rtl,
-                    AppTexts.about,
-                    style: TextStyle(
-                        fontSize: 15,
-                        height: 2,
-                    ),
+                  SizedBox(height: 50),
+                  HallLists(),
+                  SizedBox(height: 50),
+                  ElevatedButton(
+                      onPressed: (){
+                        ;
+                      }, child: null,
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+

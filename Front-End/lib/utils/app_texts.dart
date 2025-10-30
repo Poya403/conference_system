@@ -22,4 +22,6 @@ class AppTexts {
   static const String hall =  'سالن ها';
   static const String courses = 'دوره ها';
   static const String aboutUs = 'درباره ما';
+  //hall
+  static const String noData = '.آیتمی جهت نمایش وجود ندارد';
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/features/auth/auth_screen.dart';
-import 'package:conference_system/main_screen.dart';
+import 'package:conference_system/main_wrapper.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,11 +13,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/home': (_) => const MainAppScreen(),
         '/auth': (_) => const AuthScreen(),
+        '/home': (_) => const MainWrapper(page: PageType.home),
+        '/halls': (_) => const MainWrapper(page: PageType.halls),
+        '/courses': (_) => const MainWrapper(page: PageType.courses),
+        '/aboutUs': (_) => const MainWrapper(page: PageType.aboutUs),
       },
-
-      home: session == null ? const AuthScreen() : const MainAppScreen(),
+      initialRoute: session == null ? '/auth' : '/home',
     );
   }
 }
