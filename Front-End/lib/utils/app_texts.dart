@@ -11,12 +11,13 @@ class AppTexts {
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
+  static const String fullName = 'نام و نام خانوادگی';
   static const String email = 'ایمیل';
   static const String password = 'رمز عبور';
   static const String noAccountHint = 'اکانت ندارید؟ ثبت‌نام کنید';
   static const String haveAccountHint = 'اکانت دارید؟ وارد شوید';
   static const String successfulLogin =  'ورود موفقیت‌آمیز بود';
-  static const String successfulSignUp =  'ثبت‌نام انجام شد';
+  static const String successfulSignUp =  'ثبت‌نام با موفقیت انجام شد';
   static const String error = 'خطایی رخ داد';
   //app bar
   static const String home = 'خانه';
@@ -25,4 +26,11 @@ class AppTexts {
   static const String aboutUs = 'درباره ما';
   //hall
   static const String noData = '.آیتمی جهت نمایش وجود ندارد';
+  static const String capacity = 'ظرفیت';
+  static const String area = 'محدود جغرافیایی';
+  //profile
+  static const String userInfo = 'اطلاعات کاربری';
+  static const String orderHistory = 'تاریخچه سفارشات';
+  static const String waitingList = 'لیست انتظار';
+  static const String logout = 'خروج از حساب کاربری';
 }

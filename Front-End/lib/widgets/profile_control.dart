@@ -14,7 +14,9 @@ class ProfileControl extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: GestureDetector(
-              onTap: (){},
+              onTap: (){
+                Navigator.pushNamed(context, '/profile');
+              },
               child: CircleAvatar(
                 radius: 18,
                 backgroundImage: const AssetImage('assets/images/default_avatar.png') as ImageProvider,
