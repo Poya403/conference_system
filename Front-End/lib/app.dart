@@ -12,8 +12,12 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: 'Farsi'
+      ),
       routes: {
         '/auth': (_) => const AuthScreen(),
+        '/profile': (_) => const MainWrapper(page: PageType.controlPanel),
         '/home': (_) => const MainWrapper(page: PageType.home),
         '/halls': (_) => const MainWrapper(page: PageType.halls),
         '/courses': (_) => const MainWrapper(page: PageType.courses),

@@ -18,6 +18,10 @@ class ButtonNavigator extends StatelessWidget {
       currentIndex: selectedIndex,
       items: [
         BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline_outlined),
+          label: AppTexts.controlPanel,
+        ),
+        BottomNavigationBarItem(
           label: AppTexts.aboutUs,
           icon: Icon(Icons.contact_support_outlined),
         ),

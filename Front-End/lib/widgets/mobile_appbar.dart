@@ -1,4 +1,3 @@
-import 'package:conference_system/widgets/profile_control.dart';
 import 'package:flutter/material.dart';
 
 class MobileAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,9 +21,6 @@ class MobileAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
-      actions: [
-        const ProfileControl()
-      ],
     );
   }
 

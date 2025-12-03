@@ -1,6 +1,7 @@
+import 'package:conference_system/features/control_panel/control_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/features/home/home_screen.dart';
-import 'package:conference_system/features/conference_panel/conference_screen.dart';
+import 'package:conference_system/features/hall_panel/hall_screen.dart';
 import 'package:conference_system/features/courses_list/courses_list_screen.dart';
 import 'package:conference_system/features/about_us_page/about_us_screen.dart';
 import 'package:conference_system/widgets/button_navigator.dart';
@@ -43,6 +44,8 @@ class _MainWrapperState extends State<MainWrapper> {
         case PageType.aboutUs:
           targetPage = const MainWrapper(page: PageType.aboutUs);
           break;
+        case PageType.controlPanel:
+          targetPage = const MainWrapper(page: PageType.controlPanel);
       }
       Navigator.pushReplacement(
         context,
@@ -64,6 +67,8 @@ class _MainWrapperState extends State<MainWrapper> {
         return AppTexts.courses;
       case PageType.aboutUs:
         return AppTexts.aboutUs;
+      case PageType.controlPanel:
+        return AppTexts.controlPanel;
     }
   }
 
@@ -77,6 +82,8 @@ class _MainWrapperState extends State<MainWrapper> {
         return const CoursesListScreen();
       case PageType.aboutUs:
         return const AboutUsScreen();
+      case PageType.controlPanel:
+        return const ControlScreen();
     }
   }
 
@@ -102,4 +109,4 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 }
 
-enum PageType { aboutUs, courses, halls, home }
+enum PageType { controlPanel, aboutUs, courses, halls, home }

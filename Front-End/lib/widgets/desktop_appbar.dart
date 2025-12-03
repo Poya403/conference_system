@@ -33,7 +33,7 @@ class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: DefaultTextStyle(
         style: const TextStyle(color: Colors.white),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(top: 16.0),
           child: Column(
             children: [
               Text(AppTexts.siteName, style: TextStyle(fontSize: 20)),
@@ -47,27 +47,34 @@ class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       _buildMenuItem(
                         text: AppTexts.home,
-                        index: 3,
+                        index: 4,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
                       const SizedBox(width: 30),
                       _buildMenuItem(
                         text: AppTexts.hall,
-                        index: 2,
+                        index: 3,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
                       const SizedBox(width: 30),
                       _buildMenuItem(
                         text: AppTexts.courses,
-                        index: 1,
+                        index: 2,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,
                       ),
                       const SizedBox(width: 30),
                       _buildMenuItem(
                         text: AppTexts.aboutUs,
+                        index: 1,
+                        selectedIndex: selectedIndex,
+                        onTap: onItemSelected,
+                      ),
+                      const SizedBox(width: 30),
+                      _buildMenuItem(
+                        text: '',
                         index: 0,
                         selectedIndex: selectedIndex,
                         onTap: onItemSelected,

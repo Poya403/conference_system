@@ -4,6 +4,7 @@ import 'package:conference_system/utils/app_texts.dart';
 
 Future<void> authenticate({
   required BuildContext context,
+  required String fullName,
   required String email,
   required String password,
   required bool isLogin,
@@ -23,7 +24,11 @@ Future<void> authenticate({
       await supabase.auth.signUp(
         email: email,
         password: password,
+        data: {
+          'fullName': fullName,
+        },
       );
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text(AppTexts.successfulSignUp)),
       );

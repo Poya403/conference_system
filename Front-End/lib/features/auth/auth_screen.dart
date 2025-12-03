@@ -11,6 +11,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLogin = true;
@@ -21,6 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     await authenticate(
       context: context,
+      fullName: _fullNameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
       isLogin: _isLogin,
@@ -52,6 +54,14 @@ class _AuthScreenState extends State<AuthScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 ),
                 const SizedBox(height: 50),
+                !_isLogin ?
+                  CustomTextField(
+                    controller: _fullNameController,
+                    labelText: AppTexts.fullName,
+                    isPassword: false,
+                  )
+                  : SizedBox.shrink(),
+                const SizedBox(height: 35),
                 CustomTextField(
                   controller: _emailController,
                   labelText: AppTexts.email,

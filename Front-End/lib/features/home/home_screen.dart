@@ -1,7 +1,9 @@
+import 'package:conference_system/features/about_us_page/about_us_screen.dart';
+import 'package:conference_system/features/courses_list/courses_list_screen.dart';
 import 'package:conference_system/main_wrapper.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
-import 'package:conference_system/features/conference_panel/conference_screen.dart';
+import 'package:conference_system/features/hall_panel/hall_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,52 +37,7 @@ class Wide extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                color: Colors.grey[200],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: Image(
-                        image: AssetImage('assets/images/hamayesh2.jpg'),
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppTexts.aboutUs,
-                            style: TextStyle(
-                              color: Colors.purple,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Text(
-                            textDirection: TextDirection.rtl,
-                            AppTexts.about,
-                            style: TextStyle(fontSize: 16, height: 2),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            AboutContainerWide(),
             SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -94,10 +51,22 @@ class Wide extends StatelessWidget {
                       fontSize: 35,
                     ),
                   ),
+                  SizedBox(height: 30),
+                  HallList(limit: 4),
                   SizedBox(height: 50),
-                  HallLists(),
+                  ShowMoreButton(currentPageType: PageType.halls),
                   SizedBox(height: 50),
-                  ShowMoreButton(),
+                  Text(
+                    AppTexts.courses,
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 35,
+                    ),
+                  ),
+                  CoursesList(limit: 5),
+                  SizedBox(height: 50),
+                  ShowMoreButton(currentPageType: PageType.courses),
                 ],
               ),
             ),
@@ -118,54 +87,7 @@ class Narrow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                color: Colors.grey[200],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image(
-                          image: AssetImage('assets/images/hamayesh2.jpg'),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        AppTexts.aboutUs,
-                        style: TextStyle(
-                          color: Colors.purple,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Expanded(
-                      child: Text(
-                        textDirection: TextDirection.rtl,
-                        AppTexts.about,
-                        style: TextStyle(fontSize: 15, height: 2),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            AboutContainerNarrow(),
             SizedBox(height: 23),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -176,13 +98,25 @@ class Narrow extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.purple,
                       fontWeight: FontWeight.w500,
-                      fontSize: 24,
+                      fontSize: 35,
                     ),
                   ),
+                  SizedBox(height: 30),
+                  HallList(limit: 4),
                   SizedBox(height: 50),
-                  HallLists(),
+                  ShowMoreButton(currentPageType: PageType.halls),
                   SizedBox(height: 50),
-                  ShowMoreButton(),
+                  Text(
+                    AppTexts.courses,
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 35,
+                    ),
+                  ),
+                  CoursesList(limit: 5),
+                  SizedBox(height: 50),
+                  ShowMoreButton(currentPageType: PageType.courses),
                 ],
               ),
             ),
@@ -194,8 +128,8 @@ class Narrow extends StatelessWidget {
 }
 
 class ShowMoreButton extends StatelessWidget {
-  const ShowMoreButton({super.key});
-
+  const ShowMoreButton({super.key,required this.currentPageType});
+  final PageType currentPageType;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -203,19 +137,13 @@ class ShowMoreButton extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) =>
-                MainWrapper(page: PageType.halls),
+            pageBuilder: (_, __, ___) => MainWrapper(page: currentPageType),
             transitionDuration: Duration.zero,
           ),
         );
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.purple,
-      ),
-      child: Text(
-        AppTexts.showAll,
-        style: TextStyle(color: Colors.white),
-      ),
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+      child: Text(AppTexts.showAll, style: TextStyle(color: Colors.white)),
     );
   }
 }
