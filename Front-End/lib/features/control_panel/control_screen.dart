@@ -1,3 +1,4 @@
+import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/auth_service.dart';
@@ -10,98 +11,112 @@ class ControlScreen extends StatefulWidget {
 }
 
 class _ControlScreenState extends State<ControlScreen> {
+  late Widget currentPanel;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    currentPanel = ProfileScreen();
+  }
+
+  void changePanel(int index) {
+    setState(() {
+      switch (index) {
+        case 0:
+          currentPanel = ProfileScreen();
+          break;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: isDesktop ? Wide() : Narrow(),
+      body: isDesktop
+          ? Wide(currentPanel: currentPanel, onPanelChanged: changePanel)
+          : Narrow(currentPanel: currentPanel, onPanelChanged: changePanel),
+
     );
   }
 }
 
 class Wide extends StatelessWidget {
-  const Wide({super.key});
+  const Wide({
+    super.key,
+    required this.currentPanel,
+    required this.onPanelChanged,
+  });
+
+  final Widget currentPanel;
+  final Function(int) onPanelChanged;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.height * 0.1,
-                horizontal: MediaQuery.of(context).size.width * 0.05
-            ),
-            child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               textDirection: TextDirection.rtl,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: Colors.grey, width: 0.5),
-                  ),
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: Column(
-                    children: [
-                      FormButton(
-                        title: AppTexts.userInfo,
-                        icon: Icons.person_outline_outlined,
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.orderHistory,
-                        icon: Icons.history_edu_outlined,
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.waitingList,
-                        icon: Icons.list_alt_outlined,
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.logout,
-                        icon: Icons.logout,
-                        onPressed: () async {
-                          await logout(context);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: Colors.grey, width: 0.5),
-                  ),
-                  width: MediaQuery.of(context).size.width * 0.55,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: Column(
-                    children: [
-
-                    ],
+                SizedBox(
+                  width: 300,
+                  height: 400,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        FormButton(
+                          title: AppTexts.userInfo,
+                          icon: Icons.person_outline_outlined,
+                          onPressed: () => onPanelChanged(0),
+                        ),
+                        SizedBox(height: 10),
+                        FormButton(
+                          title: AppTexts.orderHistory,
+                          icon: Icons.history_edu_outlined,
+                        ),
+                        SizedBox(height: 10),
+                        FormButton(
+                          title: AppTexts.waitingList,
+                          icon: Icons.list_alt_outlined,
+                        ),
+                        SizedBox(height: 10),
+                        FormButton(
+                          title: AppTexts.logout,
+                          icon: Icons.logout,
+                          onPressed: () async {
+                            await logout(context);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                SizedBox(width: 20),
+                Expanded(child: SizedBox(child: currentPanel)),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class Narrow extends StatelessWidget {
-  const Narrow({super.key});
+  const Narrow({
+    super.key,
+    required this.currentPanel,
+    required this.onPanelChanged,
+  });
+
+  final Widget currentPanel;
+  final Function(int) onPanelChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -118,12 +133,13 @@ class FormButton extends StatelessWidget {
     required this.title,
     required this.icon,
     this.onPressed,
-    super.key
+    super.key,
   });
 
   final String title;
   final IconData icon;
   final VoidCallback? onPressed;
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -137,14 +153,8 @@ class FormButton extends StatelessWidget {
       ),
       child: Row(
         textDirection: TextDirection.rtl,
-        children: [
-          Icon(icon,size: 27),
-          SizedBox(width: 10),
-          Text(title),
-        ],
+        children: [Icon(icon, size: 27), SizedBox(width: 10), Text(title)],
       ),
-
     );
   }
 }
-

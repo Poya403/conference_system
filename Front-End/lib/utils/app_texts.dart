@@ -24,6 +24,7 @@ class AppTexts {
   static const String hall =  'سالن ها';
   static const String courses = 'دوره ها';
   static const String aboutUs = 'درباره ما';
+  static const String controlPanel = 'پنل مدیریت';
   //hall
   static const String noData = '.آیتمی جهت نمایش وجود ندارد';
   static const String capacity = 'ظرفیت';
@@ -33,4 +34,8 @@ class AppTexts {
   static const String orderHistory = 'تاریخچه سفارشات';
   static const String waitingList = 'لیست انتظار';
   static const String logout = 'خروج از حساب کاربری';
+  static const String role = 'نقش';
+  static const String bio = 'بیوگرافی';
+  static const String phoneNumber = 'شماره تماس';
+  static const String createdAt = 'تاریخ پیوستن';
 }

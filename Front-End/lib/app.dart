@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/features/auth/auth_screen.dart';
 import 'package:conference_system/main_wrapper.dart';
-import 'package:conference_system/features/control_panel/control_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/auth': (_) => const AuthScreen(),
-        '/profile': (_) => const ControlScreen(),
+        '/profile': (_) => const MainWrapper(page: PageType.controlPanel),
         '/home': (_) => const MainWrapper(page: PageType.home),
         '/halls': (_) => const MainWrapper(page: PageType.halls),
         '/courses': (_) => const MainWrapper(page: PageType.courses),

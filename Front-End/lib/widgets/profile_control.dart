@@ -13,13 +13,16 @@ class ProfileControl extends StatelessWidget {
           // عکس پروفایل
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
-            child: GestureDetector(
-              onTap: (){
-                Navigator.pushNamed(context, '/profile');
-              },
-              child: CircleAvatar(
-                radius: 18,
-                backgroundImage: const AssetImage('assets/images/default_avatar.png') as ImageProvider,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundImage: const AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                ),
               ),
             ),
           ),
