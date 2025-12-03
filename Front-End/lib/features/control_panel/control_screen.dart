@@ -120,10 +120,53 @@ class Narrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(children: [Text(AppTexts.userInfo)]),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ExpansionTile(
+              title: Text(AppTexts.controlPanel, style: TextStyle(fontSize: 18)),
+              children: [
+                ListTile(
+                  leading: Icon(Icons.person_outline),
+                  title: Text(AppTexts.userInfo),
+                  onTap: () =>  onPanelChanged(0)
+                ),
+                ListTile(
+                  leading: Icon(Icons.history_edu_outlined),
+                  title: Text(AppTexts.orderHistory),
+                  onTap: () =>  onPanelChanged(1)
+                ),
+                ListTile(
+                  leading: Icon(Icons.list_alt_outlined),
+                  title: Text(AppTexts.waitingList),
+                  onTap: () => onPanelChanged(2)
+                ),
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text(AppTexts.logout),
+                  onTap: () async {
+                    await logout(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: currentPanel,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

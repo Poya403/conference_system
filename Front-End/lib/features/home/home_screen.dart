@@ -1,4 +1,5 @@
 import 'package:conference_system/features/about_us_page/about_us_screen.dart';
+import 'package:conference_system/features/courses_list/courses_list_screen.dart';
 import 'package:conference_system/main_wrapper.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,19 @@ class Wide extends StatelessWidget {
                   SizedBox(height: 30),
                   HallList(limit: 4),
                   SizedBox(height: 50),
-                  ShowMoreButton(),
+                  ShowMoreButton(currentPageType: PageType.halls),
+                  SizedBox(height: 50),
+                  Text(
+                    AppTexts.courses,
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 35,
+                    ),
+                  ),
+                  CoursesList(limit: 5),
+                  SizedBox(height: 50),
+                  ShowMoreButton(currentPageType: PageType.courses),
                 ],
               ),
             ),
@@ -85,13 +98,25 @@ class Narrow extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.purple,
                       fontWeight: FontWeight.w500,
-                      fontSize: 24,
+                      fontSize: 35,
                     ),
                   ),
-                  SizedBox(height: 50),
+                  SizedBox(height: 30),
                   HallList(limit: 4),
                   SizedBox(height: 50),
-                  ShowMoreButton(),
+                  ShowMoreButton(currentPageType: PageType.halls),
+                  SizedBox(height: 50),
+                  Text(
+                    AppTexts.courses,
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 35,
+                    ),
+                  ),
+                  CoursesList(limit: 5),
+                  SizedBox(height: 50),
+                  ShowMoreButton(currentPageType: PageType.courses),
                 ],
               ),
             ),
@@ -103,8 +128,8 @@ class Narrow extends StatelessWidget {
 }
 
 class ShowMoreButton extends StatelessWidget {
-  const ShowMoreButton({super.key});
-
+  const ShowMoreButton({super.key,required this.currentPageType});
+  final PageType currentPageType;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -112,7 +137,7 @@ class ShowMoreButton extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) => MainWrapper(page: PageType.halls),
+            pageBuilder: (_, __, ___) => MainWrapper(page: currentPageType),
             transitionDuration: Duration.zero,
           ),
         );

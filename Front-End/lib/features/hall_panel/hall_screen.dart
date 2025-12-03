@@ -25,7 +25,6 @@ class _HallScreenState extends State<HallScreen> {
           ),
         ),
       ),
-      floatingActionButton: AddButton(),
     );
   }
 }
@@ -135,27 +134,6 @@ class HallList extends StatelessWidget {
           );
         }
       },
-    );
-  }
-}
-
-
-class AddButton extends StatelessWidget {
-  const AddButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.purple,
-        shape: CircleBorder(),
-      ),
-      child: SizedBox(
-        width: 60,
-        height: 60,
-        child: Icon(Icons.add, color: Colors.white, size: 25),
-      ),
     );
   }
 }

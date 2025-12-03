@@ -38,4 +38,8 @@ class AppTexts {
   static const String bio = 'بیوگرافی';
   static const String phoneNumber = 'شماره تماس';
   static const String createdAt = 'تاریخ پیوستن';
+  // courses
+  static const String registrants = 'تعداد ثبت نام شدگان';
+  static const String crsType = 'نوع دوره';
+  static const String hostHall = 'سالن میزبان';
 }
