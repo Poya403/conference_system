@@ -2,14 +2,14 @@ import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/auth_service.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ControlScreen extends StatefulWidget {
+  const ControlScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ControlScreen> createState() => _ControlScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ControlScreenState extends State<ControlScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
