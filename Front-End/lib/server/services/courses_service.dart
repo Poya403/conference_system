@@ -37,8 +37,6 @@ class CoursesService{
     }
   }
 
-
-
   Future<List<Map<String,dynamic>>> myCoursesList(String status) async {
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
@@ -49,6 +47,7 @@ class CoursesService{
           .select('''
             uid,
             cid,
+            status,
             courses (
               id,
               title,
