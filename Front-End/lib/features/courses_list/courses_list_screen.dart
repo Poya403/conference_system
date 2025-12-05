@@ -25,7 +25,6 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
           ),
         ),
       ),
-      floatingActionButton: AddButton(),
     );
   }
 }
@@ -37,7 +36,10 @@ class CoursesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 800;
     final coursesService = CoursesService();
 
     return FutureBuilder<List<Map<String, dynamic>>>(
@@ -104,7 +106,7 @@ class CoursesList extends StatelessWidget {
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.image_not_supported),
+                                  const Icon(Icons.image_not_supported),
                                 ),
                               ),
                               Padding(
@@ -120,8 +122,11 @@ class CoursesList extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      '${AppTexts.registrants} : ${course['registrants'] ?? ''} از '
-                                          '${course['halls']['capacity'] ?? ''} نفر ',
+                                      '${AppTexts.registrants} '
+                                          ': ${course['registrants'] ??
+                                          ''} از '
+                                          '${course['halls']['capacity'] ??
+                                          ''} نفر ',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey,
@@ -138,13 +143,32 @@ class CoursesList extends StatelessWidget {
                                     const SizedBox(height: 6),
                                     course['type'] == 'حضوری'
                                         ? Text(
-                                            '${AppTexts.hostHall} : ${course['halls']['title'] ?? ''}',
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          )
+                                      '${AppTexts
+                                          .hostHall} : ${course['halls']['title'] ??
+                                          ''}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    )
                                         : SizedBox.shrink(),
+                                    Text(
+                                      '${AppTexts.phoneNumber} : '
+                                          '${course['phone_number'] ?? '0'}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    SizedBox(
+                                      width: 140,
+                                      height: 30,
+                                      child: RegisterButton(
+                                        courseId: course['id'],
+                                        cost: course['cost'] ?? 0
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -164,21 +188,37 @@ class CoursesList extends StatelessWidget {
   }
 }
 
-class AddButton extends StatelessWidget {
-  const AddButton({super.key});
+class RegisterButton extends StatelessWidget {
+  const RegisterButton({
+    super.key,
+    required this.courseId,
+    required this.cost,
+  });
+
+  final int courseId;
+  final int cost;
 
   @override
   Widget build(BuildContext context) {
+    final coursesService = CoursesService();
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () async {
+        await coursesService.courseRegistration(context, courseId);
+      },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.purple,
-        shape: CircleBorder(),
+        backgroundColor: Colors.deepPurple,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
       ),
-      child: SizedBox(
-        width: 60,
-        height: 60,
-        child: Icon(Icons.add, color: Colors.white, size: 25),
+      child: Row(
+        children: [
+          Text(
+            '${cost.toString()} تومان ',
+            style: TextStyle(color: Colors.white)
+          ),
+          // Icon(Icons.add_circle, color: Colors.white),
+        ],
       ),
     );
   }

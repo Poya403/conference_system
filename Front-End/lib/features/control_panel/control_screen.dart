@@ -1,3 +1,4 @@
+import 'package:conference_system/features/control_panel/panels/my_courses_list.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ class _ControlScreenState extends State<ControlScreen> {
         case 0:
           currentPanel = ProfileScreen();
           break;
+        case 1:
+          currentPanel = MyCoursesList();
       }
     });
   }
@@ -77,8 +80,9 @@ class Wide extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         FormButton(
-                          title: AppTexts.orderHistory,
-                          icon: Icons.history_edu_outlined,
+                          title: AppTexts.myCourses,
+                          icon: Icons.my_library_books_outlined,
+                          onPressed: () => onPanelChanged(1),
                         ),
                         SizedBox(height: 10),
                         FormButton(
@@ -135,8 +139,8 @@ class Narrow extends StatelessWidget {
                   onTap: () =>  onPanelChanged(0)
                 ),
                 ListTile(
-                  leading: Icon(Icons.history_edu_outlined),
-                  title: Text(AppTexts.orderHistory),
+                  leading: Icon(Icons.my_library_books_outlined),
+                  title: Text(AppTexts.myCourses),
                   onTap: () =>  onPanelChanged(1)
                 ),
                 ListTile(

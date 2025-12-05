@@ -8,6 +8,7 @@ class AppTexts {
 هدف این سامانه، ارائه تجربه‌ای سریع، ساده و حرفه‌ای برای مدیریت و رزرو سالن‌های همایش است.  
   ''';
   static const String showAll = 'نمایش همه';
+
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -19,6 +20,7 @@ class AppTexts {
   static const String successfulLogin =  'ورود موفقیت‌آمیز بود';
   static const String successfulSignUp =  'ثبت‌نام با موفقیت انجام شد';
   static const String error = 'خطایی رخ داد';
+  static const String city = 'شهر';
   //app bar
   static const String home = 'خانه';
   static const String hall =  'سالن ها';
@@ -31,7 +33,7 @@ class AppTexts {
   static const String area = 'محدود جغرافیایی';
   //profile
   static const String userInfo = 'اطلاعات کاربری';
-  static const String orderHistory = 'تاریخچه سفارشات';
+  static const String myCourses = 'دوره های من';
   static const String waitingList = 'لیست انتظار';
   static const String logout = 'خروج از حساب کاربری';
   static const String role = 'نقش';
@@ -42,4 +44,5 @@ class AppTexts {
   static const String registrants = 'تعداد ثبت نام شدگان';
   static const String crsType = 'نوع دوره';
   static const String hostHall = 'سالن میزبان';
+  static const String deleteCourse = 'حذف دوره';
 }
