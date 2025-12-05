@@ -29,11 +29,19 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
   }
 }
 
-class CoursesList extends StatelessWidget {
+class CoursesList extends StatefulWidget {
   final int? limit;
 
   const CoursesList({super.key, this.limit});
 
+  @override
+  State<CoursesList> createState() => _CoursesListState();
+}
+
+class _CoursesListState extends State<CoursesList> {
+  void _refreshPage(){
+    setState(() {});
+  }
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery
@@ -42,11 +50,11 @@ class CoursesList extends StatelessWidget {
         .width > 800;
     final coursesService = CoursesService();
     final TextStyle detailStyle = TextStyle(
-      color: Colors.blueGrey,
-      fontSize: 14
+        color: Colors.blueGrey,
+        fontSize: 14
     );
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: coursesService.getCoursesLists(),
+      future: coursesService.getCoursesList(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -56,7 +64,7 @@ class CoursesList extends StatelessWidget {
           return Text(AppTexts.noData);
         } else {
           final courses = snapshot.data!;
-
+          final filteredCourses = courses;
           return LayoutBuilder(
             builder: (context, constraints) {
               //  تعیین تعداد ستون‌ها بر اساس عرض صفحه
@@ -79,10 +87,10 @@ class CoursesList extends StatelessWidget {
                     child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: math.min(
-                        limit ?? courses.length,
-                        courses.length,
-                      ),
+                      itemCount: widget.limit == null
+                          ? courses.length
+                          : math.min(widget.limit ?? 0, courses.length),
+
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 16,
@@ -90,7 +98,8 @@ class CoursesList extends StatelessWidget {
                         childAspectRatio: isDesktop ? 1 : 0.8,
                       ),
                       itemBuilder: (context, index) {
-                        final course = courses[index];
+                        final course = filteredCourses[index];
+                        final isInBasket = course['isInBasket'] as bool;
                         return Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -130,24 +139,24 @@ class CoursesList extends StatelessWidget {
                                     children: [
                                       const SizedBox(height: 6),
                                       Text(
-                                        '${AppTexts.registrants}: ${course['registrants'] ?? ''} نفر',
-                                        style: detailStyle
+                                          '${AppTexts.registrants}: ${course['registrants'] ?? ''} نفر',
+                                          style: detailStyle
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        '${AppTexts.crsType}: ${course['type'] ?? ''}',
-                                        style: detailStyle
+                                          '${AppTexts.crsType}: ${course['type'] ?? ''}',
+                                          style: detailStyle
                                       ),
                                       const SizedBox(height: 6),
                                       SizedBox(
                                         height: 22,
                                         child:
-                                          course['halls'] == null
-                                              ? const SizedBox.shrink()
-                                              : Text(
-                                            '${AppTexts.hostHall}: ${course['halls']['title']}',
-                                            style: detailStyle,
-                                          ),
+                                        course['halls'] == null
+                                            ? const SizedBox.shrink()
+                                            : Text(
+                                          '${AppTexts.hostHall}: ${course['halls']['title']}',
+                                          style: detailStyle,
+                                        ),
                                       ),
                                       const SizedBox(height: 6),
                                       SizedBox(
@@ -178,6 +187,8 @@ class CoursesList extends StatelessWidget {
                                   child: Center(
                                     child: RegisterButton(
                                       courseId: course['id'],
+                                      isInBasket: isInBasket,
+                                      onRefresh: _refreshPage,
                                     ),
                                   ),
                                 ),
@@ -202,19 +213,26 @@ class RegisterButton extends StatelessWidget {
   const RegisterButton({
     super.key,
     required this.courseId,
+    required this.isInBasket,
+    required this.onRefresh,
   });
 
   final int courseId;
-
+  final bool isInBasket;
+  final VoidCallback onRefresh;
   @override
   Widget build(BuildContext context) {
     final coursesService = CoursesService();
     return ElevatedButton(
       onPressed: () async {
-        await coursesService.addShoppingBasket(context, courseId);
+        isInBasket
+            ? await coursesService.deleteCourseFromBasket(context, courseId)
+            : await coursesService.addShoppingBasket(context, courseId)
+        ;
+        onRefresh();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: isInBasket ?  Colors.redAccent : Colors.deepPurple,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0))
         ),
@@ -223,7 +241,8 @@ class RegisterButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            AppTexts.addingToBasket,
+            isInBasket ? AppTexts.removeFromBasket
+                : AppTexts.addingToBasket,
             style: TextStyle(color: Colors.white)
           ),
           // Icon(Icons.add_circle, color: Colors.white),

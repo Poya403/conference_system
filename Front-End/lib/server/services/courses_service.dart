@@ -1,37 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/utils/app_texts.dart';
+import 'package:flutter/material.dart';
+import 'package:conference_system/utils/translator.dart';
 
 class CoursesService{
   final SupabaseClient supabase = Supabase.instance.client;
 
-  Future<List<Map<String, dynamic>>> getCoursesLists() async {
+  Future<List<Map<String, dynamic>>> getCoursesList() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return [];
+
     try {
-      final response = await supabase
+      final coursesResponse = await supabase
           .from('courses')
-          .select('''
-            id,
-            title,
-            cost,
-            hid,
-            registrants,
-            type,
-            halls (
-              id,
-              title,
-              city,
-              capacity
-            )
-          ''')
-          .order('id',ascending: true);
+          .select();
 
+      final basketResponse = await supabase
+          .from('enrollments')
+          .select('cid')
+          .eq('uid', user.id);
 
-      return List<Map<String, dynamic>>.from(response);
+      final basketIds = (basketResponse)
+          .map<int>((e) => e['cid'] as int)
+          .toSet();
+
+      return (coursesResponse).map<Map<String, dynamic>>((course) {
+        return {
+          ...course,
+          'isInBasket': basketIds.contains(course['id']),
+        };
+      }).toList();
     } catch (e) {
-      print('${AppTexts.error} $e');
+      print("Error in getCoursesWithBasketStatus: $e");
       return [];
     }
   }
+
+
 
   Future<List<Map<String,dynamic>>> myCoursesList(String status) async {
     final SupabaseClient supabase = Supabase.instance.client;
@@ -56,7 +62,6 @@ class CoursesService{
       return List<Map<String,dynamic>>.from(response);
 
     } catch (e) {
-      print('${AppTexts.error} $e');
       return [];
     }
   }
@@ -70,10 +75,15 @@ class CoursesService{
           .insert([
         { 'cid': cid },
       ]);
-      print("An Item added to shopping basket: $request");
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('آیتم با موفقیت به سبد خرید اضافه شد.')),
+      );
     } catch (e) {
-      print('${AppTexts.error} $e');
+      print(e.toString());
+      final message = await errorTranslator(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.error} : $message')),
+      );
     }
   }
 
@@ -87,10 +97,16 @@ class CoursesService{
           .update({'status': 'registered'})
           .eq('uid', uid)
           .eq('cid', cid);
-      print("Registration done: $request");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خرید با موفقیت انجام شد. ')),
+      );
 
     } catch (e) {
-      print('${AppTexts.error} $e');
+      final message = await errorTranslator(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.error} : $message')),
+      );
     }
   }
 
@@ -105,10 +121,15 @@ class CoursesService{
           .eq('uid',uid)
           .eq('status','in_basket');
 
-    print("Registration deleted successfully: $request");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('آیتم با موفقیت حذف شد.')),
+      );
 
     } catch (e) {
-    print('${AppTexts.error} $e');
+      final message = await errorTranslator(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.error}: $message')),
+      );
     }
   }
 }

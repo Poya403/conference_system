@@ -45,7 +45,7 @@ class AppTexts {
   static const String registrants = 'تعداد ثبت نام شدگان';
   static const String crsType = 'نوع دوره';
   static const String hostHall = 'سالن میزبان';
-  static const String deleteCourse = 'حذف دوره';
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
+  static const String removeFromBasket = 'حذف از سبد خرید';
 }
