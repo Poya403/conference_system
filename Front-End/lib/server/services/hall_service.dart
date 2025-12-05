@@ -11,11 +11,8 @@ class HallService{
           .select()
           .order('date', ascending: true);
 
-      if (response != null) {
-        return List<Map<String, dynamic>>.from(response);
-      } else {
-        return [];
-      }
+      return List<Map<String, dynamic>>.from(response);
+
     } catch (e) {
       print('${AppTexts.error} $e');
       return [];

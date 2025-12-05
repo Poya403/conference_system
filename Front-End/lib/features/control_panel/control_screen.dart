@@ -1,5 +1,6 @@
 import 'package:conference_system/features/control_panel/panels/my_courses_list.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
+import 'package:conference_system/features/control_panel/panels/shopping_basket.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/auth_service.dart';
@@ -29,6 +30,8 @@ class _ControlScreenState extends State<ControlScreen> {
           break;
         case 1:
           currentPanel = MyCoursesList();
+        case 2:
+          currentPanel = ShoppingBasket();
       }
     });
   }
@@ -40,7 +43,6 @@ class _ControlScreenState extends State<ControlScreen> {
       body: isDesktop
           ? Wide(currentPanel: currentPanel, onPanelChanged: changePanel)
           : Narrow(currentPanel: currentPanel, onPanelChanged: changePanel),
-
     );
   }
 }
@@ -60,51 +62,53 @@ class Wide extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          textDirection: TextDirection.rtl,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.rtl,
-              children: [
-                SizedBox(
-                  width: 300,
-                  height: 400,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        FormButton(
-                          title: AppTexts.userInfo,
-                          icon: Icons.person_outline_outlined,
-                          onPressed: () => onPanelChanged(0),
-                        ),
-                        SizedBox(height: 10),
-                        FormButton(
-                          title: AppTexts.myCourses,
-                          icon: Icons.my_library_books_outlined,
-                          onPressed: () => onPanelChanged(1),
-                        ),
-                        SizedBox(height: 10),
-                        FormButton(
-                          title: AppTexts.waitingList,
-                          icon: Icons.list_alt_outlined,
-                        ),
-                        SizedBox(height: 10),
-                        FormButton(
-                          title: AppTexts.logout,
-                          icon: Icons.logout,
-                          onPressed: () async {
-                            await logout(context);
-                          },
-                        ),
-                      ],
+            SizedBox(
+              width: 300,
+              height: 400,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    FormButton(
+                      title: AppTexts.userInfo,
+                      icon: Icons.person_outline_outlined,
+                      onPressed: () => onPanelChanged(0),
                     ),
-                  ),
+                    SizedBox(height: 10),
+                    FormButton(
+                      title: AppTexts.myCourses,
+                      icon: Icons.my_library_books_outlined,
+                      onPressed: () => onPanelChanged(1),
+                    ),
+                    SizedBox(height: 10),
+                    FormButton(
+                      title: AppTexts.shoppingBasket,
+                      icon: Icons.shopping_basket_outlined,
+                      onPressed: () => onPanelChanged(2),
+                    ),
+                    SizedBox(height: 10),
+                    FormButton(
+                      title: AppTexts.waitingList,
+                      icon: Icons.list_alt_outlined,
+                    ),
+                    SizedBox(height: 10),
+                    FormButton(
+                      title: AppTexts.logout,
+                      icon: Icons.logout,
+                      onPressed: () async {
+                        await logout(context);
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(width: 20),
-                Expanded(child: SizedBox(child: currentPanel)),
-              ],
+              ),
             ),
+            SizedBox(width: 20),
+            Expanded(child: SizedBox.expand(child: currentPanel)),
           ],
         ),
       ),
@@ -131,22 +135,30 @@ class Narrow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ExpansionTile(
-              title: Text(AppTexts.controlPanel, style: TextStyle(fontSize: 18)),
+              title: Text(
+                AppTexts.controlPanel,
+                style: TextStyle(fontSize: 18),
+              ),
               children: [
                 ListTile(
                   leading: Icon(Icons.person_outline),
                   title: Text(AppTexts.userInfo),
-                  onTap: () =>  onPanelChanged(0)
+                  onTap: () => onPanelChanged(0),
                 ),
                 ListTile(
                   leading: Icon(Icons.my_library_books_outlined),
                   title: Text(AppTexts.myCourses),
-                  onTap: () =>  onPanelChanged(1)
+                  onTap: () => onPanelChanged(1),
+                ),
+                ListTile(
+                  leading: Icon(Icons.shopping_basket_outlined),
+                  title: Text(AppTexts.shoppingBasket),
+                  onTap: () => onPanelChanged(2),
                 ),
                 ListTile(
                   leading: Icon(Icons.list_alt_outlined),
                   title: Text(AppTexts.waitingList),
-                  onTap: () => onPanelChanged(2)
+                  onTap: () => onPanelChanged(3),
                 ),
                 ListTile(
                   leading: Icon(Icons.logout),
@@ -164,9 +176,7 @@ class Narrow extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: currentPanel,
-              ),
+              child: Center(child: currentPanel),
             ),
           ),
         ],

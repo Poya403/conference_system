@@ -23,7 +23,7 @@ class CoursesService{
               capacity
             )
           ''')
-          .order('id');
+          .order('id',ascending: true);
 
 
       return List<Map<String, dynamic>>.from(response);
@@ -33,23 +33,7 @@ class CoursesService{
     }
   }
 
-  Future<void> courseRegistration(BuildContext context,int cid) async {
-    final SupabaseClient supabase = Supabase.instance.client;
-
-    try{
-      final request = await supabase
-          .from('enrollments')
-          .insert([
-        { 'cid': cid },
-      ]);
-      print("Registration done: $request");
-
-    } catch (e) {
-      print('${AppTexts.error} $e');
-    }
-  }
-
-  Future<List<Map<String,dynamic>>> myCoursesList() async {
+  Future<List<Map<String,dynamic>>> myCoursesList(String status) async {
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
 
@@ -66,7 +50,8 @@ class CoursesService{
               type
             )
           ''')
-          .eq('uid', uid);
+          .eq('uid', uid)
+          .eq('status', status);
       
       return List<Map<String,dynamic>>.from(response);
 
@@ -76,7 +61,40 @@ class CoursesService{
     }
   }
 
-  Future<void> deleteCourse(BuildContext context, int cid) async {
+  Future<void> addShoppingBasket(BuildContext context,int cid) async {
+    final SupabaseClient supabase = Supabase.instance.client;
+
+    try{
+      final request = await supabase
+          .from('enrollments')
+          .insert([
+        { 'cid': cid },
+      ]);
+      print("An Item added to shopping basket: $request");
+
+    } catch (e) {
+      print('${AppTexts.error} $e');
+    }
+  }
+
+  Future<void> courseRegistration(BuildContext context,int cid) async {
+    final SupabaseClient supabase = Supabase.instance.client;
+    final uid = supabase.auth.currentUser!.id;
+
+    try{
+      final request = await supabase
+          .from('enrollments')
+          .update({'status': 'registered'})
+          .eq('uid', uid)
+          .eq('cid', cid);
+      print("Registration done: $request");
+
+    } catch (e) {
+      print('${AppTexts.error} $e');
+    }
+  }
+
+  Future<void> deleteCourseFromBasket(BuildContext context, int cid) async {
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
     try{
@@ -84,9 +102,10 @@ class CoursesService{
           .from('enrollments')
           .delete()
           .eq('cid',cid)
-          .eq('uid',uid);
+          .eq('uid',uid)
+          .eq('status','in_basket');
 
-    print("Registration done: $request");
+    print("Registration deleted successfully: $request");
 
     } catch (e) {
     print('${AppTexts.error} $e');

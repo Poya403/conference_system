@@ -41,7 +41,10 @@ class CoursesList extends StatelessWidget {
         .size
         .width > 800;
     final coursesService = CoursesService();
-
+    final TextStyle detailStyle = TextStyle(
+      color: Colors.blueGrey,
+      fontSize: 14
+    );
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: coursesService.getCoursesLists(),
       builder: (context, snapshot) {
@@ -128,34 +131,40 @@ class CoursesList extends StatelessWidget {
                                       const SizedBox(height: 6),
                                       Text(
                                         '${AppTexts.registrants}: ${course['registrants'] ?? ''} نفر',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${AppTexts.capacity}: ${course['halls']['capacity'] ?? ''} نفر',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
-                                        ),
+                                        style: detailStyle
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
                                         '${AppTexts.crsType}: ${course['type'] ?? ''}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
+                                        style: detailStyle
+                                      ),
+                                      const SizedBox(height: 6),
+                                      SizedBox(
+                                        height: 22,
+                                        child:
+                                          course['halls'] == null
+                                              ? const SizedBox.shrink()
+                                              : Text(
+                                            '${AppTexts.hostHall}: ${course['halls']['title']}',
+                                            style: detailStyle,
+                                          ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      SizedBox(
+                                        height: 22,
+                                        child:
+                                        course['halls'] == null
+                                            ? const SizedBox.shrink()
+                                            : Text(
+                                            '${AppTexts.capacity}: ${course['halls']?['capacity'] ?? ''} نفر',
+                                            style: detailStyle
                                         ),
                                       ),
-                                      if (course['type'] == 'حضوری')
-                                        Text(
-                                          '${AppTexts.hostHall}: ${course['halls']['title'] ?? ''}',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.blueGrey,
-                                          ),
-                                        ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.registrationFee}: ${course['cost'] ?? 0}',
+                                        style: detailStyle,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -164,12 +173,11 @@ class CoursesList extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: SizedBox(
-                                  width: 150,
+                                  width: 160,
                                   height: 40,
                                   child: Center(
                                     child: RegisterButton(
                                       courseId: course['id'],
-                                      cost: course['cost'] ?? 0,
                                     ),
                                   ),
                                 ),
@@ -194,18 +202,16 @@ class RegisterButton extends StatelessWidget {
   const RegisterButton({
     super.key,
     required this.courseId,
-    required this.cost,
   });
 
   final int courseId;
-  final int cost;
 
   @override
   Widget build(BuildContext context) {
     final coursesService = CoursesService();
     return ElevatedButton(
       onPressed: () async {
-        await coursesService.courseRegistration(context, courseId);
+        await coursesService.addShoppingBasket(context, courseId);
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.deepPurple,
@@ -217,7 +223,7 @@ class RegisterButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            '${cost.toString()} تومان ',
+            AppTexts.addingToBasket,
             style: TextStyle(color: Colors.white)
           ),
           // Icon(Icons.add_circle, color: Colors.white),

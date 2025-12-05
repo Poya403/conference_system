@@ -27,6 +27,7 @@ class AppTexts {
   static const String courses = 'دوره ها';
   static const String aboutUs = 'درباره ما';
   static const String controlPanel = 'پنل مدیریت';
+  static const String shoppingBasket = 'سبد خرید';
   //hall
   static const String noData = '.آیتمی جهت نمایش وجود ندارد';
   static const String capacity = 'ظرفیت';
@@ -45,4 +46,6 @@ class AppTexts {
   static const String crsType = 'نوع دوره';
   static const String hostHall = 'سالن میزبان';
   static const String deleteCourse = 'حذف دوره';
+  static const String registrationFee = 'هزینه ثبت نام';
+  static const String addingToBasket = 'افزودن به سبد خرید';
 }

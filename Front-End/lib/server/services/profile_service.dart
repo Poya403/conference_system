@@ -11,11 +11,8 @@ class ProfileService{
           .select()
           .eq('id', supabase.auth.currentUser?.id as Object);
 
-      if (response != null) {
-        return List<Map<String, dynamic>>.from(response);
-      } else {
-        return [];
-      }
+      return List<Map<String, dynamic>>.from(response);
+
     } catch (e) {
       print('${AppTexts.error} $e');
       return [];
