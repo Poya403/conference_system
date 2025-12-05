@@ -33,6 +33,6 @@ flutter:
    fonts:
      - family: Farsi
        fonts:
-         - asset: assets/fonts/B Roya Bold.ttf
+         - asset: assets/fonts/B Yekan.ttf
            style: normal
            weight: 700

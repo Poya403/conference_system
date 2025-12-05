@@ -109,67 +109,69 @@ class CoursesList extends StatelessWidget {
                                   const Icon(Icons.image_not_supported),
                                 ),
                               ),
+                              Text(
+                                course['title'] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              SizedBox(height: 30,),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.registrants}: ${course['registrants'] ?? ''} نفر',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${AppTexts.capacity}: ${course['halls']['capacity'] ?? ''} نفر',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.crsType}: ${course['type'] ?? ''}',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
+                                      if (course['type'] == 'حضوری')
+                                        Text(
+                                          '${AppTexts.hostHall}: ${course['halls']['title'] ?? ''}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blueGrey,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      course['title'] ?? '',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: SizedBox(
+                                  width: 150,
+                                  height: 40,
+                                  child: Center(
+                                    child: RegisterButton(
+                                      courseId: course['id'],
+                                      cost: course['cost'] ?? 0,
                                     ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      '${AppTexts.registrants} '
-                                          ': ${course['registrants'] ??
-                                          ''} از '
-                                          '${course['halls']['capacity'] ??
-                                          ''} نفر ',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      '${AppTexts.crsType} : ${course['type'] ?? ''}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    course['type'] == 'حضوری'
-                                        ? Text(
-                                      '${AppTexts
-                                          .hostHall} : ${course['halls']['title'] ??
-                                          ''}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    )
-                                        : SizedBox.shrink(),
-                                    Text(
-                                      '${AppTexts.phoneNumber} : '
-                                          '${course['phone_number'] ?? '0'}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    SizedBox(
-                                      width: 140,
-                                      height: 30,
-                                      child: RegisterButton(
-                                        courseId: course['id'],
-                                        cost: course['cost'] ?? 0
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -212,6 +214,7 @@ class RegisterButton extends StatelessWidget {
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             '${cost.toString()} تومان ',

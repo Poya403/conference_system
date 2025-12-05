@@ -51,16 +51,15 @@ class HallList extends StatelessWidget {
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              //  تعیین تعداد ستون‌ها بر اساس عرض صفحه
               int crossAxisCount = 1;
               if (constraints.maxWidth > 1200) {
-                crossAxisCount = 4; // لپ‌تاپ و مانیتور بزرگ
+                crossAxisCount = 4;
               } else if (constraints.maxWidth > 800) {
-                crossAxisCount = 3; // تبلت یا لپ‌تاپ کوچک
+                crossAxisCount = 3;
               } else if (constraints.maxWidth > 500) {
-                crossAxisCount = 2; // موبایل افقی یا تبلت کوچک
+                crossAxisCount = 2;
               } else {
-                crossAxisCount = 1; // موبایل عمودی
+                crossAxisCount = 1;
               }
 
               return SingleChildScrollView(
@@ -99,27 +98,33 @@ class HallList extends StatelessWidget {
                                     const Icon(Icons.image_not_supported),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        hall['title'] ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                DefaultTextStyle(
+                                  style: TextStyle(
+                                    fontFamily: 'Farsi',
+                                    color: Colors.deepPurpleAccent
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          hall['title'] ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.capacity} : ${hall['capacity'] ?? ''} نفر ',
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                      Text(
-                                        '${AppTexts.area} : ${hall['area'] ?? ''}',
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '${AppTexts.capacity} : ${hall['capacity'] ?? ''} نفر ',
+                                          style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
+                                        ),
+                                        Text(
+                                          '${AppTexts.area} : ${hall['area'] ?? ''}',
+                                          style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
