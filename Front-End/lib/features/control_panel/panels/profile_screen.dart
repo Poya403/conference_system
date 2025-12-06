@@ -3,8 +3,12 @@ import 'package:conference_system/server/services/profile_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({
+    super.key,
+    required this.editButtonOnPressed
+  });
 
+  final Function(int) editButtonOnPressed;
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -13,14 +17,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
-    final labelStyle = TextStyle(
-        color: Colors.blueGrey,
-        fontSize: 15
-    );
+    final labelStyle = TextStyle(color: Colors.blueGrey, fontSize: 15);
     final responseStyle = TextStyle(
       color: Colors.deepPurple,
       fontWeight: FontWeight.w600,
-      fontSize: isDesktop ? 18 : 15,
+      fontSize: isDesktop ? 17 : 15,
     );
     final iconSize = 17.0;
 
@@ -61,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.deepPurpleAccent,
                           ),
                         ),
-            
+
                         Positioned(
                           left: 0,
                           right: 0,
@@ -79,13 +80,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-            
+
                     SizedBox(height: 40),
                     Text(info['fullname'], style: responseStyle),
-            
+
                     Text(info['role'], style: responseStyle),
                     SizedBox(height: 20),
-            
+
                     SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -97,14 +98,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: 6),
                           Text(': ${AppTexts.bio}', style: labelStyle),
                           SizedBox(width: 6),
-                          Text(
-                              info['bio'] ?? '',
-                              style: responseStyle
-                          ),
+                          Text(info['bio'] ?? '', style: responseStyle),
                         ],
                       ),
                     ),
-            
+
                     SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -116,14 +114,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: 6),
                           Text(': ${AppTexts.email}', style: labelStyle),
                           SizedBox(width: 6),
-                          Text(
-                            info['email'],
-                            style: responseStyle,
-                          ),
+                          Text(info['email'], style: responseStyle),
                         ],
                       ),
                     ),
-            
+
                     SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -142,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-            
+
                     SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -150,17 +145,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textDirection: TextDirection.rtl,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.calendar_today_outlined , size: iconSize),
+                          Icon(Icons.calendar_today_outlined, size: iconSize),
                           SizedBox(width: 6),
                           Text(': ${AppTexts.createdAt}', style: labelStyle),
                           SizedBox(width: 6),
                           Text(
-                            info['created_at'] ?? '',
+                            info['user_created_at'] ?? '',
                             style: responseStyle,
                           ),
                         ],
                       ),
                     ),
+                    SizedBox(height: 16,),
+                    EditButton(onPanelChanged: widget.editButtonOnPressed),
                   ],
                 ),
               ),
@@ -168,6 +165,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         }
       },
+    );
+  }
+}
+
+class EditButton extends StatelessWidget {
+  const EditButton({super.key, required this.onPanelChanged});
+  final Function(int) onPanelChanged;
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+        backgroundColor: Colors.deepPurpleAccent,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: () => onPanelChanged(4),
+      child: SizedBox(
+        width: 110,
+        height: 30,
+        child: Row(
+          children: [Text(AppTexts.edit), SizedBox(width: 6), Icon(Icons.edit)],
+        ),
+      ),
     );
   }
 }

@@ -41,6 +41,8 @@ class AppTexts {
   static const String bio = 'بیوگرافی';
   static const String phoneNumber = 'شماره تماس';
   static const String createdAt = 'تاریخ پیوستن';
+  static const String edit = 'ویرایش اطلاعات';
+  static const String apply = 'اعمال تغییرات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
   static const String crsType = 'نوع دوره';

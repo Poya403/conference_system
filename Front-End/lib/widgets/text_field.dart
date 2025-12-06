@@ -3,10 +3,12 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool isPassword;
+  final TextDirection? textDirection;
 
   const CustomTextField({
     required this.controller,
     required this.labelText,
+    this.textDirection = TextDirection.ltr,
     this.isPassword = false,
     super.key,
   });
@@ -23,12 +25,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
       width: 250,
       height: 43,
       child: TextField(
+        textDirection: widget.textDirection,
+        textAlign: widget.textDirection == TextDirection.rtl
+            ? TextAlign.right
+            : TextAlign.left,
         controller: widget.controller,
         obscureText: widget.isPassword ? _isHidden : false,
         decoration: InputDecoration(
-          labelText: widget.labelText,
+          label: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              widget.labelText,
+              textDirection: TextDirection.rtl,
+            ),
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
             borderSide: BorderSide(color: Colors.grey, width: 1),
           ),
           focusedBorder: const OutlineInputBorder(

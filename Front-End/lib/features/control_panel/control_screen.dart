@@ -1,3 +1,4 @@
+import 'package:conference_system/features/control_panel/panels/edit_form.dart';
 import 'package:conference_system/features/control_panel/panels/my_courses_list.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/features/control_panel/panels/shopping_basket.dart';
@@ -19,19 +20,21 @@ class _ControlScreenState extends State<ControlScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentPanel = ProfileScreen();
+    currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
   }
 
   void changePanel(int index) {
     setState(() {
       switch (index) {
         case 0:
-          currentPanel = ProfileScreen();
+          currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
           break;
         case 1:
           currentPanel = MyCoursesList();
         case 2:
           currentPanel = ShoppingBasket();
+        case 4:
+          currentPanel = EditForm();
       }
     });
   }

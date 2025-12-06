@@ -1,3 +1,4 @@
+import 'package:conference_system/features/control_panel/panels/edit_form.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/features/auth/auth_screen.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/auth': (_) => const AuthScreen(),
         '/profile': (_) => const MainWrapper(page: PageType.controlPanel),
+        '/edit_profile': (_) => const EditForm(),
         '/home': (_) => const MainWrapper(page: PageType.home),
         '/halls': (_) => const MainWrapper(page: PageType.halls),
         '/courses': (_) => const MainWrapper(page: PageType.courses),

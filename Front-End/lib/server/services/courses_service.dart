@@ -78,7 +78,6 @@ class CoursesService{
         SnackBar(content: Text('آیتم با موفقیت به سبد خرید اضافه شد.')),
       );
     } catch (e) {
-      print(e.toString());
       final message = await errorTranslator(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${AppTexts.error} : $message')),
