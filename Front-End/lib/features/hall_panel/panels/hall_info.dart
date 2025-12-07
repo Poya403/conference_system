@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/hall_service.dart';
+import 'package:conference_system/server/services/amenities_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 
 class HallInfoScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class HallInfoScreen extends StatefulWidget {
 class _HallInfoScreenState extends State<HallInfoScreen> {
   @override
   Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery.of(context).size.width > 800;
     final hallService = HallService();
     return FutureBuilder<Map<String, dynamic>?>(
       future: hallService.getSingleHall(widget.hid),
@@ -26,101 +28,294 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
         } else {
           final hall = snapshot.data!;
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount = 1;
-              if (constraints.maxWidth > 1200) {
-                crossAxisCount = 4;
-              } else if (constraints.maxWidth > 800) {
-                crossAxisCount = 3;
-              } else if (constraints.maxWidth > 500) {
-                crossAxisCount = 2;
-              } else {
-                crossAxisCount = 1;
-              }
-
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
+          return Container(
+            child: isDesktop
+                ? SingleChildScrollView(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      textDirection: TextDirection.rtl,
                       children: [
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          textDirection: TextDirection.rtl,
+                          children: [
+                            HallInfoBox(hall: hall),
+                            Amenities(hid: hall['id'] ?? ''),
+                          ],
+                        ),
+                        MainContent(hall: hall),
+                      ],
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      HallInfoBox(hall: hall),
+                      Amenities(hid: hall['id'] ?? ''),
+                      MainContent(hall: hall),
+                    ],
+                  ),
+          );
+        }
+      },
+    );
+  }
+}
 
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(15),
-                                ),
-                                child: Image.network(
-                                  hall['img_url'],
-                                  height: 120,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.image_not_supported),
-                                ),
-                              ),
-                              DefaultTextStyle(
-                                style: TextStyle(
-                                  fontFamily: 'Farsi',
-                                  color: Colors.deepPurpleAccent,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        hall['title'],
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.capacity} : ${hall['capacity'] ?? ''} نفر ',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.city} : ${hall['city'] ?? ''}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.area} : ${hall['area'] ?? ''}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blueGrey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+class HallInfoBox extends StatelessWidget {
+  const HallInfoBox({super.key, required this.hall});
+
+  final Map<String, dynamic> hall;
+
+  @override
+  Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SizedBox(
+          width: isDesktop ? 300 : 800,
+          height: 400,
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              textDirection: TextDirection.rtl,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                  child: Image.network(
+                    hall['img_url'],
+                    height: 120,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image_not_supported),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Center(
+                  child: SelectableText(
+                    textAlign: TextAlign.center,
+                    hall['title'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Farsi',
+                      color: Colors.deepPurpleAccent,
+                    ),
+                  ),
+                ),
+                Divider(thickness: 0.75),
+                DefaultTextStyle(
+                  style: TextStyle(
+                    fontFamily: 'Farsi',
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SelectableText(
+                          '${AppTexts.capacity} : ${hall['capacity'] ?? ''} نفر ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          '${AppTexts.city} : ${hall['city'] ?? ''}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          '${AppTexts.area} : ${hall['area'] ?? ''}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          '${AppTexts.address} : ${hall['address'] ?? ''}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SelectableText(
+                          textDirection: TextDirection.ltr,
+                          '${AppTexts.phoneNumber} : \u200E${hall['phone_number'] ?? 'ٍثبت نشده'}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              );
-            },
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MainContent extends StatelessWidget {
+  const MainContent({super.key, required this.hall});
+
+  final Map<String, dynamic> hall;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SizedBox(
+          width: 800,
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              textDirection: TextDirection.rtl,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          '${AppTexts.description} :',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ),
+                      Divider(thickness: 0.75),
+                      SelectableText(
+                        hall['description'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Amenities extends StatelessWidget {
+  const Amenities({super.key, required this.hid});
+
+  final int hid;
+
+  @override
+  Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    final amenitiesService = AmenitiesService();
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: amenitiesService.getAmenities(hid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Text(AppTexts.noData);
+        } else {
+          final amenities = snapshot.data!;
+
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: SizedBox(
+                width: isDesktop ? 300 : 800,
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppTexts.amenities,
+                          style: const TextStyle(
+                            color: Colors.deepPurple,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // اگر فقط می‌خواهی متن‌ها را پشت سر هم نمایش بدهی
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: amenities.map((amenity) {
+                            final name = amenity['amenities']['name'] ?? '';
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurple.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  color: Colors.deepPurple,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           );
         }
       },

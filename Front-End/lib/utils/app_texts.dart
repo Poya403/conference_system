@@ -8,7 +8,8 @@ class AppTexts {
 هدف این سامانه، ارائه تجربه‌ای سریع، ساده و حرفه‌ای برای مدیریت و رزرو سالن‌های همایش است.  
   ''';
   static const String showAll = 'نمایش همه';
-
+  static const String address = 'آدرس';
+  static const String description = 'توضیحات';
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -51,4 +52,6 @@ class AppTexts {
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
   static const String removeFromBasket = 'حذف از سبد خرید';
+  // amenities
+  static const String amenities = 'امکانات';
 }
