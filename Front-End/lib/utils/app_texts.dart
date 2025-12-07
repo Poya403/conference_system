@@ -32,6 +32,7 @@ class AppTexts {
   static const String noData = '.آیتمی جهت نمایش وجود ندارد';
   static const String capacity = 'ظرفیت';
   static const String area = 'محدود جغرافیایی';
+  static const String moreDetails = 'جزئیات بیشتر';
   //profile
   static const String userInfo = 'اطلاعات کاربری';
   static const String myCourses = 'دوره های من';

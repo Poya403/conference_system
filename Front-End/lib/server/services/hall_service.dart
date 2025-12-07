@@ -18,4 +18,20 @@ class HallService{
       return [];
     }
   }
+
+  Future<Map<String, dynamic>?> getSingleHall(int hid) async {
+    try {
+      final response = await supabase
+          .from('halls')
+          .select()
+          .eq('id', hid)
+          .single();
+
+      return response;
+
+    } catch (e) {
+      print('${AppTexts.error} $e');
+      return null;
+    }
+  }
 }
