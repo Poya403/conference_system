@@ -57,6 +57,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                             fontSize: 30,
                           ),
                         ),
+                        SizedBox(height: 6,),
                         Expanded(
                           child: GridView.builder(
                             itemCount: myCourses.length,
@@ -135,7 +136,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                                 color: Colors.deepPurple
                                             ),
                                           ),
-                                          const SizedBox(height: 15),
+                                          const SizedBox(height: 6),
                                           Text(
                                             '${AppTexts.endTime} : '
                                                 '${getPersianTime(endTime)}',

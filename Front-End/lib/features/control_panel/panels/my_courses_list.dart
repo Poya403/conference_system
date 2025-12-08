@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
-
+import 'package:conference_system/utils/date_converter.dart';
 class MyCoursesList extends StatefulWidget {
   const MyCoursesList({super.key});
 
@@ -63,7 +63,9 @@ class _MyCoursesListState extends State<MyCoursesList> {
                             childAspectRatio: isDesktop ? 1 : 0.8,
                           ),
                           itemBuilder: (context, index) {
-                            final courseList = myCourses[index];
+                            final singleCourse = myCourses[index];
+                            final startTime = singleCourse['courses']['start_time'];
+                            final endTime = singleCourse['courses']['end_time'];
                             return Card(
                               elevation: 4,
                               shape: RoundedRectangleBorder(
@@ -77,7 +79,7 @@ class _MyCoursesListState extends State<MyCoursesList> {
                                       top: Radius.circular(15),
                                     ),
                                     child: Image.network(
-                                      courseList['img_url'] ?? '',
+                                      singleCourse['courses']['img_url'] ?? '',
                                       height: 120,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -93,7 +95,7 @@ class _MyCoursesListState extends State<MyCoursesList> {
                                     child: Column(
                                       children: [
                                         Text(
-                                          courseList['courses']['title'] ?? '',
+                                          singleCourse['courses']['title'] ?? '',
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -102,7 +104,7 @@ class _MyCoursesListState extends State<MyCoursesList> {
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                          '${AppTexts.registrants} : ${courseList['courses']['registrants'] ?? ''}',
+                                          '${AppTexts.registrants} : ${singleCourse['courses']['registrants'] ?? ''}',
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -110,6 +112,38 @@ class _MyCoursesListState extends State<MyCoursesList> {
                                           ),
                                         ),
                                         const SizedBox(height: 6),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '${AppTexts.holdingDate} : '
+                                              '${AppTexts.day} ${getPersianWeekday(startTime ?? '')} - '
+                                              '${getPersianDate(startTime ?? '')}',
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.deepPurple
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '${AppTexts.startTime} : '
+                                              '${getPersianTime(startTime ?? '')}',
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.deepPurple
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '${AppTexts.endTime} : '
+                                              '${getPersianTime(endTime ?? '')}',
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.deepPurple
+                                          ),
+                                        ),
+                                        const SizedBox(height: 15),
                                       ],
                                     ),
                                   ),
