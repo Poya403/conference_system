@@ -4,13 +4,21 @@ class CustomTextField extends StatefulWidget {
   final String labelText;
   final bool isPassword;
   final TextDirection? textDirection;
+  final double? width;
+  final double? height;
+  final int? maxLines;
+  final int? minLines;
 
   const CustomTextField({
+    super.key,
     required this.controller,
     required this.labelText,
     this.textDirection = TextDirection.ltr,
     this.isPassword = false,
-    super.key,
+    this.width,
+    this.height,
+    this.maxLines,
+    this.minLines = 1,
   });
 
   @override
@@ -22,8 +30,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 250,
-      height: 43,
+      width: widget.width ?? 250,
+      height: widget.height ?? 43,
       child: TextField(
         textDirection: widget.textDirection,
         textAlign: widget.textDirection == TextDirection.rtl
@@ -31,6 +39,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             : TextAlign.left,
         controller: widget.controller,
         obscureText: widget.isPassword ? _isHidden : false,
+        maxLines: widget.maxLines ?? 1,
+        minLines: widget.minLines,
         decoration: InputDecoration(
           label: Align(
             alignment: Alignment.centerRight,

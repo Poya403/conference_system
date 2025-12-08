@@ -1,3 +1,4 @@
+import 'package:conference_system/utils/date_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
@@ -29,7 +30,6 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
           return Text(AppTexts.noData);
         } else {
           final myCourses = snapshot.data!;
-
           return LayoutBuilder(
             builder: (context, constraints) {
               int crossAxisCount = 1;
@@ -67,7 +67,9 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                               childAspectRatio: isDesktop ? 1 : 0.8,
                             ),
                             itemBuilder: (context, index) {
-                              final courseList = myCourses[index];
+                              final singleCourse = myCourses[index];
+                              final startTime = singleCourse['courses']['start_time'];
+                              final endTime = singleCourse['courses']['end_time'];
                               return Card(
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
@@ -81,7 +83,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                         top: Radius.circular(15),
                                       ),
                                       child: Image.network(
-                                        courseList['img_url'] ?? '',
+                                        singleCourse['img_url'] ?? '',
                                         height: 120,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
@@ -94,7 +96,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                       child: Column(
                                         children: [
                                           Text(
-                                            courseList['courses']['title'] ?? '',
+                                            singleCourse['courses']['title'] ?? '',
                                             style: const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.bold,
@@ -103,7 +105,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            '${AppTexts.registrants} : ${courseList['courses']['registrants'] ?? ''}',
+                                            '${AppTexts.registrants} : ${singleCourse['courses']['registrants'] ?? ''}',
                                             style: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -111,10 +113,38 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                             ),
                                           ),
                                           const SizedBox(height: 6),
+                                          Text(
+                                            '${AppTexts.startTime} : '
+                                                '${AppTexts.day} ${getPersianWeekday(startTime)} '
+                                                '${formatToJalali(startTime ?? '')}',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.deepPurple
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            '${AppTexts.endTime} : '
+                                                '${AppTexts.day} ${getPersianWeekday(endTime)} '
+                                                '${formatToJalali(endTime ?? '')}',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.deepPurple
+                                            ),
+                                          ),
+                                          const SizedBox(height: 15),
+
                                           DeleteButton(
-                                              courseId: courseList['cid'],
+                                              courseId: singleCourse['cid'],
                                               onDeleted: _refreshPage,
                                           ),
+                                          const SizedBox(height: 6),
+                                          AddButton(
+                                              courseId: singleCourse['cid'],
+                                              onAdded: _refreshPage,
+                                          )
                                         ],
                                       ),
                                     ),
@@ -155,6 +185,30 @@ class DeleteButton extends StatelessWidget {
         ),
       ),
       child: Icon(Icons.delete_outline_outlined, color: Colors.white),
+    );
+  }
+}
+
+class AddButton extends StatelessWidget {
+  const AddButton({super.key, required this.courseId, required this.onAdded});
+  final int courseId;
+  final VoidCallback onAdded;
+
+  @override
+  Widget build(BuildContext context) {
+    final coursesService = CoursesService();
+    return ElevatedButton(
+      onPressed: () async {
+        await coursesService.courseRegistration(context, courseId);
+        onAdded();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.greenAccent,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
+      ),
+      child: Icon(Icons.add_card_outlined, color: Colors.white),
     );
   }
 }

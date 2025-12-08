@@ -64,19 +64,17 @@ class _CoursesListState extends State<CoursesList> {
           return Text(AppTexts.noData);
         } else {
           final courses = snapshot.data!;
-          final filteredCourses = courses;
           return LayoutBuilder(
             builder: (context, constraints) {
-              //  تعیین تعداد ستون‌ها بر اساس عرض صفحه
               int crossAxisCount = 1;
               if (constraints.maxWidth > 1200) {
-                crossAxisCount = 4; // لپ‌تاپ و مانیتور بزرگ
+                crossAxisCount = 4;
               } else if (constraints.maxWidth > 800) {
-                crossAxisCount = 3; // تبلت یا لپ‌تاپ کوچک
+                crossAxisCount = 3;
               } else if (constraints.maxWidth > 500) {
-                crossAxisCount = 2; // موبایل افقی یا تبلت کوچک
+                crossAxisCount = 2;
               } else {
-                crossAxisCount = 1; // موبایل عمودی
+                crossAxisCount = 1;
               }
 
               return SingleChildScrollView(
@@ -98,8 +96,7 @@ class _CoursesListState extends State<CoursesList> {
                         childAspectRatio: isDesktop ? 1 : 0.8,
                       ),
                       itemBuilder: (context, index) {
-                        final course = filteredCourses[index];
-                        final isInBasket = course['isInBasket'] as bool;
+                        final singleCourse = courses[index];
                         return Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -113,7 +110,7 @@ class _CoursesListState extends State<CoursesList> {
                                   top: Radius.circular(15),
                                 ),
                                 child: Image.network(
-                                  course['img_url'] ?? '',
+                                  singleCourse['img_url'] ?? '',
                                   height: 120,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
@@ -122,7 +119,7 @@ class _CoursesListState extends State<CoursesList> {
                                 ),
                               ),
                               Text(
-                                course['title'] ?? '',
+                                singleCourse['title'] ?? '',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -139,22 +136,22 @@ class _CoursesListState extends State<CoursesList> {
                                     children: [
                                       const SizedBox(height: 6),
                                       Text(
-                                          '${AppTexts.registrants}: ${course['registrants'] ?? ''} نفر',
+                                          '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
                                           style: detailStyle
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                          '${AppTexts.crsType}: ${course['type'] ?? ''}',
+                                          '${AppTexts.crsType}: ${singleCourse['type'] ?? ''}',
                                           style: detailStyle
                                       ),
                                       const SizedBox(height: 6),
                                       SizedBox(
                                         height: 22,
                                         child:
-                                        course['halls'] == null
+                                        singleCourse['hall_title'] == null
                                             ? const SizedBox.shrink()
                                             : Text(
-                                          '${AppTexts.hostHall}: ${course['halls']['title']}',
+                                          '${AppTexts.hostHall}: ${singleCourse['hall_title']}',
                                           style: detailStyle,
                                         ),
                                       ),
@@ -162,16 +159,16 @@ class _CoursesListState extends State<CoursesList> {
                                       SizedBox(
                                         height: 22,
                                         child:
-                                        course['halls'] == null
+                                        singleCourse['halls'] == null
                                             ? const SizedBox.shrink()
                                             : Text(
-                                            '${AppTexts.capacity}: ${course['halls']?['capacity'] ?? ''} نفر',
+                                            '${AppTexts.capacity}: ${singleCourse['halls']?['capacity'] ?? ''} نفر',
                                             style: detailStyle
                                         ),
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        '${AppTexts.registrationFee}: ${course['cost'] ?? 0}',
+                                        '${AppTexts.registrationFee}: ${singleCourse['cost'] ?? 0}',
                                         style: detailStyle,
                                       ),
                                     ],
@@ -186,9 +183,9 @@ class _CoursesListState extends State<CoursesList> {
                                   height: 40,
                                   child: Center(
                                     child: RegisterButton(
-                                      courseId: course['id'],
-                                      isInBasket: isInBasket,
+                                      courseId: singleCourse['id'],
                                       onRefresh: _refreshPage,
+                                      isInBasket: singleCourse['status'] == 'in_basket',
                                     ),
                                   ),
                                 ),

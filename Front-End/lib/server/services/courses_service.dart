@@ -8,29 +8,12 @@ class CoursesService{
   final SupabaseClient supabase = Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> getCoursesList() async {
-    final user = supabase.auth.currentUser;
-    if (user == null) return [];
-
     try {
-      final coursesResponse = await supabase
-          .from('courses')
+      final response = await supabase
+          .rpc('get_unregistered_courses')
           .select();
 
-      final basketResponse = await supabase
-          .from('enrollments')
-          .select('cid')
-          .eq('uid', user.id);
-
-      final basketIds = (basketResponse)
-          .map<int>((e) => e['cid'] as int)
-          .toSet();
-
-      return (coursesResponse).map<Map<String, dynamic>>((course) {
-        return {
-          ...course,
-          'isInBasket': basketIds.contains(course['id']),
-        };
-      }).toList();
+      return List<Map<String,dynamic>>.from(response as List);
     } catch (e) {
       print("Error in getCoursesWithBasketStatus: $e");
       return [];
@@ -52,7 +35,9 @@ class CoursesService{
               id,
               title,
               registrants,
-              type
+              type,
+              start_time,
+              end_time
             )
           ''')
           .eq('uid', uid)

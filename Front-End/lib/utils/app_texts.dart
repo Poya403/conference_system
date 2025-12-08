@@ -10,6 +10,7 @@ class AppTexts {
   static const String showAll = 'نمایش همه';
   static const String address = 'آدرس';
   static const String description = 'توضیحات';
+  static const String submit = 'ٍثبت';
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -34,6 +35,7 @@ class AppTexts {
   static const String capacity = 'ظرفیت';
   static const String area = 'محدود جغرافیایی';
   static const String moreDetails = 'جزئیات بیشتر';
+  static const String unKnownUser = 'کاربر ناشناس';
   //profile
   static const String userInfo = 'اطلاعات کاربری';
   static const String myCourses = 'دوره های من';
@@ -52,6 +54,12 @@ class AppTexts {
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
   static const String removeFromBasket = 'حذف از سبد خرید';
+  static const String startTime = 'زمان برگزاری';
+  static const String endTime = 'زمان اتمام';
+  static const String day = 'روز';
   // amenities
   static const String amenities = 'امکانات';
+  //comments
+  static const String comments  =  'نظرات';
+  static const String noComments = 'نظری ثبت نشده است';
 }
