@@ -83,9 +83,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     SizedBox(height: 40),
-                    Text(info['fullname'], style: responseStyle),
+                    Text(info['fullname'] ?? '', style: responseStyle),
 
-                    Text(info['role'], style: responseStyle),
+                    Text(info['role'] ?? '', style: responseStyle),
                     SizedBox(height: 20),
 
                     SizedBox(height: 20),
@@ -115,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: 6),
                           Text(': ${AppTexts.email}', style: labelStyle),
                           SizedBox(width: 6),
-                          Text(info['email'], style: responseStyle),
+                          Text(info['email'] ?? '', style: responseStyle),
                         ],
                       ),
                     ),

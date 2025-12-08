@@ -1,9 +1,11 @@
-import 'package:conference_system/widgets/text_field.dart';
+import 'package:conference_system/utils/date_converter.dart';
+import 'package:conference_system/widgets/comment_box.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/hall_service.dart';
 import 'package:conference_system/server/services/amenities_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/server/services/comments_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HallInfoScreen extends StatefulWidget {
   const HallInfoScreen({super.key, required this.hid});
@@ -16,7 +18,10 @@ class HallInfoScreen extends StatefulWidget {
 class _HallInfoScreenState extends State<HallInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 800;
     final hallService = HallService();
     return FutureBuilder<Map<String, dynamic>?>(
       future: hallService.getSingleHall(widget.hid),
@@ -33,40 +38,40 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
           return Container(
             child: isDesktop
                 ? SingleChildScrollView(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            HallInfoBox(hall: hall),
-                            Amenities(hid: hall['id']),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            MainContent(hall: hall),
-                            HComments(hid: hall['id']),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                : Column(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                textDirection: TextDirection.rtl,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     textDirection: TextDirection.rtl,
                     children: [
                       HallInfoBox(hall: hall),
                       Amenities(hid: hall['id']),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.rtl,
+                    children: [
                       MainContent(hall: hall),
                       HComments(hid: hall['id']),
                     ],
                   ),
+                ],
+              ),
+            )
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textDirection: TextDirection.rtl,
+              children: [
+                HallInfoBox(hall: hall),
+                Amenities(hid: hall['id']),
+                MainContent(hall: hall),
+                HComments(hid: hall['id']),
+              ],
+            ),
           );
         }
       },
@@ -81,7 +86,10 @@ class HallInfoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 800;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Directionality(
@@ -109,7 +117,7 @@ class HallInfoBox extends StatelessWidget {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.image_not_supported),
+                    const Icon(Icons.image_not_supported),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -138,7 +146,8 @@ class HallInfoBox extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SelectableText(
-                          '${AppTexts.capacity} : ${hall['capacity'] ?? ''} نفر ',
+                          '${AppTexts.capacity} : ${hall['capacity'] ??
+                              ''} نفر ',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.blueGrey,
@@ -171,7 +180,9 @@ class HallInfoBox extends StatelessWidget {
                         const SizedBox(height: 6),
                         SelectableText(
                           textDirection: TextDirection.ltr,
-                          '${AppTexts.phoneNumber} : \u200E${hall['phone_number'] ?? 'ٍثبت نشده'}',
+                          '${AppTexts
+                              .phoneNumber} : \u200E${hall['phone_number'] ??
+                              'ٍثبت نشده'}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.blueGrey,
@@ -197,12 +208,21 @@ class MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 800;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: SizedBox(
-          width: 800,
+          width: isDesktop
+              ? MediaQuery
+              .of(context)
+              .size
+              .width * 0.55
+              : double.infinity,
           child: Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
@@ -257,7 +277,10 @@ class Amenities extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 800;
     final amenitiesService = AmenitiesService();
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: amenitiesService.getAmenities(hid),
@@ -333,138 +356,297 @@ class Amenities extends StatelessWidget {
   }
 }
 
-class HComments extends StatelessWidget {
+class HComments extends StatefulWidget {
   const HComments({super.key, required this.hid});
 
   final int hid;
 
   @override
-  Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
-    final commentsService = CommentsService();
-    final textController = TextEditingController();
+  State<HComments> createState() => _HCommentsState();
+}
 
-    return SizedBox(
-      width: 800,
-      child: Card(
-        child: Column(
-          children: [
-            SizedBox(height: 10,),
-            Text(
-              AppTexts.comments,
-              style: TextStyle(color: Colors.deepPurple, fontSize: 20),
-            ),
-            Divider(thickness: 0.75),
-            SizedBox(height: 10,),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: commentsService.getHallComments(hid),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text(AppTexts.noComments));
-                } else {
-                  final comments = snapshot.data!;
-                  return Column(
-                    children: [
-                      ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) {
-                          final comment = comments[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+class _HCommentsState extends State<HComments> {
+  final commentsService = CommentsService();
+  final textController = TextEditingController();
+  final textEditController = TextEditingController();
+
+  late Future<List<Map<String, dynamic>>> futureComments;
+  int? editingCommentId;
+
+  SupabaseClient supabase = Supabase.instance.client;
+
+  @override
+  void initState() {
+    super.initState();
+    futureComments = commentsService.getHallComments(widget.hid);
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    textEditController.dispose();
+    super.dispose();
+  }
+
+  void reloadComments() {
+    setState(() {
+      futureComments = commentsService.getHallComments(widget.hid);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width > 800;
+
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: SizedBox(
+        width: isDesktop
+            ? MediaQuery.of(context).size.width * 0.55
+            : double.infinity,
+        child: Card(
+          elevation: 4,
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+
+              /// ------------------ INPUT BOX ------------------
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: CommentBox(
+                  controller: textController,
+                  hintText: 'نظر شما',
+                  maxLines: 5,
+                  minLines: 3,
+                  width: isDesktop
+                      ? MediaQuery.of(context).size.width * 0.5
+                      : double.infinity,
+                  textDirection: TextDirection.rtl,
+                  suffixOnPressed: () async {
+                    if (textController.text.trim().isEmpty) return;
+
+                    await commentsService.sendComment(
+                      context,
+                      widget.hid,
+                      textController.text.trim(),
+                    );
+
+                    textController.clear();
+                    reloadComments();
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              /// ------------------ COMMENTS LIST ------------------
+              SizedBox(
+                height: 350,
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: futureComments,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text(AppTexts.noComments));
+                    }
+
+                    final comments = snapshot.data!;
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = comments[index];
+                        final isOwner =
+                            comment['uid'] == supabase.auth.currentUser!.id;
+
+                        final isEditing =
+                            editingCommentId == comment['id'];
+
+                        /// Avatar widget
+                        final avatar = SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              'assets/images/default_avatar.png',
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      'assets/images/default_avatar.png',
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          comment['userName'] ??
-                                              AppTexts.unKnownUser,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: isDesktop ? 16 : 14,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          comment['text'] ?? '',
-                                          style: TextStyle(
-                                            fontSize: isDesktop ? 14 : 12,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          comment['created_at'] ?? '',
-                                          style: TextStyle(
-                                            fontSize: isDesktop ? 12 : 10,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                          ),
+                        );
+
+                        /// Profile info widget
+                        final profileInfo = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          textDirection: TextDirection.rtl,
+                          children: [
+                            Text(
+                              comment['profiles']['fullname'] ??
+                                  AppTexts.unKnownUser,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isDesktop ? 16 : 14,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
-            SizedBox(height: 30,),
-            CustomTextField(
-              controller: textController,
-              labelText: 'نظر شما',
-              maxLines: 5,
-              minLines: 3,
-              width: 750,
-            ),
-            SizedBox(height: 10,),
-            SubmitButton(),
-          ],
+                            const SizedBox(height: 4),
+                            Text(
+                              comment['text'] ?? '',
+                              style: TextStyle(
+                                fontSize: isDesktop ? 14 : 12,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              formatToJalali(comment['created_at'] ?? ''),
+                              style: TextStyle(
+                                fontSize: isDesktop ? 12 : 10,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        );
+
+                        /// Action Buttons
+                        Widget actionButtons = isEditing
+                            ? CommentBox(
+                          controller: textEditController,
+                          hintText: AppTexts.edit,
+                          textDirection: TextDirection.rtl,
+                          prefixOnPressed: () {
+                            setState(() => editingCommentId = null);
+                          },
+                          suffixOnPressed: () async {
+                            await commentsService.updateComment(
+                              context,
+                              comment['id'],
+                              textEditController.text.trim(),
+                            );
+
+                            setState(() => editingCommentId = null);
+                            reloadComments();
+                          },
+                        )
+                            : Row(
+                          children: [
+                            DeleteButton(
+                              onDeleted: () async {
+                                await commentsService.deleteComment(
+                                  context,
+                                  comment['id'],
+                                );
+                                reloadComments();
+                              },
+                            ),
+                            const SizedBox(width: 6),
+                            EditButton(
+                              onPressed: () {
+                                textEditController.text =
+                                    comment['text'] ?? '';
+                                setState(() =>
+                                editingCommentId = comment['id']);
+                              },
+                            ),
+                          ],
+                        );
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: isDesktop
+                                ? Row(
+                              textDirection: TextDirection.rtl,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                avatar,
+                                const SizedBox(width: 10),
+                                Expanded(child: profileInfo),
+                                if (isOwner) ...[
+                                  const SizedBox(width: 10),
+                                  actionButtons,
+                                ]
+                              ],
+                            )
+                                : Column(
+                              textDirection: TextDirection.rtl,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                avatar,
+                                const SizedBox(height: 10),
+                                profileInfo,
+                                if (isOwner) ...[
+                                  const SizedBox(height: 10),
+                                  actionButtons,
+                                ]
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class SubmitButton extends StatelessWidget {
-  const SubmitButton({super.key});
+class DeleteButton extends StatelessWidget {
+  const DeleteButton({this.onDeleted, super.key});
+
+  final VoidCallback? onDeleted;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: null,
+      onPressed: onDeleted,
       style: ElevatedButton.styleFrom(
         shadowColor: Colors.transparent,
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
-      child: Text(AppTexts.submit),
+      child: Icon(Icons.delete_outline_outlined, color: Colors.redAccent),
+    );
+  }
+}
+
+class EditButton extends StatelessWidget {
+  const EditButton({super.key, required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      child: Icon(Icons.edit_outlined, color: Colors.blueAccent),
     );
   }
 }

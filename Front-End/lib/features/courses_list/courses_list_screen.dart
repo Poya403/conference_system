@@ -127,8 +127,7 @@ class _CoursesListState extends State<CoursesList> {
                               ),
 
                               SizedBox(height: 30,),
-                              Expanded(
-                                child: Padding(
+                              Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -174,7 +173,6 @@ class _CoursesListState extends State<CoursesList> {
                                     ],
                                   ),
                                 ),
-                              ),
 
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),

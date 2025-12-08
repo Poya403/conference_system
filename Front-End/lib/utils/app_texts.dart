@@ -11,6 +11,8 @@ class AppTexts {
   static const String address = 'آدرس';
   static const String description = 'توضیحات';
   static const String submit = 'ٍثبت';
+  static const String delete = 'حذف';
+  static const String edit = 'ویرایش';
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -45,7 +47,6 @@ class AppTexts {
   static const String bio = 'بیوگرافی';
   static const String phoneNumber = 'شماره تماس';
   static const String createdAt = 'تاریخ پیوستن';
-  static const String edit = 'ویرایش اطلاعات';
   static const String apply = 'اعمال تغییرات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
