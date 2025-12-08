@@ -54,7 +54,8 @@ class AppTexts {
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
   static const String removeFromBasket = 'حذف از سبد خرید';
-  static const String startTime = 'زمان برگزاری';
+  static const String holdingDate = 'تاریخ برگزاری';
+  static const String startTime = 'زمان شروع';
   static const String endTime = 'زمان اتمام';
   static const String day = 'روز';
   // amenities

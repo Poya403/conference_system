@@ -91,18 +91,20 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                         const Icon(Icons.image_not_supported),
                                       ),
                                     ),
+                                    Text(
+                                      singleCourse['courses']['title'] ?? '',
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.deepPurpleAccent
+                                      ),
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            singleCourse['courses']['title'] ?? '',
-                                            style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.deepPurpleAccent
-                                            ),
-                                          ),
                                           const SizedBox(height: 6),
                                           Text(
                                             '${AppTexts.registrants} : ${singleCourse['courses']['registrants'] ?? ''}',
@@ -114,9 +116,9 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            '${AppTexts.startTime} : '
-                                                '${AppTexts.day} ${getPersianWeekday(startTime)} '
-                                                '${formatToJalali(startTime ?? '')}',
+                                            '${AppTexts.holdingDate} : '
+                                                '${AppTexts.day} ${getPersianWeekday(startTime)} - '
+                                                '${getPersianDate(startTime ?? '')}',
                                             style: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -125,9 +127,8 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            '${AppTexts.endTime} : '
-                                                '${AppTexts.day} ${getPersianWeekday(endTime)} '
-                                                '${formatToJalali(endTime ?? '')}',
+                                            '${AppTexts.startTime} : '
+                                                '${getPersianTime(startTime)}',
                                             style: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -135,19 +136,28 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                             ),
                                           ),
                                           const SizedBox(height: 15),
-
-                                          DeleteButton(
-                                              courseId: singleCourse['cid'],
-                                              onDeleted: _refreshPage,
+                                          Text(
+                                            '${AppTexts.endTime} : '
+                                                '${getPersianTime(endTime)}',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.deepPurple
+                                            ),
                                           ),
-                                          const SizedBox(height: 6),
-                                          AddButton(
-                                              courseId: singleCourse['cid'],
-                                              onAdded: _refreshPage,
-                                          )
+                                          const SizedBox(height: 15),
                                         ],
                                       ),
                                     ),
+                                    DeleteButton(
+                                      courseId: singleCourse['cid'],
+                                      onDeleted: _refreshPage,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    AddButton(
+                                      courseId: singleCourse['cid'],
+                                      onAdded: _refreshPage,
+                                    )
                                   ],
                                 ),
                               );
