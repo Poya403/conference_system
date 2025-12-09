@@ -185,7 +185,7 @@ class EditButton extends StatelessWidget {
       ),
       onPressed: () => onPanelChanged(4),
       child: SizedBox(
-        width: 110,
+        width: 70,
         height: 30,
         child: Row(
           children: [Text(AppTexts.edit), SizedBox(width: 6), Icon(Icons.edit)],

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/utils/date_converter.dart';
-class MyCoursesList extends StatefulWidget {
-  const MyCoursesList({super.key});
+class RegisteredCourses extends StatefulWidget {
+  const RegisteredCourses({super.key});
 
   @override
-  State<MyCoursesList> createState() => _MyCoursesListState();
+  State<RegisteredCourses> createState() => _RegisteredCoursesState();
 }
 
-class _MyCoursesListState extends State<MyCoursesList> {
+class _RegisteredCoursesState extends State<RegisteredCourses> {
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 800;
@@ -111,7 +111,6 @@ class _MyCoursesListState extends State<MyCoursesList> {
                                             color: Colors.deepPurple,
                                           ),
                                         ),
-                                        const SizedBox(height: 6),
                                         const SizedBox(height: 6),
                                         Text(
                                           '${AppTexts.holdingDate} : '

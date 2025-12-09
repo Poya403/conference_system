@@ -41,6 +41,7 @@ class AppTexts {
   //profile
   static const String userInfo = 'اطلاعات کاربری';
   static const String myCourses = 'دوره های من';
+  static const String registeredCourses = 'دوره های ثبت نام شده';
   static const String waitingList = 'لیست انتظار';
   static const String logout = 'خروج از حساب کاربری';
   static const String role = 'نقش';

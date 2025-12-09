@@ -1,5 +1,5 @@
 import 'package:conference_system/features/control_panel/panels/edit_form.dart';
-import 'package:conference_system/features/control_panel/panels/my_courses_list.dart';
+import 'package:conference_system/features/control_panel/panels/registered_courses.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/features/control_panel/panels/shopping_basket.dart';
 import 'package:conference_system/utils/app_texts.dart';
@@ -30,7 +30,7 @@ class _ControlScreenState extends State<ControlScreen> {
           currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
           break;
         case 1:
-          currentPanel = MyCoursesList();
+          currentPanel = RegisteredCourses();
         case 2:
           currentPanel = ShoppingBasket();
         case 4:

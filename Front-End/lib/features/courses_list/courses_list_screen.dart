@@ -1,7 +1,10 @@
+import 'package:conference_system/utils/format_price.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'dart:math' as math;
+import 'package:conference_system/utils/date_converter.dart';
 
 class CoursesListScreen extends StatefulWidget {
   const CoursesListScreen({super.key});
@@ -44,10 +47,6 @@ class _CoursesListState extends State<CoursesList> {
   }
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery
-        .of(context)
-        .size
-        .width > 800;
     final coursesService = CoursesService();
     final TextStyle detailStyle = TextStyle(
         color: Colors.blueGrey,
@@ -93,10 +92,12 @@ class _CoursesListState extends State<CoursesList> {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: isDesktop ? 1 : 0.8,
+                        childAspectRatio: 0.75,
                       ),
                       itemBuilder: (context, index) {
                         final singleCourse = courses[index];
+                        final startTime = singleCourse['start_time'];
+                        final endTime = singleCourse['end_time'];
                         return Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -158,17 +159,37 @@ class _CoursesListState extends State<CoursesList> {
                                       SizedBox(
                                         height: 22,
                                         child:
-                                        singleCourse['halls'] == null
+                                        singleCourse['capacity'] == null
                                             ? const SizedBox.shrink()
                                             : Text(
-                                            '${AppTexts.capacity}: ${singleCourse['halls']?['capacity'] ?? ''} نفر',
+                                            '${AppTexts.capacity}: ${singleCourse['capacity'] ?? ''} نفر',
                                             style: detailStyle
                                         ),
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        '${AppTexts.registrationFee}: ${singleCourse['cost'] ?? 0}',
+                                        '${AppTexts.registrationFee}: '
+                                            '${formatPrice(singleCourse['cost'] ?? 0)}',
                                         style: detailStyle,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.holdingDate} : '
+                                            '${AppTexts.day} ${getPersianWeekday(startTime)} - '
+                                            '${getPersianDate(startTime ?? '')}',
+                                        style: detailStyle,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.startTime} : '
+                                            '${getPersianTime(startTime)}',
+                                        style: detailStyle
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        '${AppTexts.endTime} : '
+                                            '${getPersianTime(endTime)}',
+                                        style: detailStyle
                                       ),
                                     ],
                                   ),
