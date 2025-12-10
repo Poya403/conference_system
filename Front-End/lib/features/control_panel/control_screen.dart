@@ -1,4 +1,5 @@
 import 'package:conference_system/features/control_panel/panels/edit_form.dart';
+import 'package:conference_system/features/control_panel/panels/my_courses_page.dart';
 import 'package:conference_system/features/control_panel/panels/registered_courses.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/features/control_panel/panels/shopping_basket.dart';
@@ -30,10 +31,12 @@ class _ControlScreenState extends State<ControlScreen> {
           currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
           break;
         case 1:
-          currentPanel = RegisteredCourses();
+          currentPanel = MyCoursesPage();
         case 2:
+          currentPanel = RegisteredCourses();
+        case 3:
           currentPanel = ShoppingBasket();
-        case 4:
+        case 5:
           currentPanel = EditForm();
       }
     });
@@ -84,14 +87,20 @@ class Wide extends StatelessWidget {
                     SizedBox(height: 10),
                     FormButton(
                       title: AppTexts.myCourses,
-                      icon: Icons.my_library_books_outlined,
+                      icon: Icons.my_library_add_rounded,
                       onPressed: () => onPanelChanged(1),
+                    ),
+                    SizedBox(height: 10),
+                    FormButton(
+                      title: AppTexts.registeredCourses,
+                      icon: Icons.my_library_books_outlined,
+                      onPressed: () => onPanelChanged(2),
                     ),
                     SizedBox(height: 10),
                     FormButton(
                       title: AppTexts.shoppingBasket,
                       icon: Icons.shopping_basket_outlined,
-                      onPressed: () => onPanelChanged(2),
+                      onPressed: () => onPanelChanged(3),
                     ),
                     SizedBox(height: 10),
                     FormButton(
@@ -149,19 +158,24 @@ class Narrow extends StatelessWidget {
                   onTap: () => onPanelChanged(0),
                 ),
                 ListTile(
-                  leading: Icon(Icons.my_library_books_outlined),
+                  leading: Icon(Icons.my_library_add_sharp),
                   title: Text(AppTexts.myCourses),
                   onTap: () => onPanelChanged(1),
                 ),
                 ListTile(
+                  leading: Icon(Icons.my_library_books_outlined),
+                  title: Text(AppTexts.registeredCourses),
+                  onTap: () => onPanelChanged(2),
+                ),
+                ListTile(
                   leading: Icon(Icons.shopping_basket_outlined),
                   title: Text(AppTexts.shoppingBasket),
-                  onTap: () => onPanelChanged(2),
+                  onTap: () => onPanelChanged(3),
                 ),
                 ListTile(
                   leading: Icon(Icons.list_alt_outlined),
                   title: Text(AppTexts.waitingList),
-                  onTap: () => onPanelChanged(3),
+                  onTap: () => onPanelChanged(4),
                 ),
                 ListTile(
                   leading: Icon(Icons.logout),

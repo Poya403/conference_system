@@ -79,13 +79,19 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
   }
 }
 
-class HallInfoBox extends StatelessWidget {
+class HallInfoBox extends StatefulWidget {
   const HallInfoBox({super.key, required this.hall});
 
   final Map<String, dynamic> hall;
 
   @override
+  State<HallInfoBox> createState() => _HallInfoBoxState();
+}
+
+class _HallInfoBoxState extends State<HallInfoBox> {
+  @override
   Widget build(BuildContext context) {
+    final imgUrl = widget.hall['img_url'];
     bool isDesktop = MediaQuery
         .of(context)
         .size
@@ -111,20 +117,25 @@ class HallInfoBox extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(15),
                   ),
-                  child: Image.network(
-                    hall['img_url'],
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.image_not_supported),
-                  ),
+                  child: imgUrl == null || imgUrl.isEmpty
+                      ? const Icon(Icons.image_not_supported)
+                      : Image.network(
+                          imgUrl,
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                          const Icon(
+                            Icons.image_not_supported,
+                          ),
+                        ),
                 ),
                 SizedBox(height: 10),
                 Center(
                   child: SelectableText(
                     textAlign: TextAlign.center,
-                    hall['title'],
+                    widget.hall['title'],
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -146,7 +157,7 @@ class HallInfoBox extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SelectableText(
-                          '${AppTexts.capacity} : ${hall['capacity'] ??
+                          '${AppTexts.capacity} : ${widget.hall['capacity'] ??
                               ''} نفر ',
                           style: const TextStyle(
                             fontSize: 14,
@@ -155,7 +166,7 @@ class HallInfoBox extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         SelectableText(
-                          '${AppTexts.city} : ${hall['city'] ?? ''}',
+                          '${AppTexts.city} : ${widget.hall['city'] ?? ''}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.blueGrey,
@@ -163,7 +174,7 @@ class HallInfoBox extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         SelectableText(
-                          '${AppTexts.area} : ${hall['area'] ?? ''}',
+                          '${AppTexts.area} : ${widget.hall['area'] ?? ''}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.blueGrey,
@@ -171,7 +182,7 @@ class HallInfoBox extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         SelectableText(
-                          '${AppTexts.address} : ${hall['address'] ?? ''}',
+                          '${AppTexts.address} : ${widget.hall['address'] ?? ''}',
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.blueGrey,
@@ -181,7 +192,7 @@ class HallInfoBox extends StatelessWidget {
                         SelectableText(
                           textDirection: TextDirection.ltr,
                           '${AppTexts
-                              .phoneNumber} : \u200E${hall['phone_number'] ??
+                              .phoneNumber} : \u200E${widget.hall['phone_number'] ??
                               'ٍثبت نشده'}',
                           style: const TextStyle(
                             fontSize: 14,

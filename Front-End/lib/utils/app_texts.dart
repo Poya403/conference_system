@@ -51,7 +51,9 @@ class AppTexts {
   static const String apply = 'اعمال تغییرات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
+  static const String crsTitle = 'عنوان دوره';
   static const String crsType = 'نوع دوره';
+  static const String deliveryType = 'نوع برگزاری';
   static const String hostHall = 'سالن میزبان';
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
@@ -60,9 +62,11 @@ class AppTexts {
   static const String startTime = 'زمان شروع';
   static const String endTime = 'زمان اتمام';
   static const String day = 'روز';
+  static const String crsCapacity = 'ظرفیت دوره';
   // amenities
   static const String amenities = 'امکانات';
   //comments
   static const String comments  =  'نظرات';
   static const String noComments = 'نظری ثبت نشده است';
+
 }

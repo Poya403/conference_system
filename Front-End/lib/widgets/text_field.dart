@@ -8,17 +8,23 @@ class CustomTextField extends StatefulWidget {
   final double? height;
   final int? maxLines;
   final int? minLines;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final double? radiusValue;
 
   const CustomTextField({
     super.key,
     required this.controller,
     required this.labelText,
-    this.textDirection = TextDirection.ltr,
+    this.textDirection = TextDirection.rtl,
     this.isPassword = false,
     this.width,
     this.height,
     this.maxLines,
     this.minLines = 1,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.radiusValue,
   });
 
   @override
@@ -50,7 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
+            borderRadius: BorderRadius.all(Radius.circular(widget.radiusValue ?? 15)),
             borderSide: BorderSide(color: Colors.grey, width: 1),
           ),
           focusedBorder: const OutlineInputBorder(
@@ -74,7 +80,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               width: 1,
             ),
           ),
-          suffixIcon: widget.isPassword ? IconButton(
+          suffixIcon: widget.isPassword
+              ? IconButton(
             icon: Icon(
               _isHidden ? Icons.visibility_off : Icons.visibility,
             ),
@@ -83,7 +90,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 _isHidden = !_isHidden;
               });
             },
-          ) : null,
+          ) : widget.suffixIcon,
         ),
       ),
     );

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
@@ -23,38 +22,56 @@ class CoursesService{
   Future<List<Map<String,dynamic>>> myCoursesList(String status) async {
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
+    final PostgrestList response;
+    try {
+      if(status == "own courses"){
+        response = await supabase
+            .from('courses')
+            .select('''
+                id,
+                title,
+                registrants,
+                cost,
+                phone_number,
+                delivery_type,
+                uid,
+                start_time,
+                end_time,
+                created_at
+            ''')
+            .eq('uid', uid);
+      } else {
+        response = await supabase
+            .from('enrollments')
+            .select('''
+              uid,
+              cid,
+              status,
+              courses (
+                id,
+                title,
+                registrants,
+                delivery_type,
+                start_time,
+                end_time
+              )
+            ''')
+            .eq('uid', uid)
+            .eq('status', status);
+      }
 
-    try{
-      final response = await supabase
-          .from('enrollments')
-          .select('''
-            uid,
-            cid,
-            status,
-            courses (
-              id,
-              title,
-              registrants,
-              type,
-              start_time,
-              end_time
-            )
-          ''')
-          .eq('uid', uid)
-          .eq('status', status);
-      
       return List<Map<String,dynamic>>.from(response);
-
     } catch (e) {
       return [];
     }
+
   }
 
   Future<void> addShoppingBasket(BuildContext context,int cid) async {
     final SupabaseClient supabase = Supabase.instance.client;
 
     try{
-      final request = await supabase
+       await supabase
           .from('enrollments')
           .insert([
         { 'cid': cid },
@@ -75,7 +92,7 @@ class CoursesService{
     final uid = supabase.auth.currentUser!.id;
 
     try{
-      final request = await supabase
+      await supabase
           .from('enrollments')
           .update({'status': 'registered'})
           .eq('uid', uid)
@@ -97,7 +114,7 @@ class CoursesService{
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
     try{
-      final request = await supabase
+      await supabase
           .from('enrollments')
           .delete()
           .eq('cid',cid)

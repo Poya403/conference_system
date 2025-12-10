@@ -103,6 +103,8 @@ class HallList extends StatelessWidget {
                       ),
                       itemBuilder: (context, index) {
                         final hall = halls[index];
+                        final imgUrl = hall['img_url'];
+
                         return Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -115,13 +117,18 @@ class HallList extends StatelessWidget {
                                 borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(15),
                                 ),
-                                child: Image.network(
-                                  hall['img_url'] ?? '',
+                                child:  imgUrl == null || imgUrl.isEmpty
+                                    ? const Icon(Icons.image_not_supported)
+                                    : Image.network(
+                                  imgUrl,
                                   height: 120,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.image_not_supported),
+                                  errorBuilder:
+                                      (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.image_not_supported,
+                                  ),
                                 ),
                               ),
                               DefaultTextStyle(

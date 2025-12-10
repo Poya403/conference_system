@@ -183,7 +183,7 @@ class EditButton extends StatelessWidget {
         backgroundColor: Colors.deepPurpleAccent,
         foregroundColor: Colors.white,
       ),
-      onPressed: () => onPanelChanged(4),
+      onPressed: () => onPanelChanged(5),
       child: SizedBox(
         width: 70,
         height: 30,

@@ -71,6 +71,8 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                               final singleCourse = myCourses[index];
                               final startTime = singleCourse['courses']['start_time'];
                               final endTime = singleCourse['courses']['end_time'];
+                              final imgUrl = singleCourse['courses']['img_url'];
+
                               return Card(
                                 elevation: 4,
                                 shape: RoundedRectangleBorder(
@@ -83,13 +85,18 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
                                       borderRadius: const BorderRadius.vertical(
                                         top: Radius.circular(15),
                                       ),
-                                      child: Image.network(
-                                        singleCourse['img_url'] ?? '',
+                                      child:  imgUrl == null || imgUrl.isEmpty
+                                          ? const Icon(Icons.image_not_supported)
+                                          : Image.network(
+                                        imgUrl,
                                         height: 120,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.image_not_supported),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                        const Icon(
+                                          Icons.image_not_supported,
+                                        ),
                                       ),
                                     ),
                                     Text(
