@@ -20,36 +20,50 @@ class CustomDropdownField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      height: 43,
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: labelText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            ),
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textDirection: TextDirection.rtl,
+      children: [
+        Text(
+          '$labelText :',
+          style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black
           ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: value,
-              hint: Text("انتخاب کنید"),
-              items: items.map((String item) {
-                return DropdownMenuItem(
-                  value: item,
-                  child: Text(item),
-                );
-              }).toList(),
-              onChanged: onChanged,
+          textDirection: TextDirection.rtl,
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: 300,
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: SizedBox(
+                height: 42.5,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: items.contains(value) ? value : null, // جلوگیری از خطا
+                    hint: const Text("انتخاب کنید"),
+                    items: items.map((String item) {
+                      return DropdownMenuItem(
+                        value: item,
+                        child: Text(item),
+                      );
+                    }).toList(),
+                    onChanged: onChanged,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

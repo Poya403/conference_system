@@ -10,7 +10,6 @@ class CustomTextFormField extends StatefulWidget {
   final int? minLines;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
-  final double? radiusValue;
 
   const CustomTextFormField({
     super.key,
@@ -22,8 +21,7 @@ class CustomTextFormField extends StatefulWidget {
     this.maxLines,
     this.minLines = 1,
     this.suffixIcon,
-    this.prefixIcon,
-    this.radiusValue,
+    this.prefixIcon
   });
 
   @override
@@ -36,6 +34,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Column(
+        textDirection: TextDirection.rtl,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('${widget.labelText} : '),
@@ -58,7 +57,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
-                    Radius.circular(widget.radiusValue ?? 15),
+                    Radius.circular(8),
                   ),
                 ),
                 suffixIcon: widget.suffixIcon,

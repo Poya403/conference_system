@@ -15,6 +15,7 @@ class MyCoursesPage extends StatefulWidget {
 class _MyCoursesPageState extends State<MyCoursesPage> {
   final coursesService = CoursesService();
   final titleController = TextEditingController();
+  final typeController = TextEditingController();
   final descriptionController = TextEditingController();
   final deliveryTypeController = TextEditingController();
   final costController = TextEditingController();
@@ -25,6 +26,84 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   final capacityController = TextEditingController();
   final bool isEditing = true;
   String? selectedType;
+  late List<Widget> formFields;
+  late List<List<Widget>> fieldsGroupsDesktop;
+
+  @override
+  void initState() {
+    super.initState();
+    // the fields of courseCreationForm
+    formFields = [
+      Text(
+        'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.',
+        textDirection: TextDirection.rtl,
+        style: TextStyle(color: Colors.deepPurple, fontSize: 20),
+      ),
+      CustomTextFormField(
+        key: ValueKey('title'),
+        controller: titleController,
+        labelText: AppTexts.crsTitle,
+      ),
+      CustomTextFormField(
+        key: ValueKey('type'),
+        controller: typeController,
+        labelText: AppTexts.crsType,
+      ),
+      CustomTextFormField(
+        key: ValueKey('cost'),
+        controller: costController,
+        labelText: AppTexts.registrationFee,
+      ),
+      CustomTextFormField(
+        key: ValueKey('capacity'),
+        controller: capacityController,
+        labelText: AppTexts.crsCapacity,
+      ),
+      CustomDropdownField(
+        key: ValueKey('delivery_type'),
+        labelText: AppTexts.deliveryType,
+        items: ["حضوری", "آنلاین"],
+        value: selectedType,
+        onChanged: (val) {
+          setState(() {
+            selectedType = val;
+          });
+        },
+      ),
+      CustomTextFormField(
+        key: ValueKey('phone_number'),
+        controller: phoneNumberController,
+        labelText: AppTexts.phoneNumber,
+      ),
+      CustomTextFormField(
+        key: ValueKey('holding_date'),
+        controller: holdingDateController,
+        labelText: AppTexts.holdingDate,
+      ),
+      CustomTextFormField(
+        key: ValueKey('start_time'),
+        controller: startTimeController,
+        labelText: AppTexts.startTime,
+      ),
+      CustomTextFormField(
+        key: ValueKey('end_time'),
+        controller: endTimeController,
+        labelText: AppTexts.endTime,
+      ),
+      CustomTextFormField(
+        key: ValueKey('description'),
+        controller: descriptionController,
+        labelText: AppTexts.description,
+        width: 500,
+      ),
+    ];
+
+    fieldsGroupsDesktop = [
+      [formFields[1], formFields[2], formFields[3]],
+      [formFields[4], formFields[5], formFields[6]],
+      [formFields[7], formFields[8], formFields[9]],
+    ];
+  }
 
   @override
   void dispose() {
@@ -200,76 +279,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       ),
     );
 
-    // the fields of courseCreationForm
-    final formFields = [
-      Text(
-        'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.',
-        textDirection: TextDirection.rtl,
-        style: TextStyle(color: Colors.deepPurple, fontSize: 20),
-      ),
-      CustomTextFormField(
-        controller: titleController,
-        labelText: AppTexts.crsTitle,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: deliveryTypeController,
-        labelText: AppTexts.crsType,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: costController,
-        labelText: AppTexts.registrationFee,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: capacityController,
-        labelText: AppTexts.crsCapacity,
-        radiusValue: 8,
-      ),
-      CustomDropdownField(
-        labelText: AppTexts.deliveryType,
-        items: ["حضوری", "آنلاین"],
-        value: selectedType,
-        onChanged: (val) {
-          setState(() {
-            selectedType = val;
-          });
-        },
-      ),
-      CustomTextFormField(
-        controller: phoneNumberController,
-        labelText: AppTexts.phoneNumber,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: holdingDateController,
-        labelText: AppTexts.holdingDate,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: startTimeController,
-        labelText: AppTexts.startTime,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: endTimeController,
-        labelText: AppTexts.endTime,
-        radiusValue: 8,
-      ),
-      CustomTextFormField(
-        controller: descriptionController,
-        labelText: AppTexts.description,
-        width: 500,
-        radiusValue: 8,
-      ),
-    ];
-
-    final fieldsGroupsDesktop = [
-      [formFields[1], formFields[2], formFields[3]],
-      [formFields[4], formFields[5], formFields[6]],
-      [formFields[7], formFields[8], formFields[9]],
-    ];
     // build a group of fields
     Widget buildFieldGroup(List<Widget> fields) {
       return Padding(
