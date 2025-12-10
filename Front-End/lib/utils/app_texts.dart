@@ -13,6 +13,8 @@ class AppTexts {
   static const String submit = 'ٍثبت';
   static const String delete = 'حذف';
   static const String edit = 'ویرایش';
+  static const String loading = 'در حال بارگذاری...';
+  static const String cancel = 'انصراف';
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -53,20 +55,23 @@ class AppTexts {
   static const String registrants = 'تعداد ثبت نام شدگان';
   static const String crsTitle = 'عنوان دوره';
   static const String crsType = 'نوع دوره';
-  static const String deliveryType = 'نوع برگزاری';
+  static const String deliveryType = 'نحوه برگزاری';
   static const String hostHall = 'سالن میزبان';
   static const String registrationFee = 'هزینه ثبت نام';
   static const String addingToBasket = 'افزودن به سبد خرید';
   static const String removeFromBasket = 'حذف از سبد خرید';
   static const String holdingDate = 'تاریخ برگزاری';
-  static const String startTime = 'زمان شروع';
-  static const String endTime = 'زمان اتمام';
+  static const String startTime = 'زمان شروع جلسه';
+  static const String endTime = 'زمان اتمام جلسه';
   static const String day = 'روز';
   static const String crsCapacity = 'ظرفیت دوره';
+  static const String inPerson = 'حضوری';
+  static const String online = 'آنلاین';
   // amenities
   static const String amenities = 'امکانات';
   //comments
   static const String comments  =  'نظرات';
   static const String noComments = 'نظری ثبت نشده است';
 
+  static const String completeCourseForm = 'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.';
 }

@@ -1,3 +1,4 @@
+import 'package:conference_system/widgets/custom_time_field.dart';
 import 'package:conference_system/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
@@ -5,6 +6,8 @@ import 'package:conference_system/server/services/hall_events_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/widgets/drop_down_field.dart';
+import 'package:conference_system/widgets/custom_persian_date_picked.dart';
+import 'package:flutter/services.dart';
 
 class MyCoursesPage extends StatefulWidget {
   const MyCoursesPage({super.key});
@@ -210,7 +213,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
 
     final formFields = [
       Text(
-        'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.',
+        AppTexts.completeCourseForm,
         textDirection: TextDirection.rtl,
         style: TextStyle(color: Colors.deepPurple, fontSize: 20),
       ),
@@ -221,33 +224,40 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       FutureBuilder<List<String>>(
         future: _loadEvents(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator();
-          }
+          final items = snapshot.data ?? [AppTexts.loading];
 
           return CustomDropdownField(
             labelText: AppTexts.crsType,
             value: selectedType,
-            items: snapshot.data!,
-            onChanged: (val) {
+            items: items,
+            onChanged: snapshot.hasData
+                ? (val) {
               setState(() {
                 selectedType = val;
               });
-            },
+            } : (_) {} ,
           );
         },
       ),
       CustomTextFormField(
         controller: costController,
         labelText: AppTexts.registrationFee,
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
       ),
       CustomTextFormField(
         controller: capacityController,
         labelText: AppTexts.crsCapacity,
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly
+        ],
       ),
       CustomDropdownField(
         labelText: AppTexts.deliveryType,
-        items: ["حضوری", "آنلاین"],
+        items: [AppTexts.inPerson, AppTexts.online],
         value: selectedDeliveryType,
         onChanged: (val) {
           setState(() {
@@ -258,18 +268,35 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       CustomTextFormField(
         controller: phoneNumberController,
         labelText: AppTexts.phoneNumber,
+        keyboardType: TextInputType.phone,
+        hintText: '021xxxxxxx',
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
       ),
-      CustomTextFormField(
+      CustomPersianDateField(
         controller: holdingDateController,
         labelText: AppTexts.holdingDate,
+        helpText: AppTexts.holdingDate,
+        onDateSelected: (gregorianDate) {
+
+        },
       ),
-      CustomTextFormField(
+      CustomTimeField(
         controller: startTimeController,
         labelText: AppTexts.startTime,
+        helpText: AppTexts.startTime,
+        onTimeSelected: (time){
+
+        },
       ),
-      CustomTextFormField(
+      CustomTimeField(
         controller: endTimeController,
         labelText: AppTexts.endTime,
+        helpText: AppTexts.endTime,
+        onTimeSelected: (time){
+
+        },
       ),
       CustomTextFormField(
         controller: descriptionController,

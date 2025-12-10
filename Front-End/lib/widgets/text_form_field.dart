@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
+  final String? hintText;
   final TextDirection? textDirection;
   final double? width;
   final double? height; // controls vertical padding
@@ -10,18 +12,22 @@ class CustomTextFormField extends StatefulWidget {
   final int? minLines;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
-
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
   const CustomTextFormField({
     super.key,
     required this.controller,
     required this.labelText,
     this.textDirection = TextDirection.rtl,
+    this.keyboardType,
+    this.inputFormatters,
+    this.hintText,
     this.width,
     this.height,
     this.maxLines,
     this.minLines = 1,
     this.suffixIcon,
-    this.prefixIcon
+    this.prefixIcon,
   });
 
   @override
@@ -50,10 +56,17 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               controller: widget.controller,
               maxLines: widget.maxLines ?? 1,
               minLines: widget.minLines,
+              keyboardType: widget.keyboardType,
+              inputFormatters: widget.inputFormatters ?? [],
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
                   vertical: widget.height ?? 8, // height control here
                   horizontal: 12,
+                ),
+                hintText: widget.hintText,
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
