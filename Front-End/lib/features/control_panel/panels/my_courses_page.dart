@@ -28,7 +28,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   final endTimeController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final capacityController = TextEditingController();
-  final bool isEditing = true;
+  bool isEditing = false;
   String? selectedType;
   String? selectedDeliveryType;
 
@@ -243,6 +243,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
         controller: costController,
         labelText: AppTexts.registrationFee,
         keyboardType: TextInputType.number,
+        hintText: 'تومان',
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
         ],
@@ -250,6 +251,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       CustomTextFormField(
         controller: capacityController,
         labelText: AppTexts.crsCapacity,
+        hintText: 'بین 1 تا 3000 نفر',
         keyboardType: TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly
@@ -301,6 +303,8 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       CustomTextFormField(
         controller: descriptionController,
         labelText: AppTexts.description,
+        hintText: AppTexts.optional,
+        maxLines: 5,
         width: 500,
       ),
     ];
@@ -359,6 +363,46 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       child: Column(
         children: [
           if (isEditing) ...[courseCreationForm] else coursesList,
+          SizedBox(height: 10,),
+          PanelButton(
+            isEditing: isEditing,
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PanelButton extends StatelessWidget {
+  const PanelButton({this.onPressed,  required this.isEditing, super.key});
+
+  final VoidCallback? onPressed;
+  final bool isEditing;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.purple,
+        shape: const CircleBorder(),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(
+                isEditing ? Icons.cancel_outlined : Icons.add_outlined,
+                color: Colors.white,
+                size: 28,
+            ),
+          ),
         ],
       ),
     );

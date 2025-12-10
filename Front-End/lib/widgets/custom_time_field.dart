@@ -67,6 +67,7 @@ class _CustomTimeFieldState extends State<CustomTimeField> {
                     ),
                     suffixIcon: const Icon(Icons.access_time),
                     hintText: 'انتخاب کنید',
+                    hintStyle: TextStyle(color: Colors.grey)
                   ),
                 ),
               ),

@@ -98,10 +98,6 @@ class _CustomPersianDateFieldState extends State<CustomPersianDateField> {
                     height: 45,
                     child: TextFormField(
                       controller: widget.controller,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: widget.enabled ? Colors.black : Colors.grey[600],
-                      ),
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.calendar_month_outlined),
                         floatingLabelBehavior: FloatingLabelBehavior.auto,
@@ -110,6 +106,7 @@ class _CustomPersianDateFieldState extends State<CustomPersianDateField> {
                           horizontal: 12,
                         ),
                         hintText: 'انتخاب کنید',
+                        hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),

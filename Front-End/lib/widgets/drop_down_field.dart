@@ -49,7 +49,7 @@ class CustomDropdownField extends StatelessWidget {
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: items.contains(value) ? value : null, // جلوگیری از خطا
-                    hint: const Text("انتخاب کنید"),
+                    hint: const Text("انتخاب کنید",style: TextStyle(color: Colors.grey)),
                     items: items.map((String item) {
                       return DropdownMenuItem(
                         value: item,

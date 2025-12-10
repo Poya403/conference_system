@@ -67,6 +67,7 @@ class AppTexts {
   static const String crsCapacity = 'ظرفیت دوره';
   static const String inPerson = 'حضوری';
   static const String online = 'آنلاین';
+  static const String optional = 'اختیاری';
   // amenities
   static const String amenities = 'امکانات';
   //comments
