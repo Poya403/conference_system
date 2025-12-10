@@ -1,6 +1,7 @@
 import 'package:conference_system/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
+import 'package:conference_system/server/services/hall_events_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/widgets/drop_down_field.dart';
@@ -14,8 +15,8 @@ class MyCoursesPage extends StatefulWidget {
 
 class _MyCoursesPageState extends State<MyCoursesPage> {
   final coursesService = CoursesService();
+  final hallEventsService = HallEventsService();
   final titleController = TextEditingController();
-  final typeController = TextEditingController();
   final descriptionController = TextEditingController();
   final deliveryTypeController = TextEditingController();
   final costController = TextEditingController();
@@ -26,83 +27,11 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   final capacityController = TextEditingController();
   final bool isEditing = true;
   String? selectedType;
-  late List<Widget> formFields;
-  late List<List<Widget>> fieldsGroupsDesktop;
+  String? selectedDeliveryType;
 
-  @override
-  void initState() {
-    super.initState();
-    // the fields of courseCreationForm
-    formFields = [
-      Text(
-        'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.',
-        textDirection: TextDirection.rtl,
-        style: TextStyle(color: Colors.deepPurple, fontSize: 20),
-      ),
-      CustomTextFormField(
-        key: ValueKey('title'),
-        controller: titleController,
-        labelText: AppTexts.crsTitle,
-      ),
-      CustomTextFormField(
-        key: ValueKey('type'),
-        controller: typeController,
-        labelText: AppTexts.crsType,
-      ),
-      CustomTextFormField(
-        key: ValueKey('cost'),
-        controller: costController,
-        labelText: AppTexts.registrationFee,
-      ),
-      CustomTextFormField(
-        key: ValueKey('capacity'),
-        controller: capacityController,
-        labelText: AppTexts.crsCapacity,
-      ),
-      CustomDropdownField(
-        key: ValueKey('delivery_type'),
-        labelText: AppTexts.deliveryType,
-        items: ["حضوری", "آنلاین"],
-        value: selectedType,
-        onChanged: (val) {
-          setState(() {
-            selectedType = val;
-          });
-        },
-      ),
-      CustomTextFormField(
-        key: ValueKey('phone_number'),
-        controller: phoneNumberController,
-        labelText: AppTexts.phoneNumber,
-      ),
-      CustomTextFormField(
-        key: ValueKey('holding_date'),
-        controller: holdingDateController,
-        labelText: AppTexts.holdingDate,
-      ),
-      CustomTextFormField(
-        key: ValueKey('start_time'),
-        controller: startTimeController,
-        labelText: AppTexts.startTime,
-      ),
-      CustomTextFormField(
-        key: ValueKey('end_time'),
-        controller: endTimeController,
-        labelText: AppTexts.endTime,
-      ),
-      CustomTextFormField(
-        key: ValueKey('description'),
-        controller: descriptionController,
-        labelText: AppTexts.description,
-        width: 500,
-      ),
-    ];
-
-    fieldsGroupsDesktop = [
-      [formFields[1], formFields[2], formFields[3]],
-      [formFields[4], formFields[5], formFields[6]],
-      [formFields[7], formFields[8], formFields[9]],
-    ];
+  Future<List<String>> _loadEvents() async {
+    final events = await hallEventsService.getEventsName();
+    return events.map<String>((e) => e['name'].toString()).toList();
   }
 
   @override
@@ -279,6 +208,82 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       ),
     );
 
+    final formFields = [
+      Text(
+        'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.',
+        textDirection: TextDirection.rtl,
+        style: TextStyle(color: Colors.deepPurple, fontSize: 20),
+      ),
+      CustomTextFormField(
+        controller: titleController,
+        labelText: AppTexts.crsTitle,
+      ),
+      FutureBuilder<List<String>>(
+        future: _loadEvents(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+
+          return CustomDropdownField(
+            labelText: AppTexts.crsType,
+            value: selectedType,
+            items: snapshot.data!,
+            onChanged: (val) {
+              setState(() {
+                selectedType = val;
+              });
+            },
+          );
+        },
+      ),
+      CustomTextFormField(
+        controller: costController,
+        labelText: AppTexts.registrationFee,
+      ),
+      CustomTextFormField(
+        controller: capacityController,
+        labelText: AppTexts.crsCapacity,
+      ),
+      CustomDropdownField(
+        labelText: AppTexts.deliveryType,
+        items: ["حضوری", "آنلاین"],
+        value: selectedDeliveryType,
+        onChanged: (val) {
+          setState(() {
+            selectedDeliveryType = val;
+          });
+        },
+      ),
+      CustomTextFormField(
+        controller: phoneNumberController,
+        labelText: AppTexts.phoneNumber,
+      ),
+      CustomTextFormField(
+        controller: holdingDateController,
+        labelText: AppTexts.holdingDate,
+      ),
+      CustomTextFormField(
+        controller: startTimeController,
+        labelText: AppTexts.startTime,
+      ),
+      CustomTextFormField(
+        controller: endTimeController,
+        labelText: AppTexts.endTime,
+      ),
+      CustomTextFormField(
+        controller: descriptionController,
+        labelText: AppTexts.description,
+        width: 500,
+      ),
+    ];
+
+    final fieldsGroupsDesktop = [
+      [formFields[1], formFields[2], formFields[3]],
+      [formFields[4], formFields[5], formFields[6]],
+      [formFields[7], formFields[8], formFields[9]],
+    ];
+
     // build a group of fields
     Widget buildFieldGroup(List<Widget> fields) {
       return Padding(
@@ -302,8 +307,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(30.0),
-          child: isDesktop
-              ? Column(
+          child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   textDirection: TextDirection.rtl,
                   children: <Widget>[
@@ -312,7 +316,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                       child: formFields[0],
                     ),
                     SizedBox(height: 10),
-                    ...fieldsGroupsDesktop.map(buildFieldGroup).toList(),
+                    ...fieldsGroupsDesktop.map(buildFieldGroup),
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: formFields[10],
@@ -320,15 +324,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                     SizedBox(height: 30),
                   ],
                 )
-              : Column(
-                  children: List.generate(
-                    formFields.length,
-                    (i) => Padding(
-                      padding: EdgeInsets.only(bottom: 12),
-                      child: formFields[i],
-                    ),
-                  ),
-                ),
         ),
       ),
     );

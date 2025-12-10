@@ -17,7 +17,6 @@ class _EditFormState extends State<EditForm> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadProfileInfo();
   }
@@ -27,6 +26,7 @@ class _EditFormState extends State<EditForm> {
     bioController.text = data[0]['bio'] ?? '';
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
