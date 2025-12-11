@@ -34,7 +34,7 @@ class CustomDropdownField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          width: 300,
+          width: 250,
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: Container(

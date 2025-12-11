@@ -15,6 +15,8 @@ class AppTexts {
   static const String edit = 'ویرایش';
   static const String loading = 'در حال بارگذاری...';
   static const String cancel = 'انصراف';
+  static const String hide = 'مخفی کردن';
+  static const String price = 'قیمت';
   //authentication
   static const String login = 'ورود';
   static const String signUp = 'ثبت نام';
@@ -53,6 +55,8 @@ class AppTexts {
   static const String apply = 'اعمال تغییرات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
+  static const String completeCourseForm = 'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.';
+  static const String completeIfInPrson = 'باتوجه به حضوری بودن دوره شما لطفا فیلد های زیر را پرکنید';
   static const String crsTitle = 'عنوان دوره';
   static const String crsType = 'نوع دوره';
   static const String deliveryType = 'نحوه برگزاری';
@@ -68,11 +72,11 @@ class AppTexts {
   static const String inPerson = 'حضوری';
   static const String online = 'آنلاین';
   static const String optional = 'اختیاری';
+  static const String budget = 'بودجه';
+  static const String getBestHalls = 'انتخاب هوشمند سالن';
   // amenities
   static const String amenities = 'امکانات';
   //comments
   static const String comments  =  'نظرات';
   static const String noComments = 'نظری ثبت نشده است';
-
-  static const String completeCourseForm = 'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.';
 }

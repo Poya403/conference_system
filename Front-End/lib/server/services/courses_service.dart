@@ -132,4 +132,38 @@ class CoursesService{
       );
     }
   }
+
+  Future<List<Map<String, dynamic>>> getBestHalls({
+    required String eventType,
+    required int expectedCapacity,
+    required double budget,
+    required List<String> requiredAmenities,
+  }) async {
+    final supabase = Supabase.instance.client;
+
+    final best = await supabase.rpc(
+      'get_best_halls',
+      params: {
+        'p_event_type': eventType,
+        'p_expected_capacity': expectedCapacity,
+        'p_budget': budget,
+        'p_required_amenities': requiredAmenities,
+      },
+    );
+
+    if (best == null || best.isEmpty) return [];
+
+    final ids = (best as List<dynamic>)
+        .map((e) => e['hid'] as int)
+        .toList();
+
+    final halls = await supabase
+        .from('halls')
+        .select()
+        .inFilter('halls.id', ids);
+
+    return halls;
+  }
+
+
 }

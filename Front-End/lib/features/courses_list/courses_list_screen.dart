@@ -47,6 +47,7 @@ class _CoursesListState extends State<CoursesList> {
   }
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 800;
     final coursesService = CoursesService();
     final TextStyle detailStyle = TextStyle(
         color: Colors.blueGrey,
@@ -92,7 +93,7 @@ class _CoursesListState extends State<CoursesList> {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.75,
+                        childAspectRatio: isDesktop ? 0.9 : 1,
                       ),
                       itemBuilder: (context, index) {
                         final singleCourse = courses[index];

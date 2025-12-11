@@ -294,7 +294,7 @@ class Amenities extends StatelessWidget {
         .width > 800;
     final amenitiesService = AmenitiesService();
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: amenitiesService.getAmenities(hid),
+      future: amenitiesService.getHallAmenities(hid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

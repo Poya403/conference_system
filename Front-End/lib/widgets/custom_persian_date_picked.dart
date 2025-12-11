@@ -94,7 +94,7 @@ class _CustomPersianDateFieldState extends State<CustomPersianDateField> {
             onTap: () => _selectDate(context),
             child: IgnorePointer(
               child: SizedBox(
-                    width: 300,
+                    width: 250,
                     height: 45,
                     child: TextFormField(
                       controller: widget.controller,

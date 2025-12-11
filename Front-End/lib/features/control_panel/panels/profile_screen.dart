@@ -18,11 +18,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
-    final labelStyle = TextStyle(color: Colors.blueGrey, fontSize: 15);
+    final labelStyle = TextStyle(color: Colors.blueGrey, fontSize: isDesktop ? 15 : 12);
     final responseStyle = TextStyle(
       color: Colors.deepPurple,
-      fontWeight: FontWeight.w600,
-      fontSize: isDesktop ? 17 : 15,
+      fontWeight: FontWeight.w700,
+      fontSize: isDesktop ? 17 : 13.5,
     );
     final iconSize = 17.0;
 
@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 19.5),
                       child: Row(
                         textDirection: TextDirection.rtl,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 19.5),
                       child: Row(
                         textDirection: TextDirection.rtl,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 19.5),
                       child: Row(
                         textDirection: TextDirection.rtl,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 19.5),
                       child: Row(
                         textDirection: TextDirection.rtl,
                         crossAxisAlignment: CrossAxisAlignment.start,

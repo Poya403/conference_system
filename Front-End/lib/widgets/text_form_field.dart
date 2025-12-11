@@ -46,7 +46,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           Text('${widget.labelText} : '),
           SizedBox(height: 10),
           SizedBox(
-            width: widget.width ?? 300,
+            width: widget.width ?? 250,
             height: 43,
             child: TextFormField(
               textDirection: widget.textDirection,

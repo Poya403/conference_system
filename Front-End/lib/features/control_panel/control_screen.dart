@@ -19,7 +19,6 @@ class _ControlScreenState extends State<ControlScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
   }
@@ -32,12 +31,16 @@ class _ControlScreenState extends State<ControlScreen> {
           break;
         case 1:
           currentPanel = MyCoursesPage();
+          break;
         case 2:
           currentPanel = RegisteredCourses();
+          break;
         case 3:
           currentPanel = ShoppingBasket();
+          break;
         case 5:
           currentPanel = EditForm();
+          break;
       }
     });
   }
@@ -140,16 +143,15 @@ class Narrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ExpansionTile(
               title: Text(
                 AppTexts.controlPanel,
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 15),
               ),
               children: [
                 ListTile(
@@ -190,14 +192,9 @@ class Narrow extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(child: currentPanel),
-            ),
-          ),
+          Expanded(child: Center(child: currentPanel)),
+
         ],
-      ),
     );
   }
 }

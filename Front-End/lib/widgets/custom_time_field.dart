@@ -51,23 +51,26 @@ class _CustomTimeFieldState extends State<CustomTimeField> {
         children: [
           Text('${widget.labelText} : '),
           const SizedBox(height: 10),
-          SizedBox(
-            width: 300,
-            height: 43,
-            child: InkWell(
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
               onTap: _pickTime,
-              child: IgnorePointer(
-                child: TextFormField(
-                  controller: widget.controller,
-                  readOnly: true,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 250,
+                height: 43,
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: widget.controller,
+                    readOnly: true,
+                    textDirection: TextDirection.rtl,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      suffixIcon: const Icon(Icons.access_time),
+                      hintText: 'انتخاب کنید',
+                      hintStyle: TextStyle(color: Colors.grey)
                     ),
-                    suffixIcon: const Icon(Icons.access_time),
-                    hintText: 'انتخاب کنید',
-                    hintStyle: TextStyle(color: Colors.grey)
                   ),
                 ),
               ),
