@@ -133,8 +133,82 @@ class CoursesService{
     }
   }
 
-  Future<void> createCourse(BuildContext context) async {
+  Future<void> createCourse(
+      BuildContext context,
+      String title,
+      String deliveryType,
+      DateTime startTime,
+      DateTime endTime,
+      String phoneNumber,
+      int cost,
+      String description,
+      {int? hid}
+      ) async {
+    final uid = supabase.auth.currentUser!.id;
 
+    try {
+      await supabase
+        .from('courses')
+        .insert({
+          'title' : title,
+          'delivery_type' : deliveryType,
+          'start_time': startTime,
+          'end_time' : endTime,
+          'phone_number': phoneNumber,
+          'cost': cost,
+          'description': description,
+          'hid' : hid,
+          'uid' : uid,
+        });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("َدوره با موفقیت ثبت شد"))
+      );
+    } catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطا در ثبت دوره'))
+      );
+    }
+  }
+
+  Future<void> updateCourse(
+      BuildContext context,
+      int cid,
+      String title,
+      String deliveryType,
+      String startTime,
+      String endTime,
+      String phoneNumber,
+      int cost,
+      String description,
+      {int? hid}
+      ) async {
+    final uid = supabase.auth.currentUser!.id;
+
+    try {
+      await supabase
+        .from('courses')
+        .update({
+          'title' : title,
+          'delivery_type' : deliveryType,
+          'start_time': startTime,
+          'end_time' : endTime,
+          'phone_number': phoneNumber,
+          'cost': cost,
+          'description': description,
+          'hid' : hid,
+        })
+        .eq('id', cid)
+        .eq('uid', uid);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("َدوره با موفقیت ویرایش شد"))
+      );
+    } catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطا در ثبت دوره'))
+      );
+    }
   }
 
   Future<List<Map<String,dynamic>>> getBestHalls({

@@ -10,7 +10,7 @@ class AppTexts {
   static const String showAll = 'نمایش همه';
   static const String address = 'آدرس';
   static const String description = 'توضیحات';
-  static const String submit = 'ٍثبت';
+  static const String submit = 'ثبت';
   static const String delete = 'حذف';
   static const String edit = 'ویرایش';
   static const String loading = 'در حال بارگذاری...';

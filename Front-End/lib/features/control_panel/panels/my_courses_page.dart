@@ -37,6 +37,8 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   String? selectedType;
   String? selectedDeliveryType;
   String? selectedAmenity;
+  late int selectedHid;
+  late String selectedGregorianDate;
   List<String> requiredAmenities = [];
   Future<List<Map<String, dynamic>>>? bestHallsFuture;
 
@@ -61,6 +63,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
     fontWeight: FontWeight.bold,
     color: Colors.blueGrey,
   );
+
   //load best halls
   void loadBestHalls() {
     final budget = budgetController.text.trim();
@@ -316,7 +319,9 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
         controller: holdingDateController,
         labelText: AppTexts.holdingDate,
         helpText: AppTexts.holdingDate,
-        onDateSelected: (gregorianDate) {},
+        onDateSelected: (gregorianDate) {
+          selectedGregorianDate = gregorianDate;
+        },
       ),
       CustomTimeField(
         controller: startTimeController,
@@ -454,7 +459,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
       );
     }
 
-    final courseCreationForm = SizedBox(
+    final courseCreationOrUpdateForm = SizedBox(
       width: isDesktop ? MediaQuery
           .of(context)
           .size
@@ -494,12 +499,37 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                   ],
                 ],
               ),
+              SizedBox(height: 10),
+              SubmitButton(
+                  onPressed: () async {
+                    await coursesService.createCourse(
+                        context,
+                        titleController.text.trim(),
+                        deliveryTypeController.text.trim(),
+                        mergeDateAndTime(
+                          DateTime.parse(selectedGregorianDate),
+                          startTimeController.text.trim(),
+                        ),
+                        mergeDateAndTime(
+                          DateTime.parse(selectedGregorianDate),
+                          endTimeController.text.trim(),
+                        ),
+                        phoneNumberController.text.trim(),
+                        int.parse(costController.text.trim()),
+                        descriptionController.text.trim(),
+                        hid: deliveryTypeController.text.trim() == AppTexts.inPerson
+                            ? selectedHid : null
+                    );
+                  }
+              ),
+              SizedBox(height: 10),
               if (selectedDeliveryType == AppTexts.inPerson) ... [
                 HallSelectButton(
                     isEditing: isEditing,
                     showHalls: showHalls,
                     onPressed: loadBestHalls
                 ),
+                SizedBox(height: 10),
               ]
             ],
           ),
@@ -510,7 +540,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
     final bestHallsList = SizedBox(
       height: 500,
       child: bestHallsFuture != null
-          ? FutureBuilder<List<Map<String,dynamic>>>(
+          ? FutureBuilder<List<Map<String, dynamic>>>(
         future: bestHallsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -599,32 +629,42 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                                     child: Column(
                                       children: [
                                         Text(
-                                          '${AppTexts
-                                              .capacity} : ${hall['capacity'] ??
-                                              ''} نفر ',
-                                          style: hallDetailStyle
+                                            '${AppTexts
+                                                .capacity} : ${hall['capacity'] ??
+                                                ''} نفر ',
+                                            style: hallDetailStyle
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                          '${AppTexts.area} : ${hall['area'] ??
-                                              ''}',
-                                          style:hallDetailStyle
+                                            '${AppTexts
+                                                .area} : ${hall['area'] ??
+                                                ''}',
+                                            style: hallDetailStyle
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                            '${AppTexts.price} : ${formatPrice(hall['price'] ?? '0')}',
-                                            style:hallDetailStyle
+                                            '${AppTexts.price} : ${formatPrice(
+                                                hall['price'] ?? '0')}',
+                                            style: hallDetailStyle
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                            '${AppTexts.amenities} : ${hall['amenities']}',
-                                            style:hallDetailStyle
+                                            '${AppTexts
+                                                .amenities} : ${hall['amenities']}',
+                                            style: hallDetailStyle
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                            '${AppTexts.supportedEvents} : ${hall['events']}',
-                                            style:hallDetailStyle
+                                            '${AppTexts
+                                                .supportedEvents} : ${hall['events']}',
+                                            style: hallDetailStyle
                                         ),
+                                        const SizedBox(height: 6),
+                                        SubmitButton(onPressed: (){
+                                          setState(() {
+                                            selectedHid = hall['hid'];
+                                          });
+                                        }),
                                       ],
                                     ),
                                   ),
@@ -647,7 +687,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          if (isEditing) ...[courseCreationForm] else
+          if (isEditing) ...[courseCreationOrUpdateForm] else
             coursesList,
           SizedBox(height: 10),
           PanelButton(
@@ -724,6 +764,36 @@ class HallSelectButton extends StatelessWidget {
         children: [
           Text(
             AppTexts.getBestHalls,
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  const SubmitButton({
+    this.onPressed,
+    super.key,
+  });
+
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.green,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            AppTexts.submit,
             style: TextStyle(color: Colors.white),
           ),
         ],
