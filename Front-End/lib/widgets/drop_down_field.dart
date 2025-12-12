@@ -48,7 +48,7 @@ class CustomDropdownField extends StatelessWidget {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     isExpanded: true,
-                    value: items.contains(value) ? value : null, // جلوگیری از خطا
+                    value: items.contains(value) ? value : null,
                     hint: const Text("انتخاب کنید",style: TextStyle(color: Colors.grey)),
                     items: items.map((String item) {
                       return DropdownMenuItem(

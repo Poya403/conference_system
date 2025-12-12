@@ -386,6 +386,18 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                     : (_) {},
               ),
               SizedBox(height: 10),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (selectedAmenity != null &&
+                          !requiredAmenities.contains(selectedAmenity)) {
+                        requiredAmenities.add(selectedAmenity ?? 'unknown');
+                      }
+                    });
+                  },
+                  child: Text('انتخاب')
+              ),
+              SizedBox(height: 10),
               for(String amenity in requiredAmenities)...[
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -412,17 +424,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                 )
               ],
               SizedBox(height: 10),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (selectedAmenity != null &&
-                          !requiredAmenities.contains(selectedAmenity)) {
-                        requiredAmenities.add(selectedAmenity ?? 'unknown');
-                      }
-                    });
-                  },
-                  child: Text('انتخاب')
-              ),
             ],
           );
         },
@@ -466,32 +467,40 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
         child: Padding(
           padding: EdgeInsets.all(isDesktop ? 30.0 : 1.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             textDirection: TextDirection.rtl,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: formFields[0],
-              ),
-              SizedBox(height: 10),
-              ...fieldsGroupsDesktop.map(buildFieldGroup),
-              SizedBox(height: 20),
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.rtl,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: formFields[0],
+                  ),
+                  SizedBox(height: 10),
+                  ...fieldsGroupsDesktop.map(buildFieldGroup),
+                  SizedBox(height: 20),
 
-              if (selectedDeliveryType == AppTexts.inPerson) ...[
-                Divider(thickness: 0.75),
-                Text(
-                  AppTexts.completeIfInPrson,
-                  style: TextStyle(color: Colors.deepPurple, fontSize: 13),
-                ),
-                SizedBox(height: 10),
-                ...inPersonFields.map(buildFieldGroup),
-                SizedBox(height: 10),
+                  if (selectedDeliveryType == AppTexts.inPerson) ...[
+                    Divider(thickness: 0.75),
+                    Text(
+                      AppTexts.completeIfInPrson,
+                      style: TextStyle(color: Colors.deepPurple, fontSize: 13),
+                    ),
+                    SizedBox(height: 10),
+                    ...inPersonFields.map(buildFieldGroup),
+                    SizedBox(height: 10),
+                  ],
+                ],
+              ),
+              if (selectedDeliveryType == AppTexts.inPerson) ... [
                 HallSelectButton(
-                  isEditing: isEditing,
-                  showHalls: showHalls,
-                  onPressed: loadBestHalls
+                    isEditing: isEditing,
+                    showHalls: showHalls,
+                    onPressed: loadBestHalls
                 ),
-              ],
+              ]
             ],
           ),
         ),
@@ -501,7 +510,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
     final bestHallsList = SizedBox(
       height: 500,
       child: bestHallsFuture != null
-          ? FutureBuilder<List<Map<String, dynamic>>?>(
+          ? FutureBuilder<List<Map<String,dynamic>>>(
         future: bestHallsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -571,6 +580,15 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                                     ),
                                   ),
                                 ),
+                                Text(
+                                  hall['title'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
                                 DefaultTextStyle(
                                   style: TextStyle(
                                     fontFamily: 'Farsi',
@@ -580,14 +598,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       children: [
-                                        Text(
-                                          hall['title'] ?? '',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
                                         Text(
                                           '${AppTexts
                                               .capacity} : ${hall['capacity'] ??
@@ -602,7 +612,17 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                            '${AppTexts.price} : ${formatPrice(hall['price'])}',
+                                            '${AppTexts.price} : ${formatPrice(hall['price'] ?? '0')}',
+                                            style:hallDetailStyle
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                            '${AppTexts.amenities} : ${hall['amenities']}',
+                                            style:hallDetailStyle
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                            '${AppTexts.supportedEvents} : ${hall['events']}',
                                             style:hallDetailStyle
                                         ),
                                       ],

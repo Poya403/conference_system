@@ -133,16 +133,18 @@ class CoursesService{
     }
   }
 
-  Future<List<Map<String, dynamic>>> getBestHalls({
+  Future<void> createCourse(BuildContext context) async {
+
+  }
+
+  Future<List<Map<String,dynamic>>> getBestHalls({
     required String eventType,
     required int expectedCapacity,
     required double budget,
     required List<String> requiredAmenities,
   }) async {
-    final supabase = Supabase.instance.client;
-
-    final best = await supabase.rpc(
-      'get_best_halls',
+    final response = await supabase.rpc(
+      'get_best_hall_list',
       params: {
         'p_event_type': eventType,
         'p_expected_capacity': expectedCapacity,
@@ -151,19 +153,8 @@ class CoursesService{
       },
     );
 
-    if (best == null || best.isEmpty) return [];
-
-    final ids = (best as List<dynamic>)
-        .map((e) => e['hid'] as int)
+    return (response as List<dynamic>)
+        .map((e) => Map<String, dynamic>.from(e as Map))
         .toList();
-
-    final halls = await supabase
-        .from('halls')
-        .select()
-        .inFilter('halls.id', ids);
-
-    return halls;
   }
-
-
 }

@@ -79,4 +79,6 @@ class AppTexts {
   //comments
   static const String comments  =  'نظرات';
   static const String noComments = 'نظری ثبت نشده است';
+
+  static const String supportedEvents  = 'رویداد های پشتیبانی شده';
 }
