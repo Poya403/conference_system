@@ -16,7 +16,6 @@ class ControlScreen extends StatefulWidget {
 
 class _ControlScreenState extends State<ControlScreen> {
   late Widget currentPanel;
-
   @override
   void initState() {
     super.initState();
@@ -76,54 +75,81 @@ class Wide extends StatelessWidget {
           textDirection: TextDirection.rtl,
           children: [
             SizedBox(
-              width: 300,
+              width: 270,
               height: 400,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    FormButton(
-                      title: AppTexts.userInfo,
-                      icon: Icons.person_outline_outlined,
-                      onPressed: () => onPanelChanged(0),
-                    ),
-                    SizedBox(height: 10),
-                    FormButton(
-                      title: AppTexts.myCourses,
-                      icon: Icons.my_library_add_rounded,
-                      onPressed: () => onPanelChanged(1),
-                    ),
-                    SizedBox(height: 10),
-                    FormButton(
-                      title: AppTexts.registeredCourses,
-                      icon: Icons.my_library_books_outlined,
-                      onPressed: () => onPanelChanged(2),
-                    ),
-                    SizedBox(height: 10),
-                    FormButton(
-                      title: AppTexts.shoppingBasket,
-                      icon: Icons.shopping_basket_outlined,
-                      onPressed: () => onPanelChanged(3),
-                    ),
-                    SizedBox(height: 10),
-                    FormButton(
-                      title: AppTexts.waitingList,
-                      icon: Icons.list_alt_outlined,
-                    ),
-                    SizedBox(height: 10),
-                    FormButton(
-                      title: AppTexts.logout,
-                      icon: Icons.logout,
-                      onPressed: () async {
-                        await logout(context);
-                      },
-                    ),
-                  ],
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 4,
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 23.0, top: 18.0),
+                        child: Text(
+                            AppTexts.controlPanel,
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.userInfo,
+                        icon: Icons.person_outline_outlined,
+                        onPressed: () => onPanelChanged(0),
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.myCourses,
+                        icon: Icons.my_library_add_rounded,
+                        onPressed: () => onPanelChanged(1),
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.registeredCourses,
+                        icon: Icons.my_library_books_outlined,
+                        onPressed: () => onPanelChanged(2),
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.shoppingBasket,
+                        icon: Icons.shopping_basket_outlined,
+                        onPressed: () => onPanelChanged(3),
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.waitingList,
+                        icon: Icons.list_alt_outlined,
+                      ),
+                      SizedBox(height: 10),
+                      FormButton(
+                        title: AppTexts.logout,
+                        icon: Icons.logout,
+                        onPressed: () async {
+                          await logout(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            SizedBox(width: 20),
-            Expanded(child: SizedBox.expand(child: currentPanel)),
+            SizedBox(width: 10),
+            Expanded(
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: currentPanel,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -143,45 +169,54 @@ class Narrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final narrowTextStyle = TextStyle(
+      color: Colors.blueGrey,
+      fontSize: 13,
+    );
+    final Color iconColor = Colors.blueGrey;
+    final double iconSize = 20.0;
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      textDirection: TextDirection.rtl,
+      children: [
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: ExpansionTile(
-              title: Text(
-                AppTexts.controlPanel,
-                style: TextStyle(fontSize: 15),
+              title: Text(AppTexts.controlPanel, style: TextStyle(fontSize: 15)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))
               ),
               children: [
                 ListTile(
-                  leading: Icon(Icons.person_outline),
-                  title: Text(AppTexts.userInfo),
+                  leading: Icon(Icons.person_outline, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.userInfo, style: narrowTextStyle,),
                   onTap: () => onPanelChanged(0),
                 ),
                 ListTile(
-                  leading: Icon(Icons.my_library_add_sharp),
-                  title: Text(AppTexts.myCourses),
+                  leading: Icon(Icons.my_library_add_sharp, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.myCourses, style: narrowTextStyle,),
                   onTap: () => onPanelChanged(1),
                 ),
                 ListTile(
-                  leading: Icon(Icons.my_library_books_outlined),
-                  title: Text(AppTexts.registeredCourses),
+                  leading: Icon(Icons.my_library_books_outlined, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.registeredCourses, style: narrowTextStyle,),
                   onTap: () => onPanelChanged(2),
                 ),
                 ListTile(
-                  leading: Icon(Icons.shopping_basket_outlined),
-                  title: Text(AppTexts.shoppingBasket),
+                  leading: Icon(Icons.shopping_basket_outlined, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.shoppingBasket, style: narrowTextStyle,),
                   onTap: () => onPanelChanged(3),
                 ),
                 ListTile(
-                  leading: Icon(Icons.list_alt_outlined),
-                  title: Text(AppTexts.waitingList),
+                  leading: Icon(Icons.list_alt_outlined, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.waitingList, style: narrowTextStyle,),
                   onTap: () => onPanelChanged(4),
                 ),
                 ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text(AppTexts.logout),
+                  leading: Icon(Icons.logout, color: iconColor, size: iconSize,),
+                  title: Text(AppTexts.logout, style: narrowTextStyle,),
                   onTap: () async {
                     await logout(context);
                   },
@@ -189,12 +224,12 @@ class Narrow extends StatelessWidget {
               ],
             ),
           ),
+        ),
 
-          const SizedBox(height: 10),
+        const SizedBox(height: 10),
 
-          Expanded(child: Center(child: currentPanel)),
-
-        ],
+        Expanded(child: Center(child: currentPanel)),
+      ],
     );
   }
 }
@@ -224,7 +259,7 @@ class FormButton extends StatelessWidget {
       ),
       child: Row(
         textDirection: TextDirection.rtl,
-        children: [Icon(icon, size: 27), SizedBox(width: 10), Text(title)],
+        children: [Icon(icon, size: 23), SizedBox(width: 10), Text(title)],
       ),
     );
   }
