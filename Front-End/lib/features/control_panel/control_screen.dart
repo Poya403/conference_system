@@ -6,6 +6,8 @@ import 'package:conference_system/features/control_panel/panels/shopping_basket.
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/auth_service.dart';
+import 'package:conference_system/server/services/profile_service.dart';
+import 'package:conference_system/models/user_profile.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -16,10 +18,15 @@ class ControlScreen extends StatefulWidget {
 
 class _ControlScreenState extends State<ControlScreen> {
   late Widget currentPanel;
+  UserRole? currentUser;
+  bool isLoading = true;
+  final profileService = ProfileService();
+
   @override
   void initState() {
     super.initState();
     currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
+    _loadUserRole();
   }
 
   void changePanel(int index) {
@@ -44,13 +51,39 @@ class _ControlScreenState extends State<ControlScreen> {
     });
   }
 
+  Future<void> _loadUserRole() async {
+    try {
+      final data = await profileService.getProfileInfo();
+      if (data.isNotEmpty) {
+        setState(() {
+          currentUser = UserRole(
+            fullName: data[0]['fullname'] ?? '',
+            role: data[0]['role'] ?? '',
+          );
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading profile: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
     return Scaffold(
       body: isDesktop
-          ? Wide(currentPanel: currentPanel, onPanelChanged: changePanel)
-          : Narrow(currentPanel: currentPanel, onPanelChanged: changePanel),
+          ? Wide(
+              currentPanel: currentPanel,
+              onPanelChanged: changePanel,
+              currentUser: currentUser,
+              isLoading: isLoading,
+          )
+          : Narrow(
+              currentPanel: currentPanel,
+              onPanelChanged: changePanel,
+              currentUser: currentUser,
+              isLoading: isLoading,
+          ),
     );
   }
 }
@@ -60,13 +93,28 @@ class Wide extends StatelessWidget {
     super.key,
     required this.currentPanel,
     required this.onPanelChanged,
+    required this.isLoading,
+    this.currentUser,
   });
 
   final Widget currentPanel;
   final Function(int) onPanelChanged;
-
+  final UserRole? currentUser;
+  final bool isLoading;
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (currentUser == null) {
+      return const Center(
+        child: Text('خطا در دریافت اطلاعات کاربر'),
+      );
+    }
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -106,28 +154,31 @@ class Wide extends StatelessWidget {
                         onPressed: () => onPanelChanged(0),
                       ),
                       SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.myCourses,
-                        icon: Icons.my_library_add_rounded,
-                        onPressed: () => onPanelChanged(1),
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.registeredCourses,
-                        icon: Icons.my_library_books_outlined,
-                        onPressed: () => onPanelChanged(2),
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.shoppingBasket,
-                        icon: Icons.shopping_basket_outlined,
-                        onPressed: () => onPanelChanged(3),
-                      ),
-                      SizedBox(height: 10),
-                      FormButton(
-                        title: AppTexts.waitingList,
-                        icon: Icons.list_alt_outlined,
-                      ),
+                      if(currentUser?.role == "admin")...[
+                        FormButton(
+                          title: AppTexts.myCourses,
+                          icon: Icons.my_library_add_rounded,
+                          onPressed: () => onPanelChanged(1),
+                        ),
+                      ],
+                      if(currentUser?.role == "user")...[
+                        FormButton(
+                          title: AppTexts.registeredCourses,
+                          icon: Icons.my_library_books_outlined,
+                          onPressed: () => onPanelChanged(2),
+                        ),
+                        SizedBox(height: 10),
+                        FormButton(
+                          title: AppTexts.shoppingBasket,
+                          icon: Icons.shopping_basket_outlined,
+                          onPressed: () => onPanelChanged(3),
+                        ),
+                        SizedBox(height: 10),
+                        FormButton(
+                          title: AppTexts.waitingList,
+                          icon: Icons.list_alt_outlined,
+                        ),
+                      ],
                       SizedBox(height: 10),
                       FormButton(
                         title: AppTexts.logout,
@@ -162,10 +213,14 @@ class Narrow extends StatelessWidget {
     super.key,
     required this.currentPanel,
     required this.onPanelChanged,
+    required this.isLoading,
+    this.currentUser,
   });
 
   final Widget currentPanel;
   final Function(int) onPanelChanged;
+  final UserRole? currentUser;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:conference_system/server/services/profile_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'package:conference_system/widgets/text_field.dart';
+import 'package:conference_system/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 
 class EditForm extends StatefulWidget {
@@ -28,59 +28,53 @@ class _EditFormState extends State<EditForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
         color: Colors.white,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0))
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              textDirection: TextDirection.rtl,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ClipRect(
-                  child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Column(
-                      children: [
-                        Image.asset('assets/images/default_avatar.png'),
-                      ],
-                    ),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            textDirection: TextDirection.rtl,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 35,
+            children: [
+              ClipRect(
+                child: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Image.asset('assets/images/default_avatar.png'),
+                    ],
                   ),
                 ),
-                SizedBox(height: 15,),
-                CustomTextField(
-                  controller: fullNameController,
-                  labelText: AppTexts.fullName,
-                  textDirection: TextDirection.rtl,
-                ),
-                SizedBox(height: 15,),
-                CustomTextField(
-                  controller: bioController,
-                  labelText: AppTexts.bio,
-                  textDirection: TextDirection.rtl,
-                ),
-                SizedBox(height: 15,),
-                ApplyButton(
-                  onPressed: () async {
-                    await profileService.updateProfileInfo(
-                        context,
-                        fullNameController.text.trim(),
-                        bioController.text.trim()
-                    );
-                    Navigator.popAndPushNamed(context, '/profile');
-                  },
-                ),
-              ],
-            ),
+              ),
+              CustomTextFormField(
+                controller: fullNameController,
+                labelText: AppTexts.fullName,
+                textDirection: TextDirection.rtl,
+              ),
+              CustomTextFormField(
+                controller: bioController,
+                labelText: AppTexts.bio,
+                textDirection: TextDirection.rtl,
+              ),
+              ApplyButton(
+                onPressed: () async {
+                  await profileService.updateProfileInfo(
+                      context,
+                      fullNameController.text.trim(),
+                      bioController.text.trim()
+                  );
+                  Navigator.popAndPushNamed(context, '/profile');
+                },
+              ),
+            ],
           ),
         ),
       ),

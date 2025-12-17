@@ -38,7 +38,25 @@ class _RegisteredCoursesState extends State<RegisteredCourses> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Text(AppTexts.noData);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 5,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        AppTexts.noData,
+                        style: TextStyle(color: Colors.grey,fontSize: 17),
+                      ),
+                    ],
+                  ),
+                );
               } else {
                 final myCourses = snapshot.data!;
 
