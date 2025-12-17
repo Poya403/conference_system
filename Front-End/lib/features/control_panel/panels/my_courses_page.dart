@@ -24,7 +24,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
   final amenitiesService = AmenitiesService();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  final deliveryTypeController = TextEditingController();
   final costController = TextEditingController();
   final holdingDateController = TextEditingController();
   final startTimeController = TextEditingController();
@@ -92,7 +91,6 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
     super.dispose();
     titleController.dispose();
     descriptionController.dispose();
-    deliveryTypeController.dispose();
     costController.dispose();
     holdingDateController.dispose();
     startTimeController.dispose();
@@ -241,6 +239,12 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                                                 startTime ?? '')}',
                                             style: detailStyle,
                                           ),
+                                          const SizedBox(height: 6),
+                                          singleCourse['delivery_type'] == AppTexts.inPerson ?
+                                          Text(
+                                            '${AppTexts.hostHall} : ${singleCourse['halls']?['title'] ?? ''}',
+                                            style: detailStyle,
+                                          ) : SizedBox.shrink(),
                                           const SizedBox(height: 6),
                                           Text(
                                             '${AppTexts.startTime} : '
@@ -505,7 +509,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                     await coursesService.createCourse(
                         context,
                         titleController.text.trim(),
-                        deliveryTypeController.text.trim(),
+                        selectedDeliveryType ?? AppTexts.online,
                         mergeDateAndTime(
                           DateTime.parse(selectedGregorianDate),
                           startTimeController.text.trim(),
@@ -517,7 +521,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                         phoneNumberController.text.trim(),
                         int.parse(costController.text.trim()),
                         descriptionController.text.trim(),
-                        hid: deliveryTypeController.text.trim() == AppTexts.inPerson
+                        hid: selectedDeliveryType == AppTexts.inPerson
                             ? selectedHid : null
                     );
                   }

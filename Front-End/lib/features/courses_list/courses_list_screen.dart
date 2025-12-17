@@ -93,7 +93,7 @@ class _CoursesListState extends State<CoursesList> {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: isDesktop ? 0.9 : 1,
+                        childAspectRatio: isDesktop ? 0.7 : 1,
                       ),
                       itemBuilder: (context, index) {
                         final singleCourse = courses[index];

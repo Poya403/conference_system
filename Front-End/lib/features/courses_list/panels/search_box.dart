@@ -5,6 +5,20 @@ class SearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SizedBox(
+      width: 500,
+      height: 300,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+        elevation: 0,
+        color: Colors.white,
+        child: Column(
+          textDirection: TextDirection.rtl,
+
+        ),
+      ),
+    );
   }
 }

@@ -35,9 +35,14 @@ class CoursesService{
                 phone_number,
                 delivery_type,
                 uid,
+                hid,
                 start_time,
                 end_time,
-                created_at
+                created_at,
+                halls(
+                  id,
+                  title
+                )
             ''')
             .eq('uid', uid);
       } else {
@@ -152,8 +157,8 @@ class CoursesService{
         .insert({
           'title' : title,
           'delivery_type' : deliveryType,
-          'start_time': startTime,
-          'end_time' : endTime,
+          'start_time': startTime.toIso8601String(),
+          'end_time' : endTime.toIso8601String(),
           'phone_number': phoneNumber,
           'cost': cost,
           'description': description,
@@ -166,7 +171,7 @@ class CoursesService{
       );
     } catch(e){
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطا در ثبت دوره'))
+          SnackBar(content: Text(' : خطا در ثبت دوره$e'))
       );
     }
   }
@@ -206,7 +211,7 @@ class CoursesService{
       );
     } catch(e){
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطا در ثبت دوره'))
+          SnackBar(content: Text(' : خطا در ویرایش دوره$e'))
       );
     }
   }
