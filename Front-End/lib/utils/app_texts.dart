@@ -86,4 +86,6 @@ class AppTexts {
 
   static const String maxPrice = 'حداکثر قیمت';
   static const String minPrice = 'حداقل قیمت';
+  static const String minCapacity = 'حداقل ظرفیت';
+  static const String maxCapacity = 'حداکثر ظرفیت';
 }

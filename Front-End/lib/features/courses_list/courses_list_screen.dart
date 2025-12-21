@@ -91,7 +91,7 @@ class CoursesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayCourses = (courses ?? []).take(limit ?? courses.length).toList();
+    final displayCourses = (courses).take(limit ?? courses.length).toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -103,7 +103,7 @@ class CoursesList extends StatelessWidget {
         }
         else if (constraints.maxWidth > 500) {
           crossAxisCount = 2;
-        };
+        }
 
         double cardWidth = (constraints.maxWidth - 16 * (crossAxisCount - 1)) / crossAxisCount;
 
@@ -116,7 +116,7 @@ class CoursesList extends StatelessWidget {
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: courses.length,
+              itemCount: displayCourses.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 16,

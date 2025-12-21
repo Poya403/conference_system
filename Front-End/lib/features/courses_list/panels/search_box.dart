@@ -16,12 +16,14 @@ class SearchBox extends StatefulWidget {
 
 class _SearchBoxState extends State<SearchBox> {
   final titleController = TextEditingController();
-  final capacityController = TextEditingController();
+  final minCapacityController = TextEditingController();
+  final maxCapacityController = TextEditingController();
   final maxPriceController = TextEditingController();
   final minPriceController = TextEditingController();
   List<Hall> halls = [];
   Hall? selectedHall;
   String? selectedDeliveryType;
+  bool isExpanded = false;
 
   @override
   void initState() {
@@ -32,7 +34,8 @@ class _SearchBoxState extends State<SearchBox> {
   @override
   void dispose() {
     titleController.dispose();
-    capacityController.dispose();
+    minCapacityController.dispose();
+    maxCapacityController.dispose();
     minPriceController.dispose();
     maxPriceController.dispose();
     super.dispose();
@@ -53,80 +56,124 @@ class _SearchBoxState extends State<SearchBox> {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = MediaQuery.of(context).size.width < 200;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
-        elevation: 0,
+        color: Colors.white,
+        elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Column(
-            textDirection: TextDirection.rtl,
-            spacing: 10,
-            children: [
-              SearchTextField(
-                controller: titleController,
-                labelText: 'جستجو نام دوره',
-                prefixIcon: Icon(Icons.search_rounded),
-              ),
-              Divider(thickness: 0.75),
-              Text('فیلتر ها'),
-              CustomDropdownField(
-                  labelText: AppTexts.deliveryType,
-                  items: [AppTexts.inPerson, AppTexts.online],
-                  value: selectedDeliveryType,
-                  onChanged: (val) {
-                    setState(() {
-                      selectedDeliveryType = val;
-                    });
-                  }
-              ),
-              selectedDeliveryType == AppTexts.inPerson
-                  ? CustomDropdownField(
-                    labelText: AppTexts.hostHall,
-                    value: selectedHall?.title,
-                    items: halls.map((e) => e.title).toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        selectedHall = halls.firstWhere((e) => e.title == val);
-                      });
-                    },
-                  ): SizedBox.shrink(),
-              CustomTextFormField(
-                  controller: capacityController,
-                  labelText: AppTexts.capacity,
-              ),
-              Row(
-                spacing: 20,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomTextFormField(
-                    controller: maxPriceController,
-                    labelText: AppTexts.maxPrice,
-                    width: 105,
+          child: SingleChildScrollView(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 20,
+              runSpacing: 10,
+              textDirection: TextDirection.rtl,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 2,
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    SearchTextField(
+                      controller: titleController,
+                      labelText: 'جستجو نام دوره',
+                      prefixIcon: Icon(Icons.search_rounded),
+                      width: isMobile ? 200 : 180,
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() {
+                        isExpanded = !isExpanded;
+                      }),
+                      icon: Icon(
+                          isExpanded
+                            ? Icons.expand_more_outlined
+                            : Icons.expand_less_outlined
+                      ),
+                    ),
+                  ]
+                ),
+
+                if(isExpanded) ... [
+                  Divider(thickness: 0.75),
+                  Text(': فیلتر ها'),
+                  CustomDropdownField(
+                      labelText: AppTexts.deliveryType,
+                      items: [AppTexts.inPerson, AppTexts.online],
+                      value: selectedDeliveryType,
+                      onChanged: (val) {
+                        setState(() {
+                          selectedDeliveryType = val;
+                        });
+                      }
                   ),
-                  CustomTextFormField(
-                    controller: minPriceController,
-                    labelText: AppTexts.minPrice,
-                    width: 105,
+                  if(selectedDeliveryType == AppTexts.inPerson)...[
+                    CustomDropdownField(
+                      labelText: AppTexts.hostHall,
+                      value: selectedHall?.title,
+                      items: halls.map((e) => e.title).toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          selectedHall = halls.firstWhere((e) => e.title == val);
+                        });
+                      },
+                    ),
+                    Row(
+                      spacing: 20,
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        CustomTextFormField(
+                          controller: minCapacityController,
+                          labelText: AppTexts.minCapacity,
+                          width: 105,
+                        ),
+                        CustomTextFormField(
+                          controller: maxCapacityController,
+                          labelText: AppTexts.maxCapacity,
+                          width: 105,
+                        ),
+                      ],
+                    ),
+                  ],
+                  Row(
+                    spacing: 20,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      CustomTextFormField(
+                        controller: minPriceController,
+                        labelText: AppTexts.minPrice,
+                        width: 105,
+                      ),
+                      CustomTextFormField(
+                        controller: maxPriceController,
+                        labelText: AppTexts.maxPrice,
+                        width: 105,
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              SearchButton(
-                onPressed: () async {
-                  final filter = CourseFilter(
-                    search: titleController.text.trim(),
-                    deliveryType: selectedDeliveryType,
-                    minPrice: int.tryParse(minPriceController.text.trim()),
-                    maxPrice: int.tryParse(maxPriceController.text.trim()),
-                    hid: selectedHall?.id,
-                  );
-                  widget.onSearch(filter);
-                }
-              ),
-            ],
+                Center(
+                  child: SearchButton(
+                    onPressed: () async {
+                      final filter = CourseFilter(
+                        search: titleController.text.trim(),
+                        deliveryType: selectedDeliveryType,
+                        minPrice: int.tryParse(minPriceController.text.trim()),
+                        maxPrice: int.tryParse(maxPriceController.text.trim()),
+                        hid: selectedHall?.id,
+                        minCapacity: int.tryParse(minCapacityController.text.trim()),
+                        maxCapacity: int.tryParse(maxCapacityController.text.trim())
+                      );
+                      widget.onSearch(filter);
+                    }
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -215,7 +262,7 @@ class SearchButton extends StatelessWidget {
           shadowColor: Colors.transparent,
           backgroundColor: Colors.deepPurple,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
           ),
         ),
         onPressed: onPressed,

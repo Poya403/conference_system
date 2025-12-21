@@ -245,6 +245,8 @@ class CoursesService{
         params: {
           'p_search': filter.search,
           'p_hid': filter.hid,
+          'p_min_capacity': filter.minCapacity,
+          'p_max_capacity': filter.maxCapacity,
           'p_min_cost': filter.minPrice ?? 0,
           'p_max_cost': filter.maxPrice ?? 1000000,
         },
