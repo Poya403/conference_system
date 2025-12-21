@@ -6,6 +6,7 @@ import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/features/courses_list/panels/search_box.dart';
 import 'package:conference_system/models/course_filter.dart';
+// import 'package:conference_system/features/courses_list/panels/course_info.dart';
 
 class CoursesListScreen extends StatefulWidget {
   const CoursesListScreen({super.key});
@@ -18,12 +19,26 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
   final coursesService = CoursesService();
   final ValueNotifier<List<Map<String, dynamic>>> coursesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> loadingNotifier = ValueNotifier(false);
+  // late Widget currentPage;
 
   @override
   void initState() {
     super.initState();
     _loadAllCourses();
   }
+
+  // void onChangedPage(int index, {int? cid}) {
+  //   setState(() {
+  //     switch (index) {
+  //       case 0:
+  //         currentPage = CoursesList(onChangedPage: onChangedPage);
+  //         break;
+  //       case 1:
+  //         currentPage = CourseInfoScreen(cid: cid ?? 0);
+  //         break;
+  //     }
+  //   });
+  // }
 
   Future<void> _onSearch(CourseFilter filter) async {
     loadingNotifier.value = true;
@@ -65,7 +80,7 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
             if (courses.isEmpty) {
               return NoDataWidget();
             }
-            return CoursesList(courses: courses);
+            return CoursesList(courses: courses, onRefresh: _loadAllCourses,);
           },
         );
       },
@@ -75,14 +90,16 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: isDesktop
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: 280, child: searchBox),
-                  const SizedBox(width: 16),
-                  Expanded(child: coursesList),
-                ],
-              )
+            ? SingleChildScrollView(
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 280, child: searchBox),
+                    const SizedBox(width: 16),
+                    Expanded(child: coursesList),
+                  ],
+                ),
+            )
             : Column(
                 children: [
                   searchBox,
@@ -98,8 +115,14 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
 class CoursesList extends StatefulWidget {
   final List<Map<String, dynamic>> courses;
   final int? limit;
+  final VoidCallback? onRefresh;
 
-  const CoursesList({super.key, required this.courses, this.limit});
+  const CoursesList({
+    super.key,
+    required this.courses,
+    this.limit,
+    this.onRefresh,
+  });
 
   @override
   State<CoursesList> createState() => _CoursesListState();
@@ -144,7 +167,7 @@ class _CoursesListState extends State<CoursesList> {
               itemBuilder: (context, index) {
                 return CourseCard(
                   singleCourse: displayCourses[index],
-                  onRefresh: () => setState(() {}),
+                  onRefresh: widget.onRefresh
                 );
               },
             ),
