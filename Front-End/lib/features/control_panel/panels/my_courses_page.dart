@@ -1,6 +1,7 @@
 import 'package:conference_system/server/services/amenities_service.dart';
 import 'package:conference_system/utils/format_price.dart';
 import 'package:conference_system/widgets/custom_time_field.dart';
+import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:conference_system/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
@@ -577,7 +578,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text(AppTexts.noData);
+            return NoDataWidget();
           } else {
             final halls = snapshot.data!;
 

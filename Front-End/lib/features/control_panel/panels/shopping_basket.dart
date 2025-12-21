@@ -2,6 +2,7 @@ import 'package:conference_system/utils/date_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
+import 'package:conference_system/widgets/no_data_widget.dart';
 
 class ShoppingBasket extends StatefulWidget {
   const ShoppingBasket({super.key});
@@ -43,25 +44,7 @@ class _ShoppingBasketState extends State<ShoppingBasket> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 50),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 5,
-                    children: [
-                      Icon(
-                        Icons.inbox_outlined,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        AppTexts.noData,
-                        style: TextStyle(color: Colors.grey,fontSize: 17),
-                      ),
-                    ],
-                  ),
-                );
+                return const NoDataWidget();
               } else {
                 final myCourses = snapshot.data!;
                 return LayoutBuilder(

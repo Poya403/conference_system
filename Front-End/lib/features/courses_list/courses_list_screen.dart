@@ -1,4 +1,5 @@
 import 'package:conference_system/utils/format_price.dart';
+import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
@@ -15,8 +16,8 @@ class CoursesListScreen extends StatefulWidget {
 
 class _CoursesListScreenState extends State<CoursesListScreen> {
   final coursesService = CoursesService();
-  List<Map<String, dynamic>> courses = [];
-  bool loading = false;
+  final ValueNotifier<List<Map<String, dynamic>>> coursesNotifier = ValueNotifier([]);
+  final ValueNotifier<bool> loadingNotifier = ValueNotifier(false);
 
   @override
   void initState() {
@@ -24,74 +25,92 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
     _loadAllCourses();
   }
 
-  Future<void> _loadAllCourses() async {
-    setState(() => loading = true);
-    final result = await coursesService.getCoursesList();
-    setState(() {
-      courses = result;
-      loading = false;
-    });
+  Future<void> _onSearch(CourseFilter filter) async {
+    loadingNotifier.value = true;
+    final result = await coursesService.searchCourse(filter);
+    coursesNotifier.value = result;
+    loadingNotifier.value = false;
   }
 
-  void _onSearch(CourseFilter filter) async {
-    setState(() => loading = true);
-    final result = await coursesService.searchCourse(filter);
-    setState(() {
-      courses = result;
-      loading = false;
-    });
+
+  Future<void> _loadAllCourses() async {
+    loadingNotifier.value = true;
+    final result = await coursesService.getCoursesList();
+    coursesNotifier.value = result;
+    loadingNotifier.value = false;
+  }
+
+  @override
+  void dispose() {
+    coursesNotifier.dispose();
+    loadingNotifier.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
+    Widget searchBox = SearchBox(onSearch: _onSearch);
+
+    Widget coursesList = ValueListenableBuilder<bool>(
+      valueListenable: loadingNotifier,
+      builder: (context, loading, _) {
+        if (loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return ValueListenableBuilder<List<Map<String, dynamic>>>(
+          valueListenable: coursesNotifier,
+          builder: (context, courses, _) {
+            if (courses.isEmpty) {
+              return NoDataWidget();
+            }
+            return CoursesList(courses: courses);
+          },
+        );
+      },
+    );
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: loading
-          ? const Center(child: CircularProgressIndicator())
-          : isDesktop
+        child: isDesktop
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 280,
-                    child: SearchBox(onSearch: _onSearch),
-                  ),
+                  SizedBox(width: 280, child: searchBox),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: CoursesList(courses: courses),
-                  ),
+                  Expanded(child: coursesList),
                 ],
-            )
-          : Column(
-              children: [
-                SearchBox(onSearch: _onSearch,),
-                const SizedBox(height: 16),
-                Expanded(child: CoursesList(courses: courses)),
-              ],
-          ),
+              )
+            : Column(
+                children: [
+                  searchBox,
+                  const SizedBox(height: 16),
+                  Expanded(child: coursesList),
+                ],
+              ),
       ),
     );
   }
 }
 
-class CoursesList extends StatelessWidget {
-  const CoursesList({
-    super.key,
-    required this.courses,
-    this.limit,
-    this.onRefresh
-  });
-
+class CoursesList extends StatefulWidget {
   final List<Map<String, dynamic>> courses;
   final int? limit;
-  final VoidCallback? onRefresh;
+
+  const CoursesList({super.key, required this.courses, this.limit});
 
   @override
+  State<CoursesList> createState() => _CoursesListState();
+}
+
+class _CoursesListState extends State<CoursesList> {
+  @override
   Widget build(BuildContext context) {
-    final displayCourses = (courses).take(limit ?? courses.length).toList();
+    final displayCourses = widget.courses
+        .take(widget.limit ?? widget.courses.length)
+        .toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -100,13 +119,12 @@ class CoursesList extends StatelessWidget {
           crossAxisCount = 4;
         } else if (constraints.maxWidth > 800) {
           crossAxisCount = 3;
-        }
-        else if (constraints.maxWidth > 500) {
+        } else if (constraints.maxWidth > 500) {
           crossAxisCount = 2;
         }
 
-        double cardWidth = (constraints.maxWidth - 16 * (crossAxisCount - 1)) / crossAxisCount;
-
+        double cardWidth =
+            (constraints.maxWidth - 16 * (crossAxisCount - 1)) / crossAxisCount;
         double estimatedCardHeight = 500;
         double childAspectRatio = cardWidth / estimatedCardHeight;
 
@@ -124,7 +142,10 @@ class CoursesList extends StatelessWidget {
                 childAspectRatio: childAspectRatio,
               ),
               itemBuilder: (context, index) {
-                return CourseCard(singleCourse: displayCourses[index]);
+                return CourseCard(
+                  singleCourse: displayCourses[index],
+                  onRefresh: () => setState(() {}),
+                );
               },
             ),
           ),
@@ -135,20 +156,16 @@ class CoursesList extends StatelessWidget {
 }
 
 class CourseCard extends StatelessWidget {
-  const CourseCard({
-    super.key,
-    required this.singleCourse,
-    this.onRefresh
-  });
+  const CourseCard({super.key, required this.singleCourse, this.onRefresh});
 
-  final Map<String,dynamic> singleCourse;
+  final Map<String, dynamic> singleCourse;
   final VoidCallback? onRefresh;
 
   @override
   Widget build(BuildContext context) {
     final TextStyle detailStyle = TextStyle(
-        color: Colors.blueGrey,
-        fontSize: 14
+      color: Colors.blueGrey,
+      fontSize: 14,
     );
     final startTime = singleCourse['start_time'];
     final endTime = singleCourse['end_time'];
@@ -158,36 +175,31 @@ class CourseCard extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-              child:  imgUrl == null || imgUrl.isEmpty
-                  ? const Icon(Icons.image_not_supported, size: 120,)
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
+              child: imgUrl == null || imgUrl.isEmpty
+                  ? const Icon(Icons.image_not_supported, size: 120)
                   : Image.network(
                       imgUrl,
                       height: 120,
                       width: double.infinity,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
-                        const Icon(
-                          Icons.image_not_supported,
-                        ),
-                  ),
+                          const Icon(Icons.image_not_supported),
+                    ),
             ),
             Text(
               singleCourse['title'] ?? '',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 30,),
+            SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
               child: Column(
@@ -196,60 +208,58 @@ class CourseCard extends StatelessWidget {
                 children: [
                   const SizedBox(height: 6),
                   Text(
-                      '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
-                      style: detailStyle
+                    '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
+                    style: detailStyle,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                      '${AppTexts.crsType}: ${singleCourse['delivery_type'] ?? ''}',
-                      style: detailStyle
+                    '${AppTexts.crsType}: ${singleCourse['delivery_type'] ?? ''}',
+                    style: detailStyle,
                   ),
                   const SizedBox(height: 6),
                   SizedBox(
                     height: 22,
-                    child:
-                    singleCourse['hall_title'] == null
+                    child: singleCourse['hall_title'] == null
                         ? const SizedBox.shrink()
                         : Text(
-                      '${AppTexts.hostHall}: ${singleCourse['hall_title']}',
-                      style: detailStyle,
-                    ),
+                            '${AppTexts.hostHall}: ${singleCourse['hall_title']}',
+                            style: detailStyle,
+                          ),
                   ),
                   const SizedBox(height: 6),
                   SizedBox(
                     height: 22,
-                    child:
-                    singleCourse['capacity'] == null
+                    child: singleCourse['capacity'] == null
                         ? const SizedBox.shrink()
                         : Text(
-                        '${AppTexts.capacity}: ${singleCourse['capacity'] ?? ''} نفر',
-                        style: detailStyle
-                    ),
+                            '${AppTexts.capacity}: ${singleCourse['capacity'] ?? ''} نفر',
+                            style: detailStyle,
+                          ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     '${AppTexts.registrationFee}: '
-                        '${formatPrice(singleCourse['cost'] ?? 0)}',
+                    '${formatPrice(singleCourse['cost'] ?? 0)}',
                     style: detailStyle,
                   ),
                   const SizedBox(height: 6),
                   Text(
                     '${AppTexts.holdingDate} : '
-                        '${AppTexts.day} ${getPersianWeekday(startTime)} - '
-                        '${getPersianDate(startTime ?? '')}',
+                    '${AppTexts.day} ${getPersianWeekday(startTime)} - '
+                    '${getPersianDate(startTime ?? '')}',
                     style: detailStyle,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                      '${AppTexts.startTime} : '
-                          '${getPersianTime(startTime ?? '')}',
-                      style: detailStyle
+                    '${AppTexts.startTime} : '
+                    '${getPersianTime(startTime ?? '')}',
+                    style: detailStyle,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                      '${AppTexts.endTime} : '
-                          '${getPersianTime(endTime ?? '')}',
-                      style: detailStyle
+                    '${AppTexts.endTime} : '
+                    '${getPersianTime(endTime ?? '')}',
+                    style: detailStyle,
                   ),
                 ],
               ),
@@ -263,7 +273,7 @@ class CourseCard extends StatelessWidget {
                 child: Center(
                   child: RegisterButton(
                     courseId: singleCourse['id'],
-                    onRefresh: onRefresh ?? (){},
+                    onRefresh: onRefresh ?? () {},
                     isInBasket: singleCourse['status'] == 'in_basket',
                   ),
                 ),
@@ -287,6 +297,7 @@ class RegisterButton extends StatelessWidget {
   final int courseId;
   final bool isInBasket;
   final VoidCallback onRefresh;
+
   @override
   Widget build(BuildContext context) {
     final coursesService = CoursesService();
@@ -294,23 +305,21 @@ class RegisterButton extends StatelessWidget {
       onPressed: () async {
         isInBasket
             ? await coursesService.deleteCourseFromBasket(context, courseId)
-            : await coursesService.addShoppingBasket(context, courseId)
-        ;
+            : await coursesService.addShoppingBasket(context, courseId);
         onRefresh();
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isInBasket ?  Colors.redAccent : Colors.deepPurple,
+        backgroundColor: isInBasket ? Colors.redAccent : Colors.deepPurple,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0))
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            isInBasket ? AppTexts.removeFromBasket
-                : AppTexts.addingToBasket,
-            style: TextStyle(color: Colors.white)
+            isInBasket ? AppTexts.removeFromBasket : AppTexts.addingToBasket,
+            style: TextStyle(color: Colors.white),
           ),
           // Icon(Icons.add_circle, color: Colors.white),
         ],
