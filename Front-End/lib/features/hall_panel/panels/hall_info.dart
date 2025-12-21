@@ -1,5 +1,6 @@
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/widgets/comment_box.dart';
+import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/hall_service.dart';
 import 'package:conference_system/server/services/amenities_service.dart';
@@ -108,6 +109,7 @@ class _HallInfoBoxState extends State<HallInfoBox> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
+            color: Colors.white,
             child: Column(
               textDirection: TextDirection.rtl,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -239,6 +241,7 @@ class MainContent extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
+            color: Colors.white,
             child: Column(
               textDirection: TextDirection.rtl,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -253,7 +256,7 @@ class MainContent extends StatelessWidget {
                     children: [
                       Center(
                         child: Text(
-                          '${AppTexts.description} :',
+                          hall['title'],
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.deepPurple,
@@ -316,6 +319,7 @@ class Amenities extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -417,11 +421,10 @@ class _HCommentsState extends State<HComments> {
             : double.infinity,
         child: Card(
           elevation: 4,
+          color: Colors.white,
           child: Column(
             children: [
               const SizedBox(height: 10),
-
-              /// ------------------ INPUT BOX ------------------
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: CommentBox(
@@ -449,7 +452,6 @@ class _HCommentsState extends State<HComments> {
               ),
               const SizedBox(height: 10),
 
-              /// ------------------ COMMENTS LIST ------------------
               SizedBox(
                 height: 350,
                 child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -464,7 +466,10 @@ class _HCommentsState extends State<HComments> {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text(AppTexts.noComments));
+                      return NoDataWidget(
+                        title: AppTexts.noComments,
+                        icon: Icons.comment_bank_outlined,
+                      );
                     }
 
                     final comments = snapshot.data!;
@@ -572,6 +577,7 @@ class _HCommentsState extends State<HComments> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          color: Colors.white,
                           child: Padding(
                             padding: const EdgeInsets.all(12),
                             child: isDesktop

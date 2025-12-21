@@ -93,7 +93,7 @@ class _SearchBoxState extends State<SearchBox> {
                       icon: Icon(
                           isExpanded
                             ? Icons.expand_more_outlined
-                            : Icons.expand_less_outlined
+                            : Icons.expand_less_outlined,
                       ),
                     ),
                   ]
@@ -101,7 +101,6 @@ class _SearchBoxState extends State<SearchBox> {
 
                 if(isExpanded) ... [
                   Divider(thickness: 0.75),
-                  Text(': فیلتر ها'),
                   CustomDropdownField(
                       labelText: AppTexts.deliveryType,
                       items: [AppTexts.inPerson, AppTexts.online],

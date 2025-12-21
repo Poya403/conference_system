@@ -74,6 +74,10 @@ class AppTexts {
   static const String optional = 'اختیاری';
   static const String budget = 'بودجه';
   static const String getBestHalls = 'انتخاب هوشمند سالن';
+  static const String maxPrice = 'حداکثر قیمت';
+  static const String minPrice = 'حداقل قیمت';
+  static const String minCapacity = 'حداقل ظرفیت';
+  static const String maxCapacity = 'حداکثر ظرفیت';
   // amenities
   static const String amenities = 'امکانات';
   //comments
@@ -83,9 +87,4 @@ class AppTexts {
   static const String supportedEvents  = 'رویداد های پشتیبانی شده';
 
   static const String search = 'جستجو';
-
-  static const String maxPrice = 'حداکثر قیمت';
-  static const String minPrice = 'حداقل قیمت';
-  static const String minCapacity = 'حداقل ظرفیت';
-  static const String maxCapacity = 'حداکثر ظرفیت';
 }

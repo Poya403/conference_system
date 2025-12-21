@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
 
 class NoDataWidget extends StatelessWidget {
-  const NoDataWidget({super.key});
+  const NoDataWidget({
+    super.key,
+    this.title,
+    this.icon
+  });
+
+  final String? title;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +20,13 @@ class NoDataWidget extends StatelessWidget {
         spacing: 5,
         children: [
           Icon(
-            Icons.inbox_outlined,
+            icon ?? Icons.inbox_outlined,
             size: 64,
             color: Colors.grey,
           ),
           SizedBox(height: 12),
           Text(
-            AppTexts.noData,
+            title ?? AppTexts.noData,
             style: TextStyle(color: Colors.grey,fontSize: 17),
           ),
         ],
