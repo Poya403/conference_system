@@ -40,7 +40,7 @@ class CustomDropdownField extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: Colors.grey),
               ),
               child: SizedBox(

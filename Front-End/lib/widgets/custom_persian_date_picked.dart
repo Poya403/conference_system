@@ -108,7 +108,7 @@ class _CustomPersianDateFieldState extends State<CustomPersianDateField> {
                         hintText: 'انتخاب کنید',
                         hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
                         ),
                       ),
                       keyboardType: widget.keyboardType,

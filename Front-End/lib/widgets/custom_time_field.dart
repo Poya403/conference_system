@@ -65,7 +65,7 @@ class _CustomTimeFieldState extends State<CustomTimeField> {
                     textDirection: TextDirection.rtl,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                       suffixIcon: const Icon(Icons.access_time),
                       hintText: 'انتخاب کنید',

@@ -69,7 +69,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                   fontSize: 13
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
                 suffixIcon: widget.suffixIcon,
                 prefixIcon: widget.prefixIcon,
