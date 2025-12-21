@@ -4,6 +4,7 @@ import 'package:conference_system/main_wrapper.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/features/hall_panel/hall_screen.dart';
+import 'package:conference_system/server/services/courses_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,23 +14,52 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final coursesService = CoursesService();
+  List<Map<String, dynamic>> allCourses = [];
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCourses();
+  }
+
+  Future<void> _loadCourses() async {
+    setState(() => loading = true);
+    final result = await coursesService.getCoursesList();
+
+    setState(() {
+      allCourses = result;
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          SizedBox(height: 30),
-          Expanded(child: isDesktop ? Wide() : Narrow()),
-        ],
-      ),
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: <Widget>[
+                SizedBox(height: 30),
+                Expanded(
+                  child: isDesktop
+                      ? Wide(courses: allCourses)
+                      : Narrow(courses: allCourses),
+                ),
+              ],
+            ),
     );
   }
 }
 
 class Wide extends StatelessWidget {
-  const Wide({super.key});
-
+  const Wide({
+    required this.courses,
+    super.key
+  });
+  final List<Map<String, dynamic>> courses;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -64,7 +94,7 @@ class Wide extends StatelessWidget {
                       fontSize: 35,
                     ),
                   ),
-                  CoursesList(limit: 5),
+                  CoursesList(limit: 4, courses: courses),
                   SizedBox(height: 50),
                   ShowMoreButton(currentPageType: PageType.courses),
                 ],
@@ -78,8 +108,9 @@ class Wide extends StatelessWidget {
 }
 
 class Narrow extends StatelessWidget {
-  const Narrow({super.key});
+  const Narrow({super.key, required this.courses});
 
+  final List<Map<String,dynamic>> courses;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -114,7 +145,7 @@ class Narrow extends StatelessWidget {
                       fontSize: 35,
                     ),
                   ),
-                  CoursesList(limit: 5),
+                  CoursesList(limit: 4, courses: courses),
                   SizedBox(height: 50),
                   ShowMoreButton(currentPageType: PageType.courses),
                 ],

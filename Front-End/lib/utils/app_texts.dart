@@ -81,4 +81,9 @@ class AppTexts {
   static const String noComments = 'نظری ثبت نشده است';
 
   static const String supportedEvents  = 'رویداد های پشتیبانی شده';
+
+  static const String search = 'جستجو';
+
+  static const String maxPrice = 'حداکثر قیمت';
+  static const String minPrice = 'حداقل قیمت';
 }

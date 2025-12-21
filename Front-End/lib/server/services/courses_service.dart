@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/utils/translator.dart';
+import 'package:conference_system/models/course_filter.dart';
 
 class CoursesService{
   final SupabaseClient supabase = Supabase.instance.client;
@@ -236,4 +237,24 @@ class CoursesService{
         .map((e) => Map<String, dynamic>.from(e as Map))
         .toList();
   }
+
+  Future<List<Map<String, dynamic>>> searchCourse(CourseFilter filter) async {
+    try {
+      final response = await supabase
+          .rpc('get_unregistered_courses',
+        params: {
+          'p_search': filter.search,
+          'p_hid': filter.hid,
+          'p_min_cost': filter.minPrice ?? 0,
+          'p_max_cost': filter.maxPrice ?? 1000000,
+        },
+      ).select();
+
+      return List<Map<String, dynamic>>.from(response as List);
+    } catch (e) {
+      print("Error in searchCourse: $e");
+      return [];
+    }
+  }
+
 }

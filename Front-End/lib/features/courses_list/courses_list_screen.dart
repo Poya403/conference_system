@@ -1,10 +1,10 @@
 import 'package:conference_system/utils/format_price.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'dart:math' as math;
 import 'package:conference_system/utils/date_converter.dart';
+import 'package:conference_system/features/courses_list/panels/search_box.dart';
+import 'package:conference_system/models/course_filter.dart';
 
 class CoursesListScreen extends StatefulWidget {
   const CoursesListScreen({super.key});
@@ -14,221 +14,264 @@ class CoursesListScreen extends StatefulWidget {
 }
 
 class _CoursesListScreenState extends State<CoursesListScreen> {
+  final coursesService = CoursesService();
+  List<Map<String, dynamic>> courses = [];
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllCourses();
+  }
+
+  Future<void> _loadAllCourses() async {
+    setState(() => loading = true);
+    final result = await coursesService.getCoursesList();
+    setState(() {
+      courses = result;
+      loading = false;
+    });
+  }
+
+  void _onSearch(CourseFilter filter) async {
+    setState(() => loading = true);
+    final result = await coursesService.searchCourse(filter);
+    setState(() {
+      courses = result;
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width > 900;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 50),
-              CoursesList(),
-              SizedBox(height: 30),
-            ],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: loading
+          ? const Center(child: CircularProgressIndicator())
+          : isDesktop
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 280,
+                    child: SearchBox(onSearch: _onSearch),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CoursesList(courses: courses),
+                  ),
+                ],
+            )
+          : Column(
+              children: [
+                SearchBox(onSearch: _onSearch,),
+                const SizedBox(height: 16),
+                Expanded(child: CoursesList(courses: courses)),
+              ],
           ),
-        ),
       ),
     );
   }
 }
 
-class CoursesList extends StatefulWidget {
+class CoursesList extends StatelessWidget {
+  const CoursesList({
+    super.key,
+    required this.courses,
+    this.limit,
+    this.onRefresh
+  });
+
+  final List<Map<String, dynamic>> courses;
   final int? limit;
+  final VoidCallback? onRefresh;
 
-  const CoursesList({super.key, this.limit});
-
-  @override
-  State<CoursesList> createState() => _CoursesListState();
-}
-
-class _CoursesListState extends State<CoursesList> {
-  void _refreshPage(){
-    setState(() {});
-  }
   @override
   Widget build(BuildContext context) {
-    final bool isDesktop = MediaQuery.of(context).size.width > 800;
-    final coursesService = CoursesService();
+    final displayCourses = (courses ?? []).take(limit ?? courses.length).toList();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount = 1;
+        if (constraints.maxWidth > 1200) {
+          crossAxisCount = 4;
+        } else if (constraints.maxWidth > 800) {
+          crossAxisCount = 3;
+        }
+        else if (constraints.maxWidth > 500) {
+          crossAxisCount = 2;
+        };
+
+        double cardWidth = (constraints.maxWidth - 16 * (crossAxisCount - 1)) / crossAxisCount;
+
+        double estimatedCardHeight = 500;
+        double childAspectRatio = cardWidth / estimatedCardHeight;
+
+        return SingleChildScrollView(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: courses.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemBuilder: (context, index) {
+                return CourseCard(singleCourse: displayCourses[index]);
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CourseCard extends StatelessWidget {
+  const CourseCard({
+    super.key,
+    required this.singleCourse,
+    this.onRefresh
+  });
+
+  final Map<String,dynamic> singleCourse;
+  final VoidCallback? onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
     final TextStyle detailStyle = TextStyle(
         color: Colors.blueGrey,
         fontSize: 14
     );
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: coursesService.getCoursesList(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text(AppTexts.noData);
-        } else {
-          final courses = snapshot.data!;
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              int crossAxisCount = 1;
-              if (constraints.maxWidth > 1200) {
-                crossAxisCount = 4;
-              } else if (constraints.maxWidth > 800) {
-                crossAxisCount = 3;
-              } else if (constraints.maxWidth > 500) {
-                crossAxisCount = 2;
-              } else {
-                crossAxisCount = 1;
-              }
+    final startTime = singleCourse['start_time'];
+    final endTime = singleCourse['end_time'];
+    final imgUrl = singleCourse['img_url'];
 
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.limit == null
-                          ? courses.length
-                          : math.min(widget.limit ?? 0, courses.length),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              child:  imgUrl == null || imgUrl.isEmpty
+                  ? const Icon(Icons.image_not_supported, size: 120,)
+                  : Image.network(
+                      imgUrl,
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                        const Icon(
+                          Icons.image_not_supported,
+                        ),
+                  ),
+            ),
+            Text(
+              singleCourse['title'] ?? '',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
 
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: isDesktop ? 0.7 : 1,
-                      ),
-                      itemBuilder: (context, index) {
-                        final singleCourse = courses[index];
-                        final startTime = singleCourse['start_time'];
-                        final endTime = singleCourse['end_time'];
-                        final imgUrl = singleCourse['img_url'];
-
-                        return Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(15),
-                                ),
-                                child:  imgUrl == null || imgUrl.isEmpty
-                                    ? const Icon(Icons.image_not_supported)
-                                    : Image.network(
-                                  imgUrl,
-                                  height: 120,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (context, error, stackTrace) =>
-                                  const Icon(
-                                    Icons.image_not_supported,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                singleCourse['title'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              SizedBox(height: 30,),
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 6),
-                                      Text(
-                                          '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
-                                          style: detailStyle
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                          '${AppTexts.crsType}: ${singleCourse['delivery_type'] ?? ''}',
-                                          style: detailStyle
-                                      ),
-                                      const SizedBox(height: 6),
-                                      SizedBox(
-                                        height: 22,
-                                        child:
-                                        singleCourse['hall_title'] == null
-                                            ? const SizedBox.shrink()
-                                            : Text(
-                                          '${AppTexts.hostHall}: ${singleCourse['hall_title']}',
-                                          style: detailStyle,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      SizedBox(
-                                        height: 22,
-                                        child:
-                                        singleCourse['capacity'] == null
-                                            ? const SizedBox.shrink()
-                                            : Text(
-                                            '${AppTexts.capacity}: ${singleCourse['capacity'] ?? ''} نفر',
-                                            style: detailStyle
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.registrationFee}: '
-                                            '${formatPrice(singleCourse['cost'] ?? 0)}',
-                                        style: detailStyle,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.holdingDate} : '
-                                            '${AppTexts.day} ${getPersianWeekday(startTime)} - '
-                                            '${getPersianDate(startTime ?? '')}',
-                                        style: detailStyle,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.startTime} : '
-                                            '${getPersianTime(startTime)}',
-                                        style: detailStyle
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${AppTexts.endTime} : '
-                                            '${getPersianTime(endTime)}',
-                                        style: detailStyle
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: SizedBox(
-                                  width: 160,
-                                  height: 40,
-                                  child: Center(
-                                    child: RegisterButton(
-                                      courseId: singleCourse['id'],
-                                      onRefresh: _refreshPage,
-                                      isInBasket: singleCourse['status'] == 'in_basket',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+            SizedBox(height: 30,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 6),
+                  Text(
+                      '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
+                      style: detailStyle
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                      '${AppTexts.crsType}: ${singleCourse['delivery_type'] ?? ''}',
+                      style: detailStyle
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: 22,
+                    child:
+                    singleCourse['hall_title'] == null
+                        ? const SizedBox.shrink()
+                        : Text(
+                      '${AppTexts.hostHall}: ${singleCourse['hall_title']}',
+                      style: detailStyle,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: 22,
+                    child:
+                    singleCourse['capacity'] == null
+                        ? const SizedBox.shrink()
+                        : Text(
+                        '${AppTexts.capacity}: ${singleCourse['capacity'] ?? ''} نفر',
+                        style: detailStyle
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${AppTexts.registrationFee}: '
+                        '${formatPrice(singleCourse['cost'] ?? 0)}',
+                    style: detailStyle,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${AppTexts.holdingDate} : '
+                        '${AppTexts.day} ${getPersianWeekday(startTime)} - '
+                        '${getPersianDate(startTime ?? '')}',
+                    style: detailStyle,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                      '${AppTexts.startTime} : '
+                          '${getPersianTime(startTime ?? '')}',
+                      style: detailStyle
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                      '${AppTexts.endTime} : '
+                          '${getPersianTime(endTime ?? '')}',
+                      style: detailStyle
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: SizedBox(
+                width: 160,
+                height: 40,
+                child: Center(
+                  child: RegisterButton(
+                    courseId: singleCourse['id'],
+                    onRefresh: onRefresh ?? (){},
+                    isInBasket: singleCourse['status'] == 'in_basket',
+                  ),
                 ),
-              );
-            },
-          );
-        }
-      },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
