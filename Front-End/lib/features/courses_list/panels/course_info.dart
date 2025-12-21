@@ -2,8 +2,7 @@ import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/widgets/comment_box.dart';
 import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:conference_system/server/services/hall_service.dart';
-import 'package:conference_system/server/services/amenities_service.dart';
+import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/server/services/comments_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,24 +16,24 @@ class CourseInfoScreen extends StatefulWidget {
 }
 
 class _CourseInfoScreenState extends State<CourseInfoScreen> {
+  final courseService = CoursesService();
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery
         .of(context)
         .size
         .width > 800;
-    final hallService = HallService();
     return FutureBuilder<Map<String, dynamic>?>(
-      future: hallService.getSingleHall(widget.cid),
+      future: courseService.getSingleCourse(widget.cid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text(AppTexts.noData);
+          return NoDataWidget();
         } else {
-          final hall = snapshot.data!;
+          final course = snapshot.data!;
 
           return Container(
             child: isDesktop
@@ -48,16 +47,15 @@ class _CourseInfoScreenState extends State<CourseInfoScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     textDirection: TextDirection.rtl,
                     children: [
-                      HallInfoBox(hall: hall),
-                      Amenities(hid: hall['id']),
+                      CourseInfoBox(course: course),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     textDirection: TextDirection.rtl,
                     children: [
-                      MainContent(hall: hall),
-                      HComments(hid: hall['id']),
+                      MainContent(course: course),
+                      CComments(cid: course['id']),
                     ],
                   ),
                 ],
@@ -67,10 +65,9 @@ class _CourseInfoScreenState extends State<CourseInfoScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               textDirection: TextDirection.rtl,
               children: [
-                HallInfoBox(hall: hall),
-                Amenities(hid: hall['id']),
-                MainContent(hall: hall),
-                HComments(hid: hall['id']),
+                CourseInfoBox(course: course),
+                MainContent(course: course),
+                CComments(cid: course['id']),
               ],
             ),
           );
@@ -80,19 +77,27 @@ class _CourseInfoScreenState extends State<CourseInfoScreen> {
   }
 }
 
-class HallInfoBox extends StatefulWidget {
-  const HallInfoBox({super.key, required this.hall});
+class CourseInfoBox extends StatefulWidget {
+  const CourseInfoBox({super.key, required this.course});
 
-  final Map<String, dynamic> hall;
+  final Map<String, dynamic> course;
 
   @override
-  State<HallInfoBox> createState() => _HallInfoBoxState();
+  State<CourseInfoBox> createState() => _CourseInfoBoxState();
 }
 
-class _HallInfoBoxState extends State<HallInfoBox> {
+class _CourseInfoBoxState extends State<CourseInfoBox> {
+  final detailStyle = const TextStyle(
+    fontSize: 14,
+    color: Colors.blueGrey,
+    fontFamily: 'Farsi',
+  );
+
   @override
   Widget build(BuildContext context) {
-    final imgUrl = widget.hall['img_url'];
+    final imgUrl = widget.course['img_url'];
+    final startTime = widget.course['start_time'];
+    final endTime = widget.course['end_time'];
     bool isDesktop = MediaQuery
         .of(context)
         .size
@@ -120,7 +125,7 @@ class _HallInfoBoxState extends State<HallInfoBox> {
                     top: Radius.circular(15),
                   ),
                   child: imgUrl == null || imgUrl.isEmpty
-                      ? const Icon(Icons.image_not_supported)
+                      ? Center(child: const Icon(Icons.image_not_supported))
                       : Image.network(
                           imgUrl,
                           height: 120,
@@ -128,8 +133,10 @@ class _HallInfoBoxState extends State<HallInfoBox> {
                           fit: BoxFit.cover,
                           errorBuilder:
                               (context, error, stackTrace) =>
-                          const Icon(
-                            Icons.image_not_supported,
+                          Center(
+                            child: const Icon(
+                              Icons.image_not_supported,
+                            ),
                           ),
                         ),
                 ),
@@ -137,7 +144,7 @@ class _HallInfoBoxState extends State<HallInfoBox> {
                 Center(
                   child: SelectableText(
                     textAlign: TextAlign.center,
-                    widget.hall['title'],
+                    widget.course['title'],
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -147,62 +154,43 @@ class _HallInfoBoxState extends State<HallInfoBox> {
                   ),
                 ),
                 Divider(thickness: 0.75),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontFamily: 'Farsi',
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SelectableText(
-                          '${AppTexts.capacity} : ${widget.hall['capacity'] ??
-                              ''} نفر ',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        SelectableText(
-                          '${AppTexts.city} : ${widget.hall['city'] ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        SelectableText(
-                          '${AppTexts.area} : ${widget.hall['area'] ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        SelectableText(
-                          '${AppTexts.address} : ${widget.hall['address'] ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        SelectableText(
-                          textDirection: TextDirection.ltr,
-                          '${AppTexts
-                              .phoneNumber} : \u200E${widget.hall['phone_number'] ??
-                              'ٍثبت نشده'}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ],
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    spacing: 6,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SelectableText(
+                        '${AppTexts.price} : ${widget.course['cost'] ?? 'رایگان'} تومان ',
+                        style: detailStyle
+                      ),
+                      SelectableText(
+                        '${AppTexts.deliveryType} : ${widget.course['delivery_type'] ?? ''}',
+                        style: detailStyle
+                      ),
+                      SelectableText(
+                        '${AppTexts.registrants} : ${widget.course['registrants'] ?? ''}',
+                        style: detailStyle
+                      ),
+                      SelectableText(
+                        textDirection: TextDirection.ltr,
+                        '${AppTexts.phoneNumber} '
+                            ': \u200E${widget.course['phone_number'] ??
+                            'ٍثبت نشده'}',
+                        style: detailStyle
+                      ),
+                      Text(
+                        '${AppTexts.startTime} : '
+                            '${getPersianTime(startTime ?? '')}',
+                        style: detailStyle,
+                      ),
+                      Text(
+                        '${AppTexts.endTime} : '
+                            '${getPersianTime(endTime ?? '')}',
+                        style: detailStyle,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -215,9 +203,9 @@ class _HallInfoBoxState extends State<HallInfoBox> {
 }
 
 class MainContent extends StatelessWidget {
-  const MainContent({super.key, required this.hall});
+  const MainContent({super.key, required this.course});
 
-  final Map<String, dynamic> hall;
+  final Map<String, dynamic> course;
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +244,7 @@ class MainContent extends StatelessWidget {
                     children: [
                       Center(
                         child: Text(
-                          hall['title'],
+                          course['title'],
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.deepPurple,
@@ -265,7 +253,7 @@ class MainContent extends StatelessWidget {
                       ),
                       Divider(thickness: 0.75),
                       SelectableText(
-                        hall['description'] ?? '',
+                        course['description'] ?? '',
                         style: const TextStyle(
                           fontSize: 15,
                           color: Colors.black,
@@ -284,103 +272,15 @@ class MainContent extends StatelessWidget {
   }
 }
 
-class Amenities extends StatelessWidget {
-  const Amenities({super.key, required this.hid});
-
-  final int hid;
-
-  @override
-  Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery
-        .of(context)
-        .size
-        .width > 800;
-    final amenitiesService = AmenitiesService();
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: amenitiesService.getHallAmenities(hid),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text(AppTexts.noData);
-        } else {
-          final amenities = snapshot.data!;
-
-          return Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: SizedBox(
-                width: isDesktop ? 300 : 800,
-                child: Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppTexts.amenities,
-                          style: const TextStyle(
-                            color: Colors.deepPurple,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: amenities.map((amenity) {
-                            final name = amenity['amenities']['name'] ?? '';
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 6,
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.shade50,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                name,
-                                style: const TextStyle(
-                                  color: Colors.deepPurple,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-      },
-    );
-  }
-}
-
-class HComments extends StatefulWidget {
-  const HComments({super.key, required this.hid});
-
-  final int hid;
+class CComments extends StatefulWidget {
+  const CComments({super.key, required this.cid});
+  final int cid;
 
   @override
-  State<HComments> createState() => _HCommentsState();
+  State<CComments> createState() => _CCommentsState();
 }
 
-class _HCommentsState extends State<HComments> {
+class _CCommentsState extends State<CComments> {
   final commentsService = CommentsService();
   final textController = TextEditingController();
   final textEditController = TextEditingController();
@@ -393,7 +293,7 @@ class _HCommentsState extends State<HComments> {
   @override
   void initState() {
     super.initState();
-    futureComments = commentsService.getHallComments(widget.hid);
+    futureComments = commentsService.getComments(cid: widget.cid);
   }
 
   @override
@@ -405,7 +305,7 @@ class _HCommentsState extends State<HComments> {
 
   void reloadComments() {
     setState(() {
-      futureComments = commentsService.getHallComments(widget.hid);
+      futureComments = commentsService.getComments(cid: widget.cid);
     });
   }
 
@@ -441,8 +341,8 @@ class _HCommentsState extends State<HComments> {
 
                     await commentsService.sendComment(
                       context,
-                      widget.hid,
-                      textController.text.trim(),
+                      cid: widget.cid,
+                      text: textController.text.trim(),
                     );
 
                     textController.clear();
@@ -540,8 +440,8 @@ class _HCommentsState extends State<HComments> {
                           suffixOnPressed: () async {
                             await commentsService.updateComment(
                               context,
-                              comment['id'],
-                              textEditController.text.trim(),
+                              commentId: comment['id'],
+                              text: textEditController.text.trim(),
                             );
 
                             setState(() => editingCommentId = null);

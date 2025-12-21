@@ -6,23 +6,35 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class CommentsService{
   SupabaseClient supabase = Supabase.instance.client;
 
-  Future<List<Map<String,dynamic>>> getHallComments(int hid) async {
+  Future<List<Map<String,dynamic>>> getComments({int? hid, int? cid}) async {
     try {
-      final response = await supabase
+      if (hid == null && cid == null) {
+        throw Exception('Either hid or cid must be provided');
+      }
+
+      var query = supabase
           .from('comments')
           .select('''
             id,
             created_at,
             uid,
             hid,
+            cid,
             text,
             score,
             profiles(
               id,
               fullname
             )
-          ''')
-          .eq('hid', hid);
+          ''');
+      
+      if(hid != null){
+        query = query.eq('hid', hid);
+      } else if(cid != null) {
+        query = query.eq('cid', cid);
+      }
+      final response = await query;
+
       return List<Map<String,dynamic>>.from(response);
     } catch(e) {
       print('${AppTexts.error} : $e}');
@@ -30,65 +42,90 @@ class CommentsService{
     }
   }
 
-  Future<void> sendComment(BuildContext context, int hid, String text, {String? score}) async{
+  Future<void> sendComment(
+      BuildContext context, {
+        int? hid,
+        int? cid,
+        required String text,
+        int? score,
+      }) async {
     final uid = supabase.auth.currentUser!.id;
-    try {
-      await supabase.
-          from('comments')
-          .insert({
-            'text' : text,
-            'hid' : hid,
-            'uid' : uid,
-            'score' : score ?? 0
-          });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('کامنت شما با موفقیت ثبت شد.'))
-      );
-    } catch (e){
-      final message = errorTranslator(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppTexts.error} ${message}'))
-      );
+    if (hid == null && cid == null) {
+      throw Exception('hid or cid must be provided');
     }
-  }
 
-  Future<void> deleteComment(BuildContext context, int commentId) async{
-    final uid = supabase.auth.currentUser!.id;
     try {
-      await supabase.
-        from('comments')
-            .delete()
-            .eq('id', commentId)
-            .eq('uid', uid)
-      ;
+      final data = <String, dynamic>{
+        'text': text,
+        'uid': uid,
+        'score': score ?? 0,
+      };
+
+      if (hid != null) data['hid'] = hid;
+      if (cid != null) data['cid'] = cid;
+
+      await supabase.from('comments').insert(data);
 
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('کامنت شما با موفقیت حذف شد.'))
+        const SnackBar(content: Text('کامنت شما با موفقیت ثبت شد')),
       );
-    } catch (e){
-      final message = errorTranslator(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppTexts.error} ${message}'))
-      );
-    }
-  }
-
-  Future<void> updateComment(BuildContext context, int cid, String text) async {
-    SupabaseClient supabase = Supabase.instance.client;
-    final uid = supabase.auth.currentUser!.id;
-    try {
-      await supabase
-          .from('comments')
-          .update({'text' : text})
-          .eq('id', cid)
-          .eq('uid', uid);
-
     } catch (e) {
       final message = errorTranslator(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppTexts.error} ${message}'))
+        SnackBar(content: Text('${AppTexts.error} $message')),
       );
     }
   }
+
+  Future<void> deleteComment(BuildContext context, int commentId) async {
+    final uid = supabase.auth.currentUser!.id;
+
+    try {
+      await supabase
+          .from('comments')
+          .delete()
+          .eq('id', commentId)
+          .eq('uid', uid);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('کامنت شما با موفقیت حذف شد')),
+      );
+    } catch (e) {
+      final message = errorTranslator(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.error} $message')),
+      );
+    }
+  }
+
+  Future<void> updateComment(
+      BuildContext context, {
+        required int commentId,
+        required String text,
+        int? score,
+      }) async {
+    final uid = supabase.auth.currentUser!.id;
+
+    try {
+      final data = <String, dynamic>{'text': text};
+      if (score != null) data['score'] = score;
+
+      await supabase
+          .from('comments')
+          .update(data)
+          .eq('id', commentId)
+          .eq('uid', uid);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('کامنت شما با موفقیت ویرایش شد')),
+      );
+    } catch (e) {
+      final message = errorTranslator(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppTexts.error} $message')),
+      );
+    }
+  }
+
 }

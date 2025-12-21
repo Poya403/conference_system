@@ -1,12 +1,16 @@
+import 'package:conference_system/features/courses_list/panels/course_info.dart';
 import 'package:conference_system/utils/format_price.dart';
 import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/courses_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'package:conference_system/utils/date_converter.dart';
 import 'package:conference_system/features/courses_list/panels/search_box.dart';
 import 'package:conference_system/models/course_filter.dart';
-// import 'package:conference_system/features/courses_list/panels/course_info.dart';
+
+enum CrsPageType {
+  coursesList,
+  courseInfo,
+}
 
 class CoursesListScreen extends StatefulWidget {
   const CoursesListScreen({super.key});
@@ -19,26 +23,58 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
   final coursesService = CoursesService();
   final ValueNotifier<List<Map<String, dynamic>>> coursesNotifier = ValueNotifier([]);
   final ValueNotifier<bool> loadingNotifier = ValueNotifier(false);
-  // late Widget currentPage;
+  late Widget coursesListPage;
+  CrsPageType _currentPageType = CrsPageType.coursesList;
+  int? _selectedCourseId;
 
   @override
   void initState() {
     super.initState();
     _loadAllCourses();
+
+    coursesListPage = ValueListenableBuilder<bool>(
+      valueListenable: loadingNotifier,
+      builder: (context, loading, _) {
+        if (loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return ValueListenableBuilder<List<Map<String, dynamic>>>(
+          valueListenable: coursesNotifier,
+          builder: (context, courses, _) {
+            if (courses.isEmpty) {
+              return NoDataWidget();
+            }
+            return CoursesList(
+              courses: courses,
+              onRefresh: _loadAllCourses,
+              onChangedPage: onChangedPage,
+            );
+          },
+        );
+      },
+    );
   }
 
-  // void onChangedPage(int index, {int? cid}) {
-  //   setState(() {
-  //     switch (index) {
-  //       case 0:
-  //         currentPage = CoursesList(onChangedPage: onChangedPage);
-  //         break;
-  //       case 1:
-  //         currentPage = CourseInfoScreen(cid: cid ?? 0);
-  //         break;
-  //     }
-  //   });
-  // }
+  void onChangedPage(CrsPageType page, {int? cid}) {
+    setState(() {
+      _currentPageType = page;
+      _selectedCourseId = cid;
+    });
+  }
+
+  bool get showSearchBox => _currentPageType == CrsPageType.coursesList;
+
+  Widget get currentPage {
+    switch (_currentPageType) {
+      case CrsPageType.coursesList:
+        return coursesListPage;
+
+      case CrsPageType.courseInfo:
+        return CourseInfoScreen(
+          cid: _selectedCourseId!,
+        );
+    }
+  }
 
   Future<void> _onSearch(CourseFilter filter) async {
     loadingNotifier.value = true;
@@ -46,7 +82,6 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
     coursesNotifier.value = result;
     loadingNotifier.value = false;
   }
-
 
   Future<void> _loadAllCourses() async {
     loadingNotifier.value = true;
@@ -68,45 +103,33 @@ class _CoursesListScreenState extends State<CoursesListScreen> {
 
     Widget searchBox = SearchBox(onSearch: _onSearch);
 
-    Widget coursesList = ValueListenableBuilder<bool>(
-      valueListenable: loadingNotifier,
-      builder: (context, loading, _) {
-        if (loading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return ValueListenableBuilder<List<Map<String, dynamic>>>(
-          valueListenable: coursesNotifier,
-          builder: (context, courses, _) {
-            if (courses.isEmpty) {
-              return NoDataWidget();
-            }
-            return CoursesList(courses: courses, onRefresh: _loadAllCourses,);
-          },
-        );
-      },
-    );
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: isDesktop
             ? SingleChildScrollView(
-              child: Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(width: 280, child: searchBox),
-                    const SizedBox(width: 16),
-                    Expanded(child: coursesList),
+                    if(showSearchBox)...[
+                      SizedBox(width: 280, child: searchBox),
+                      const SizedBox(width: 16)
+                    ],
+                    Expanded(child: currentPage),
                   ],
                 ),
-            )
-            : Column(
-                children: [
-                  searchBox,
-                  const SizedBox(height: 16),
-                  Expanded(child: coursesList),
-                ],
-              ),
+              )
+            : SingleChildScrollView(
+              child: Column(
+                  children: [
+                    if(showSearchBox)...[
+                      searchBox,
+                      const SizedBox(height: 16)
+                    ],
+                    currentPage,
+                  ],
+                ),
+            ),
       ),
     );
   }
@@ -116,12 +139,14 @@ class CoursesList extends StatefulWidget {
   final List<Map<String, dynamic>> courses;
   final int? limit;
   final VoidCallback? onRefresh;
+  final Function(CrsPageType page, {int? cid})? onChangedPage;
 
   const CoursesList({
     super.key,
     required this.courses,
     this.limit,
     this.onRefresh,
+    this.onChangedPage,
   });
 
   @override
@@ -148,7 +173,7 @@ class _CoursesListState extends State<CoursesList> {
 
         double cardWidth =
             (constraints.maxWidth - 16 * (crossAxisCount - 1)) / crossAxisCount;
-        double estimatedCardHeight = 500;
+        double estimatedCardHeight = 450;
         double childAspectRatio = cardWidth / estimatedCardHeight;
 
         return SingleChildScrollView(
@@ -167,7 +192,8 @@ class _CoursesListState extends State<CoursesList> {
               itemBuilder: (context, index) {
                 return CourseCard(
                   singleCourse: displayCourses[index],
-                  onRefresh: widget.onRefresh
+                  onRefresh: widget.onRefresh,
+                  onChangedPage: widget.onChangedPage,
                 );
               },
             ),
@@ -179,8 +205,14 @@ class _CoursesListState extends State<CoursesList> {
 }
 
 class CourseCard extends StatelessWidget {
-  const CourseCard({super.key, required this.singleCourse, this.onRefresh});
+  const CourseCard({
+    super.key,
+    required this.singleCourse,
+    this.onRefresh,
+    this.onChangedPage,
+  });
 
+  final Function(CrsPageType, {int? cid})? onChangedPage;
   final Map<String, dynamic> singleCourse;
   final VoidCallback? onRefresh;
 
@@ -190,8 +222,6 @@ class CourseCard extends StatelessWidget {
       color: Colors.blueGrey,
       fontSize: 14,
     );
-    final startTime = singleCourse['start_time'];
-    final endTime = singleCourse['end_time'];
     final imgUrl = singleCourse['img_url'];
 
     return Directionality(
@@ -226,20 +256,23 @@ class CourseCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
               child: Column(
+                spacing: 6,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 6),
                   Text(
                     '${AppTexts.registrants}: ${singleCourse['registrants'] ?? ''} نفر',
                     style: detailStyle,
                   ),
-                  const SizedBox(height: 6),
+                  Text(
+                    '${AppTexts.registrationFee}: '
+                        '${formatPrice(singleCourse['cost'] ?? 0)}',
+                    style: detailStyle,
+                  ),
                   Text(
                     '${AppTexts.crsType}: ${singleCourse['delivery_type'] ?? ''}',
                     style: detailStyle,
                   ),
-                  const SizedBox(height: 6),
                   SizedBox(
                     height: 22,
                     child: singleCourse['hall_title'] == null
@@ -249,7 +282,6 @@ class CourseCard extends StatelessWidget {
                             style: detailStyle,
                           ),
                   ),
-                  const SizedBox(height: 6),
                   SizedBox(
                     height: 22,
                     child: singleCourse['capacity'] == null
@@ -259,45 +291,28 @@ class CourseCard extends StatelessWidget {
                             style: detailStyle,
                           ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${AppTexts.registrationFee}: '
-                    '${formatPrice(singleCourse['cost'] ?? 0)}',
-                    style: detailStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${AppTexts.holdingDate} : '
-                    '${AppTexts.day} ${getPersianWeekday(startTime)} - '
-                    '${getPersianDate(startTime ?? '')}',
-                    style: detailStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${AppTexts.startTime} : '
-                    '${getPersianTime(startTime ?? '')}',
-                    style: detailStyle,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${AppTexts.endTime} : '
-                    '${getPersianTime(endTime ?? '')}',
-                    style: detailStyle,
-                  ),
                 ],
               ),
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
               child: SizedBox(
                 width: 160,
-                height: 40,
+                height: 70,
                 child: Center(
-                  child: RegisterButton(
-                    courseId: singleCourse['id'],
-                    onRefresh: onRefresh ?? () {},
-                    isInBasket: singleCourse['status'] == 'in_basket',
+                  child: Column(
+                    children: [
+                      RegisterButton(
+                        courseId: singleCourse['id'],
+                        onRefresh: onRefresh ?? () {},
+                        isInBasket: singleCourse['status'] == 'in_basket',
+                      ),
+                      DetailButton(
+                          cid: singleCourse['id'],
+                          onChangedPage: onChangedPage,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -305,6 +320,28 @@ class CourseCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class DetailButton extends StatelessWidget {
+  const DetailButton({this.onChangedPage, required this.cid, super.key});
+
+  final Function(CrsPageType, {int? cid})? onChangedPage;
+  final int cid;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => onChangedPage?.call(CrsPageType.courseInfo, cid: cid),
+      style: ElevatedButton.styleFrom(
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      child: Text(AppTexts.moreDetails),
     );
   }
 }

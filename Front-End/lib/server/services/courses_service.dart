@@ -20,6 +20,22 @@ class CoursesService{
     }
   }
 
+  Future<Map<String, dynamic>?> getSingleCourse(int cid) async {
+    try {
+      final response = await supabase
+          .from('courses')
+          .select()
+          .eq('id', cid)
+          .single();
+
+      return response;
+
+    } catch (e) {
+      print('${AppTexts.error} $e');
+      return null;
+    }
+  }
+
   Future<List<Map<String,dynamic>>> myCoursesList(String status) async {
     final SupabaseClient supabase = Supabase.instance.client;
     final uid = supabase.auth.currentUser!.id;
@@ -245,6 +261,7 @@ class CoursesService{
         params: {
           'p_search': filter.search,
           'p_hid': filter.hid,
+          'p_delivery_type': filter.deliveryType,
           'p_min_capacity': filter.minCapacity,
           'p_max_capacity': filter.maxCapacity,
           'p_min_cost': filter.minPrice ?? 0,

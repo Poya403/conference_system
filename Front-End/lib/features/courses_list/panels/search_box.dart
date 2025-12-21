@@ -102,25 +102,35 @@ class _SearchBoxState extends State<SearchBox> {
                 if(isExpanded) ... [
                   Divider(thickness: 0.75),
                   CustomDropdownField(
-                      labelText: AppTexts.deliveryType,
-                      items: [AppTexts.inPerson, AppTexts.online],
-                      value: selectedDeliveryType,
-                      onChanged: (val) {
-                        setState(() {
-                          selectedDeliveryType = val;
-                        });
-                      }
+                    labelText: AppTexts.deliveryType,
+                    items: [AppTexts.inPerson, AppTexts.online],
+                    value: selectedDeliveryType,
+                    onChanged: (val) {
+                      setState(() {
+                        selectedDeliveryType = val;
+                      });
+                    },
+                    onPressed: selectedDeliveryType != null ? (){
+                      setState(() {
+                        selectedDeliveryType = null;
+                      });
+                    } : null,
                   ),
                   if(selectedDeliveryType == AppTexts.inPerson)...[
                     CustomDropdownField(
                       labelText: AppTexts.hostHall,
                       value: selectedHall?.title,
-                      items: halls.map((e) => e.title).toList(),
+                      items: halls.map((e) => e.title).toList() + [''],
                       onChanged: (val) {
                         setState(() {
                           selectedHall = halls.firstWhere((e) => e.title == val);
                         });
                       },
+                      onPressed: selectedHall != null ? (){
+                        setState(() {
+                          selectedHall = null;
+                        });
+                      } : null,
                     ),
                     Row(
                       spacing: 20,

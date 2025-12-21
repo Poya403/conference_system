@@ -393,7 +393,7 @@ class _HCommentsState extends State<HComments> {
   @override
   void initState() {
     super.initState();
-    futureComments = commentsService.getHallComments(widget.hid);
+    futureComments = commentsService.getComments(hid: widget.hid);
   }
 
   @override
@@ -405,7 +405,7 @@ class _HCommentsState extends State<HComments> {
 
   void reloadComments() {
     setState(() {
-      futureComments = commentsService.getHallComments(widget.hid);
+      futureComments = commentsService.getComments(hid: widget.hid);
     });
   }
 
@@ -441,8 +441,8 @@ class _HCommentsState extends State<HComments> {
 
                     await commentsService.sendComment(
                       context,
-                      widget.hid,
-                      textController.text.trim(),
+                      hid: widget.hid,
+                      text: textController.text.trim(),
                     );
 
                     textController.clear();
@@ -540,8 +540,8 @@ class _HCommentsState extends State<HComments> {
                           suffixOnPressed: () async {
                             await commentsService.updateComment(
                               context,
-                              comment['id'],
-                              textEditController.text.trim(),
+                              commentId: comment['id'],
+                              text: textEditController.text.trim(),
                             );
 
                             setState(() => editingCommentId = null);

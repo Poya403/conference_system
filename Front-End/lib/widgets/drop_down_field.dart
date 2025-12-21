@@ -5,6 +5,7 @@ class CustomDropdownField extends StatelessWidget {
   final List<String> items;
   final String? value;
   final Function(String?) onChanged;
+  final VoidCallback? onPressed;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
 
@@ -16,6 +17,7 @@ class CustomDropdownField extends StatelessWidget {
     required this.onChanged,
     this.prefixIcon,
     this.suffixIcon,
+    this.onPressed,
   });
 
   @override
@@ -57,6 +59,11 @@ class CustomDropdownField extends StatelessWidget {
                       );
                     }).toList(),
                     onChanged: onChanged,
+                    icon: value != null ? IconButton(
+                        icon: Icon(Icons.cancel_outlined),
+                        color: Colors.grey,
+                        onPressed: onPressed,
+                    ) : null,
                   ),
                 ),
               ),

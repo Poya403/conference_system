@@ -1,4 +1,5 @@
 import 'package:conference_system/features/hall_panel/panels/hall_info.dart';
+import 'package:conference_system/widgets/no_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/server/services/hall_service.dart';
 import 'package:conference_system/utils/app_texts.dart';
@@ -69,7 +70,7 @@ class HallList extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text(AppTexts.noData);
+          return const NoDataWidget();
         } else {
           final halls = snapshot.data!;
 
