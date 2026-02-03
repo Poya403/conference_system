@@ -11,6 +11,8 @@ class CustomTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final double? radiusValue;
+  final bool readOnly;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     super.key,
@@ -25,6 +27,8 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.radiusValue,
+    this.readOnly = false,
+    this.onChanged
   });
 
   @override
@@ -37,16 +41,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width ?? 250,
-      height: widget.height ?? 43,
+      height: widget.height ?? 42,
       child: TextField(
         textDirection: widget.textDirection,
         textAlign: widget.textDirection == TextDirection.rtl
             ? TextAlign.right
             : TextAlign.left,
+        readOnly: widget.readOnly,
         controller: widget.controller,
         obscureText: widget.isPassword ? _isHidden : false,
         maxLines: widget.maxLines ?? 1,
         minLines: widget.minLines,
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
           label: Align(
             alignment: Alignment.centerRight,

@@ -1,13 +1,19 @@
+import 'package:conference_system/bloc/auth/auth_event.dart';
 import 'package:conference_system/features/control_panel/panels/edit_form.dart';
+import 'package:conference_system/features/control_panel/panels/waiting_list.dart';
 import 'package:conference_system/features/control_panel/panels/my_courses_page.dart';
 import 'package:conference_system/features/control_panel/panels/registered_courses.dart';
 import 'package:conference_system/features/control_panel/panels/profile_screen.dart';
 import 'package:conference_system/features/control_panel/panels/shopping_basket.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter/material.dart';
-import 'package:conference_system/server/services/auth_service.dart';
-import 'package:conference_system/server/services/profile_service.dart';
-import 'package:conference_system/models/user_profile.dart';
+import 'package:conference_system/bloc/users/users_bloc.dart';
+import 'package:conference_system/bloc/users/users_state.dart';
+import 'package:conference_system/bloc/auth/auth_bloc.dart';
+import 'package:conference_system/bloc/auth/auth_state.dart';
+import 'package:conference_system/bloc/users/users_event.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/users.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -18,15 +24,20 @@ class ControlScreen extends StatefulWidget {
 
 class _ControlScreenState extends State<ControlScreen> {
   late Widget currentPanel;
-  UserRole? currentUser;
-  bool isLoading = true;
-  final profileService = ProfileService();
+
+  void logout() async {
+    context.read<AuthBloc>().add(AuthLogout());
+  }
 
   @override
   void initState() {
     super.initState();
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthSuccess) {
+      context.read<UsersBloc>().add(GetCurrentUser(authState.authResponse.userId ?? 0));
+    }
     currentPanel = ProfileScreen(editButtonOnPressed: changePanel);
-    _loadUserRole();
   }
 
   void changePanel(int index) {
@@ -44,6 +55,9 @@ class _ControlScreenState extends State<ControlScreen> {
         case 3:
           currentPanel = ShoppingBasket();
           break;
+        case 4:
+          currentPanel = WaitingList();
+          break;
         case 5:
           currentPanel = EditForm();
           break;
@@ -51,39 +65,41 @@ class _ControlScreenState extends State<ControlScreen> {
     });
   }
 
-  Future<void> _loadUserRole() async {
-    try {
-      final data = await profileService.getProfileInfo();
-      if (data.isNotEmpty) {
-        setState(() {
-          currentUser = UserRole(
-            fullName: data[0]['fullname'] ?? '',
-            role: data[0]['role'] ?? '',
-          );
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('Error loading profile: $e');
-    }
-  }
   @override
   Widget build(BuildContext context) {
     bool isDesktop = MediaQuery.of(context).size.width > 700;
-    return Scaffold(
-      body: isDesktop
-          ? Wide(
-              currentPanel: currentPanel,
-              onPanelChanged: changePanel,
-              currentUser: currentUser,
-              isLoading: isLoading,
-          )
-          : Narrow(
-              currentPanel: currentPanel,
-              onPanelChanged: changePanel,
-              currentUser: currentUser,
-              isLoading: isLoading,
-          ),
+    return BlocBuilder<UsersBloc, UsersState>(
+      builder: (context, state) {
+        if (state is UsersLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is UsersError) {
+          return Scaffold(
+            body: Center(
+              child: ScaffoldMessenger(
+                  child: Text('${AppTexts.errorLoading} ${state.message}')),
+            ),
+          );
+        } else if (state is UserLoaded) {
+          final user = state.user;
+
+          return Scaffold(
+            body: isDesktop
+                ? Wide(
+                    currentPanel: currentPanel,
+                    onPanelChanged: changePanel,
+                    currentUser: user,
+                    logout: logout,
+                  )
+                : Narrow(
+                    currentPanel: currentPanel,
+                    onPanelChanged: changePanel,
+                    currentUser: user,
+                    logout: logout,
+                  ),
+          );
+        }
+        return Center(child: Text(AppTexts.initialize));
+      },
     );
   }
 }
@@ -93,28 +109,17 @@ class Wide extends StatelessWidget {
     super.key,
     required this.currentPanel,
     required this.onPanelChanged,
-    required this.isLoading,
-    this.currentUser,
+    required this.currentUser,
+    required this.logout,
   });
 
   final Widget currentPanel;
   final Function(int) onPanelChanged;
-  final UserRole? currentUser;
-  final bool isLoading;
+  final User? currentUser;
+  final VoidCallback logout;
+
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    if (currentUser == null) {
-      return const Center(
-        child: Text('خطا در دریافت اطلاعات کاربر'),
-      );
-    }
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -140,11 +145,11 @@ class Wide extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 23.0, top: 18.0),
                         child: Text(
-                            AppTexts.controlPanel,
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
+                          AppTexts.controlPanel,
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                       SizedBox(height: 10),
@@ -154,14 +159,14 @@ class Wide extends StatelessWidget {
                         onPressed: () => onPanelChanged(0),
                       ),
                       SizedBox(height: 10),
-                      if(currentUser?.role == "admin")...[
+                      if (currentUser?.role == "Admin") ...[
                         FormButton(
                           title: AppTexts.myCourses,
                           icon: Icons.my_library_add_rounded,
                           onPressed: () => onPanelChanged(1),
                         ),
                       ],
-                      if(currentUser?.role == "user")...[
+                      if (currentUser?.role == "User") ...[
                         FormButton(
                           title: AppTexts.registeredCourses,
                           icon: Icons.my_library_books_outlined,
@@ -177,15 +182,14 @@ class Wide extends StatelessWidget {
                         FormButton(
                           title: AppTexts.waitingList,
                           icon: Icons.list_alt_outlined,
+                          onPressed: () => onPanelChanged(4),
                         ),
                       ],
                       SizedBox(height: 10),
                       FormButton(
                         title: AppTexts.logout,
                         icon: Icons.logout,
-                        onPressed: () async {
-                          await logout(context);
-                        },
+                        onPressed: logout,
                       ),
                     ],
                   ),
@@ -213,21 +217,18 @@ class Narrow extends StatelessWidget {
     super.key,
     required this.currentPanel,
     required this.onPanelChanged,
-    required this.isLoading,
     this.currentUser,
+    required this.logout,
   });
 
   final Widget currentPanel;
   final Function(int) onPanelChanged;
-  final UserRole? currentUser;
-  final bool isLoading;
+  final User? currentUser;
+  final VoidCallback logout;
 
   @override
   Widget build(BuildContext context) {
-    final narrowTextStyle = TextStyle(
-      color: Colors.blueGrey,
-      fontSize: 13,
-    );
+    final narrowTextStyle = TextStyle(color: Colors.blueGrey, fontSize: 13);
     final Color iconColor = Colors.blueGrey;
     final double iconSize = 20.0;
     return Column(
@@ -239,42 +240,73 @@ class Narrow extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: ExpansionTile(
-              title: Text(AppTexts.controlPanel, style: TextStyle(fontSize: 15)),
+              title: Text(
+                AppTexts.controlPanel,
+                style: TextStyle(fontSize: 15),
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
               ),
               children: [
                 ListTile(
-                  leading: Icon(Icons.person_outline, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.userInfo, style: narrowTextStyle,),
+                  leading: Icon(
+                    Icons.person_outline,
+                    color: iconColor,
+                    size: iconSize,
+                  ),
+                  title: Text(AppTexts.userInfo, style: narrowTextStyle),
                   onTap: () => onPanelChanged(0),
                 ),
+                if (currentUser?.role == "Admin") ...[
+                  ListTile(
+                    leading: Icon(
+                      Icons.my_library_add_sharp,
+                      color: iconColor,
+                      size: iconSize,
+                    ),
+                    title: Text(AppTexts.myCourses, style: narrowTextStyle),
+                    onTap: () => onPanelChanged(1),
+                  ),
+                ],
+                if (currentUser?.role == "User") ...[
+                  ListTile(
+                    leading: Icon(
+                      Icons.my_library_books_outlined,
+                      color: iconColor,
+                      size: iconSize,
+                    ),
+                    title: Text(
+                      AppTexts.registeredCourses,
+                      style: narrowTextStyle,
+                    ),
+                    onTap: () => onPanelChanged(2),
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.shopping_basket_outlined,
+                      color: iconColor,
+                      size: iconSize,
+                    ),
+                    title: Text(
+                      AppTexts.shoppingBasket,
+                      style: narrowTextStyle,
+                    ),
+                    onTap: () => onPanelChanged(3),
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.list_alt_outlined,
+                      color: iconColor,
+                      size: iconSize,
+                    ),
+                    title: Text(AppTexts.waitingList, style: narrowTextStyle),
+                    onTap: () => onPanelChanged(4),
+                  ),
+                ],
                 ListTile(
-                  leading: Icon(Icons.my_library_add_sharp, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.myCourses, style: narrowTextStyle,),
-                  onTap: () => onPanelChanged(1),
-                ),
-                ListTile(
-                  leading: Icon(Icons.my_library_books_outlined, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.registeredCourses, style: narrowTextStyle,),
-                  onTap: () => onPanelChanged(2),
-                ),
-                ListTile(
-                  leading: Icon(Icons.shopping_basket_outlined, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.shoppingBasket, style: narrowTextStyle,),
-                  onTap: () => onPanelChanged(3),
-                ),
-                ListTile(
-                  leading: Icon(Icons.list_alt_outlined, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.waitingList, style: narrowTextStyle,),
-                  onTap: () => onPanelChanged(4),
-                ),
-                ListTile(
-                  leading: Icon(Icons.logout, color: iconColor, size: iconSize,),
-                  title: Text(AppTexts.logout, style: narrowTextStyle,),
-                  onTap: () async {
-                    await logout(context);
-                  },
+                  leading: Icon(Icons.logout, color: iconColor, size: iconSize),
+                  title: Text(AppTexts.logout, style: narrowTextStyle),
+                  onTap: logout,
                 ),
               ],
             ),

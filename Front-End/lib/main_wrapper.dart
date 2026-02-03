@@ -1,8 +1,11 @@
+import 'package:conference_system/enums/course_category.dart';
 import 'package:conference_system/features/control_panel/control_screen.dart';
+import 'package:conference_system/features/course_panels/courses_list_screen.dart';
+import 'package:conference_system/features/hall_panel/hall_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/features/home/home_screen.dart';
-import 'package:conference_system/features/hall_panel/hall_screen.dart';
-import 'package:conference_system/features/courses_list/courses_list_screen.dart';
+// import 'package:conference_system/features/hall_panel/hall_list_screen.dart';
+//import 'package:conference_system/features/course_panels/courses_list_screen.dart';
 import 'package:conference_system/features/about_us_page/about_us_screen.dart';
 import 'package:conference_system/widgets/button_navigator.dart';
 import 'package:conference_system/widgets/desktop_appbar.dart';
@@ -30,30 +33,6 @@ class _MainWrapperState extends State<MainWrapper> {
   void _onItemTapped(int index) {
     setState(() {
       selectedPage = PageType.values[index];
-      Widget targetPage;
-      switch (selectedPage) {
-        case PageType.home:
-          targetPage = const MainWrapper(page: PageType.home);
-          break;
-        case PageType.halls:
-          targetPage = const MainWrapper(page: PageType.halls);
-          break;
-        case PageType.courses:
-          targetPage = const MainWrapper(page: PageType.courses);
-          break;
-        case PageType.aboutUs:
-          targetPage = const MainWrapper(page: PageType.aboutUs);
-          break;
-        case PageType.controlPanel:
-          targetPage = const MainWrapper(page: PageType.controlPanel);
-      }
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => targetPage,
-          transitionDuration: Duration.zero,
-        ),
-      );
     });
   }
 
@@ -77,9 +56,10 @@ class _MainWrapperState extends State<MainWrapper> {
       case PageType.home:
         return const HomeScreen();
       case PageType.halls:
-        return const HallScreen();
+        return const HallListScreen();
       case PageType.courses:
-        return const CoursesListScreen();
+        return const CoursesListScreen(
+            category: CourseCategory.availableCourses);
       case PageType.aboutUs:
         return const AboutUsScreen();
       case PageType.controlPanel:
@@ -89,22 +69,25 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    final bool isDesktop = MediaQuery.of(context).size.width > 800;
+
     return Scaffold(
       appBar: isDesktop
           ? DesktopAppBar(
-              title: currentTitle,
-              selectedIndex: selectedPage.index,
-              onItemSelected: _onItemTapped,
-            )
+        title: currentTitle,
+        selectedIndex: selectedPage.index,
+        onItemSelected: _onItemTapped,
+      )
           : MobileAppBar(title: currentTitle),
+
       body: currentBody,
+
       bottomNavigationBar: isDesktop
           ? null
           : ButtonNavigator(
-              selectedIndex: selectedPage.index,
-              onItemTapped: _onItemTapped,
-            ),
+        selectedIndex: selectedPage.index,
+        onItemTapped: _onItemTapped,
+      ),
     );
   }
 }

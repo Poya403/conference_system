@@ -1,4 +1,5 @@
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:flutter/material.dart';
 
 String formatToJalali(String serverDate) {
   final dateTime = DateTime.parse(serverDate).toLocal();
@@ -50,4 +51,10 @@ DateTime mergeDateAndTime(DateTime date, String timeString) {
     hour,
     minute,
   );
+}
+
+String formatTime24(TimeOfDay time) {
+  final h = time.hour.toString().padLeft(2, '0');
+  final m = time.minute.toString().padLeft(2, '0');
+  return '$h:$m';
 }

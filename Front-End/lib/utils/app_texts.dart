@@ -13,6 +13,7 @@ class AppTexts {
   static const String submit = 'ثبت';
   static const String delete = 'حذف';
   static const String edit = 'ویرایش';
+  static const String editInfo = 'ویرایش اطلاعات';
   static const String loading = 'در حال بارگذاری...';
   static const String cancel = 'انصراف';
   static const String hide = 'مخفی کردن';
@@ -23,11 +24,15 @@ class AppTexts {
   static const String fullName = 'نام و نام خانوادگی';
   static const String email = 'ایمیل';
   static const String password = 'رمز عبور';
+  static const String newPassword = 'رمز عبور جدید';
+  static const String changePassword = 'تغییر رمز عبور';
+  static const String repaidPassword = 'تکرار رمز عبور جدید';
   static const String noAccountHint = 'اکانت ندارید؟ ثبت‌نام کنید';
   static const String haveAccountHint = 'اکانت دارید؟ وارد شوید';
   static const String successfulLogin =  'ورود موفقیت‌آمیز بود';
   static const String successfulSignUp =  'ثبت‌نام با موفقیت انجام شد';
   static const String error = 'خطایی رخ داد';
+  static const String errorLoading = 'خطا در دریافت اطلاعات';
   static const String city = 'شهر';
   //app bar
   static const String home = 'خانه';
@@ -70,7 +75,7 @@ class AppTexts {
   static const String day = 'روز';
   static const String crsCapacity = 'ظرفیت دوره';
   static const String inPerson = 'حضوری';
-  static const String online = 'آنلاین';
+  static const String online = 'مجازی';
   static const String optional = 'اختیاری';
   static const String budget = 'بودجه';
   static const String getBestHalls = 'انتخاب هوشمند سالن';
@@ -87,4 +92,14 @@ class AppTexts {
   static const String supportedEvents  = 'رویداد های پشتیبانی شده';
 
   static const String search = 'جستجو';
+
+  static String initialize = 'در حال شروع فرایند بارگذاری';
+
+  static const String status = 'وضعیت';
+
+  static const String reservations = 'دوره‌ها و زمان‌بندی‌ها';
+  static const String newReserve = 'افزودن رزرو';
+  static const String operation = 'عملیات';
+
+
 }

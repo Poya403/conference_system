@@ -13,6 +13,8 @@ class CustomTextFormField extends StatefulWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
+  final bool readOnly;
+
   final List<TextInputFormatter>? inputFormatters;
   const CustomTextFormField({
     super.key,
@@ -28,6 +30,7 @@ class CustomTextFormField extends StatefulWidget {
     this.minLines = 1,
     this.suffixIcon,
     this.prefixIcon,
+    this.readOnly = false,
   });
 
   @override
@@ -56,22 +59,54 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               controller: widget.controller,
               maxLines: widget.maxLines ?? 1,
               minLines: widget.minLines,
+              readOnly: widget.readOnly,
               keyboardType: widget.keyboardType,
               inputFormatters: widget.inputFormatters ?? [],
+              style: TextStyle(
+                fontSize: 14,
+                color: widget.readOnly ? Colors.grey.shade700 : Colors.black,
+              ),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: widget.readOnly
+                    ? Colors.grey.shade100
+                    : Colors.white,
+
                 contentPadding: EdgeInsets.symmetric(
-                  vertical: widget.height ?? 8, // height control here
+                  vertical: widget.height ?? 10,
                   horizontal: 12,
                 ),
+
                 hintText: widget.hintText,
                 hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 13
+                  color: Colors.grey.shade400,
+                  fontSize: 13,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
+
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: BorderSide(
+                    color: widget.readOnly
+                        ? Colors.grey.shade300
+                        : Colors.grey.shade400,
+                    width: 1,
+                  ),
                 ),
-                suffixIcon: widget.suffixIcon,
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: BorderSide(
+                    color: widget.readOnly
+                        ? Colors.grey.shade300
+                        : Colors.purple,
+                    width: 1.2,
+                  ),
+                ),
+
+                suffixIcon: widget.readOnly
+                    ? Icon(Icons.lock_outline, size: 18, color: Colors.grey)
+                    : widget.suffixIcon,
+
                 prefixIcon: widget.prefixIcon,
               ),
             ),
