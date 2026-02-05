@@ -1,5 +1,5 @@
 import 'package:conference_system/bloc/users/users_event.dart';
-import 'package:conference_system/data/models/update_user_dto.dart';
+import 'package:conference_system/data/DTOs/update_user_dto.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/widgets/custom_text_fields/text_form_field.dart';
 import 'package:conference_system/widgets/custom_text_fields/text_field.dart';

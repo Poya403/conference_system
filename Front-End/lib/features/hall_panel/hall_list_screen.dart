@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:conference_system/features/hall_panel/panels/reservation_list.dart';
 
 class HallListScreen extends StatefulWidget {
   const HallListScreen({super.key});
@@ -30,20 +29,10 @@ class _HallListScreenState extends State<HallListScreen> {
     setState(() {
       switch (index) {
         case 0:
-          currentPage = Column(
-            children: [
-              HallList(onChangedPage: onChangedPage),
-            ],
-          );
+          currentPage = HallList(onChangedPage: onChangedPage);
           break;
         case 1:
-          currentPage = Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              HallInfoScreen(hid: hid ?? 0),
-              ReservationList(hallId: hid ?? 0)
-            ],
-          );
+          currentPage = HallInfoScreen(hid: hid ?? 0);
           break;
       }
     });
@@ -102,7 +91,9 @@ class HallList extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state is HallLoading) {
+        if(state is HallInitial){
+          return Center(child: Text(AppTexts.initialize));
+        } else if (state is HallLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is HallListSuccess) {
           final halls = state.halls;
@@ -213,7 +204,7 @@ class HallList extends StatelessWidget {
             },
           );
         }
-        return Center(child: Text(AppTexts.loading));
+        return SizedBox.shrink();
       },
     );
   }

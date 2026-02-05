@@ -1,15 +1,16 @@
-import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:flutter/material.dart';
-import 'package:conference_system/widgets/comment_box.dart';
+import 'package:conference_system/widgets/custom_text_fields/comment_text_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/bloc/comments/bloc/comment_bloc.dart';
 import 'package:conference_system/bloc/comments/bloc/comment_state.dart';
 import 'package:conference_system/bloc/comments/bloc/comment_event.dart';
 import 'package:conference_system/enums/target_type.dart';
-import 'package:conference_system/data/models/comment_create_dto.dart';
+import 'package:conference_system/data/DTOs/comment_create_dto.dart';
 import 'package:conference_system/bloc/auth/auth_bloc.dart';
 import 'package:conference_system/bloc/auth/auth_state.dart';
+import '../../../widgets/title_widgets/title_widget.dart';
+import 'package:conference_system/utils/app_texts.dart';
 
 class HComments extends StatefulWidget {
   const HComments({super.key, required this.hid});
@@ -95,10 +96,10 @@ class _HCommentsState extends State<HComments> {
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: CommentBox(
+                    child: CommentTextField(
                       controller: textController,
-                      hintText: 'نظر شما',
-                      maxLines: 5,
+                      hintText: AppTexts.yourComment,
+                      maxLines: 10,
                       minLines: 3,
                       width: isDesktop
                           ? MediaQuery.of(context).size.width * 0.5
@@ -123,7 +124,7 @@ class _HCommentsState extends State<HComments> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  commentsLabel(),
+                  TitleWidget(caption: AppTexts.comments, icon: Icons.comment_rounded),
                   const SizedBox(height: 15),
                   SizedBox(
                     height: 350,
@@ -159,8 +160,32 @@ class _HCommentsState extends State<HComments> {
                                 fontSize: isDesktop ? 16 : 14,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
+                            const SizedBox(height: 10),
+                            isEditing ? CommentTextField(
+                              controller: textEditController,
+                              hintText: AppTexts.editComment,
+                              textDirection: TextDirection.rtl,
+                              prefixOnPressed: () {
+                                setState(() => editingCommentId = null);
+                              },
+                              suffixOnPressed: () {
+                                final newComment = CommentCreateDto(
+                                  targetType: CommentTargetType.hall,
+                                  targetId: widget.hid,
+                                  parentId: comment.parentId,
+                                  text: textEditController.text.trim(),
+                                  score: comment.parentId == null ? 5 : null,
+                                );
+                                context.read<CommentBloc>().add(
+                                  UpdateComment(
+                                    commentId: comment.id,
+                                    newComment: newComment,
+                                  ),
+                                );
+                                setState(() => editingCommentId = null);
+                              },
+                            )
+                            : Text(
                               textDirection: TextDirection.rtl,
                               comment.text,
                               style: TextStyle(
@@ -183,30 +208,7 @@ class _HCommentsState extends State<HComments> {
 
                         /// Action Buttons
                         Widget actionButtons = isEditing
-                            ? CommentBox(
-                          controller: textEditController,
-                          hintText: 'ویرایش نظر',
-                          textDirection: TextDirection.rtl,
-                          prefixOnPressed: () {
-                            setState(() => editingCommentId = null);
-                          },
-                          suffixOnPressed: () {
-                            final newComment = CommentCreateDto(
-                              targetType: CommentTargetType.hall,
-                              targetId: widget.hid,
-                              parentId: comment.parentId,
-                              text: textEditController.text.trim(),
-                              score: comment.parentId == null ? 5 : null,
-                            );
-                            context.read<CommentBloc>().add(
-                              UpdateComment(
-                                commentId: comment.id,
-                                newComment: newComment,
-                              ),
-                            );
-                            setState(() => editingCommentId = null);
-                          },
-                        )
+                            ? SizedBox.shrink()
                             : Row(
                           children: [
                             DeleteButton(
@@ -322,35 +324,4 @@ class EditButton extends StatelessWidget {
   }
 }
 
-Widget commentsLabel() {
-  return Container(
-    width: 150,
-    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-    decoration: BoxDecoration(
-      color: Colors.deepPurple.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      textDirection: TextDirection.rtl,
-      spacing: 3,
-      children: const [
-        Icon(
-          Icons.comment_rounded,
-          size: 25,
-          color: Colors.deepPurple,
-        ),
-        SizedBox(width: 6),
-        Text(
-          AppTexts.comments,
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w600,
-            color: Colors.deepPurple,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+

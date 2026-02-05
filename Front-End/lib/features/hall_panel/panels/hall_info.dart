@@ -1,13 +1,13 @@
-import 'package:conference_system/widgets/no_data_widget.dart';
-import 'package:conference_system/bloc/hall/hall_event.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/bloc/hall/hall_bloc.dart';
 import 'package:conference_system/bloc/hall/hall_state.dart';
+import 'package:conference_system/bloc/hall/hall_event.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/features/hall_panel/panels/comment_box.dart';
 import '../../../data/models/halls.dart';
-
+import 'package:conference_system/widgets/no_data_widget.dart';
+import 'package:conference_system/features/hall_panel/panels/reservation_list.dart';
 
 class HallInfoScreen extends StatefulWidget {
   const HallInfoScreen({super.key, required this.hid});
@@ -36,7 +36,9 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
         }
       },
       builder: (context, state) {
-        if (state is HallLoading) {
+        if(state is HallInitial){
+          return Center(child: Text(AppTexts.initialize));
+        } if (state is HallLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is SingleHallSuccess) {
           final hall = state.hall;
@@ -61,6 +63,7 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
                           textDirection: TextDirection.rtl,
                           children: [
                             MainContent(hall: hall),
+                            ReservationList(hallId: hall.id),
                             HComments(hid: hall.id),
                           ],
                         ),
@@ -74,12 +77,13 @@ class _HallInfoScreenState extends State<HallInfoScreen> {
                       HallInfoBox(hall: hall),
                       // Amenities(hid: hall['id']),
                       MainContent(hall: hall),
+                      ReservationList(hallId: hall.id),
                       HComments(hid: hall.id),
                     ],
                   ),
           );
         }
-        return Center(child: Text(AppTexts.loading));
+        return SizedBox.shrink();
       },
     );
   }
@@ -180,7 +184,6 @@ class _HallInfoBoxState extends State<HallInfoBox> {
                           style: detailStyle
                         ),
                         SelectableText(
-                          textDirection: TextDirection.ltr,
                           '${AppTexts.phoneNumber} : \u200E${widget.hall.phone ?? 'ٍثبت نشده'}',
                           style: detailStyle
                         ),
@@ -211,7 +214,7 @@ class MainContent extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: SizedBox(
           width: isDesktop
-              ? MediaQuery.of(context).size.width * 0.55
+              ? MediaQuery.of(context).size.width * 0.6
               : double.infinity,
           child: Card(
             elevation: 4,
@@ -242,18 +245,20 @@ class MainContent extends StatelessWidget {
                       ),
                       Divider(thickness: 0.35),
                       (hall.description != null && hall.description!.isNotEmpty)
-                          ? Column(
-                              children: [
-                                SizedBox(height: 20),
-                                SelectableText(
-                                  hall.description ?? '',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey[700],
+                          ? Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                                children: [
+                                  SelectableText(
+                                    hall.description ?? '',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )
+                                ],
+                              ),
+                          )
                           : Center(
                               child: NoDataWidget(
                                 title: 'اطلاعاتی جهت نمایش یا چاپ وجود ندارد.',

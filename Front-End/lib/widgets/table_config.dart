@@ -21,11 +21,11 @@ class TableConfig<T> extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.deepPurpleAccent
-              ),
+            title,
+            style: TextStyle(
+                fontSize: 20,
+                color: Colors.deepPurpleAccent
+            ),
           ),
         ),
         Directionality(

@@ -11,6 +11,7 @@ class CourseBloc extends Bloc<CoursesEvent, CoursesState> {
   CourseBloc({required CourseService courseService})
       : _courseService = courseService,
         super(CourseInitial()) {
+    on<GetSingleCourse>(_onGetSingleCourse);
     on<GetCoursesList>(_onGetCoursesList);
     on<ToggleBasket>(_onToggleBasket);
     on<SearchCourses>(_onSearchCourses);
@@ -36,6 +37,20 @@ class CourseBloc extends Bloc<CoursesEvent, CoursesState> {
     }
   }
 
+  Future<void> _onGetSingleCourse(GetSingleCourse event,
+      Emitter<CoursesState> emit) async {
+    emit(CourseLoading());
+
+    try {
+      final course = await _courseService.getSingleCourse(event.cid);
+
+      emit(SingleCourseLoaded(course));
+    } catch (e) {
+      emit(CoursesError(
+        e is Exception ? e.toString() : 'خطای ناشناخته در دریافت اطلاعات دوره‌',
+      ));
+    }
+  }
 
   Future<void> _onToggleBasket(
       ToggleBasket event, Emitter<CoursesState> emit) async {

@@ -1,4 +1,4 @@
-import 'package:conference_system/data/models/update_user_dto.dart';
+import 'package:conference_system/data/DTOs/update_user_dto.dart';
 import 'package:conference_system/data/models/users.dart';
 import 'package:conference_system/data/repositories/user_repository.dart';
 

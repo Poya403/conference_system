@@ -36,8 +36,10 @@ class _ReservationListState extends State<ReservationList> {
         }
       },
       builder: (context, state) {
-        if (state is ReservationLoading) {
-          return Center(child: CircularProgressIndicator());
+        if (state is ReservationInitial) {
+          return Center(child: Text(AppTexts.initialize));
+        } else if (state is ReservationLoading) {
+          return const Center(child: CircularProgressIndicator());
         } else if (state is ReservationLoaded) {
           final reservations = state.reservations;
 
@@ -58,74 +60,78 @@ class _ReservationListState extends State<ReservationList> {
                 ),
                 margin: const EdgeInsets.all(12),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 15,
-                  children: [
-                    TableConfig<Reservation>(
-                      title: AppTexts.reservations,
-                      data: reservations, // List<Reservation>
-                      columns: const [
-                        AppTexts.crsTitle,
-                        AppTexts.holdingDate,
-                        AppTexts.day,
-                        AppTexts.startTime,
-                        AppTexts.endTime,
-                        AppTexts.status,
-                        AppTexts.operation,
-                      ],
-                      rowBuilder: [
-                        (r) => Text(r.courseTitle),
-                        (r) => DateTimeStyle(
-                          dateInput: getPersianDate(r.holdingDate.toString()),
-                        ),
-                        (r) => Text(
-                          getPersianWeekday(r.holdingDate.toString()),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.blueGrey,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 15,
+                    children:[
+                      TableConfig<Reservation>(
+                        title: AppTexts.reservations,
+                        data: reservations, // List<Reservation>
+                        columns: const [
+                          AppTexts.crsTitle,
+                          AppTexts.holdingDate,
+                          AppTexts.day,
+                          AppTexts.startTime,
+                          AppTexts.endTime,
+                          AppTexts.status,
+                          AppTexts.operation,
+                        ],
+                        rowBuilder: [
+                              (r) => Text(r.courseTitle),
+                              (r) => DateTimeStyle(
+                              dateInput:
+                              getPersianDate(r.holdingDate.toString())
                           ),
-                        ),
-                        // Start Time
-                        (r) => Text(formatTime24(r.startTime)),
-                        // End Time
-                        (r) => Text(formatTime24(r.endTime)),
-                        (r) => StatusLabelStyle(status: r.status),
-                        (r) => Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.blueAccent,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                //editReservation(r);
-                              },
+                              (r) => Text(
+                            getPersianWeekday(r.holdingDate.toString()),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.blueGrey,
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete,
-                                color: Colors.redAccent,
-                                size: 20,
+                          ),
+                          // Start Time
+                              (r) => Text(formatTime24(r.startTime)),
+                          // End Time
+                              (r) => Text(formatTime24(r.endTime)),
+                              (r) => StatusLabelStyle(status: r.status),
+                              (r) => Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.blueAccent,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  //editReservation(r);
+                                },
                               ),
-                              onPressed: () {
-                                // deleteReservation(r);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 150, child: AddButton(onPressed: () {})),
-                  ],
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.redAccent,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  // deleteReservation(r);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                          width: 150,
+                          child: AddButton(onPressed: (){})
+                      ),
+                    ]
                 ),
               ),
             ),
           );
         }
-        return Center(child: Text(AppTexts.loading));
+        return const SizedBox.shrink();
       },
     );
   }
@@ -151,10 +157,17 @@ class AddButton extends StatelessWidget {
         textDirection: TextDirection.rtl,
         spacing: 6,
         children: [
-          Icon(Icons.add_circle, color: Colors.white, size: 18),
+          Icon(
+            Icons.add_circle,
+            color: Colors.white,
+            size: 18,
+          ),
           Text(
             AppTexts.newReserve,
-            style: TextStyle(color: Colors.white, fontSize: 15),
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 15
+            ),
           ),
         ],
       ),

@@ -1,6 +1,6 @@
 import 'package:conference_system/enums/target_type.dart';
 import 'package:equatable/equatable.dart';
-import 'package:conference_system/data/models/comment_create_dto.dart';
+import 'package:conference_system/data/DTOs/comment_create_dto.dart';
 
 abstract class CommentEvent extends Equatable{
   @override

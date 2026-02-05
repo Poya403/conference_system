@@ -14,7 +14,7 @@ class AppTexts {
   static const String delete = 'حذف';
   static const String edit = 'ویرایش';
   static const String editInfo = 'ویرایش اطلاعات';
-  static const String loading = 'در حال بارگذاری...';
+  static const String initialize = 'در حال بارگذاری...';
   static const String cancel = 'انصراف';
   static const String hide = 'مخفی کردن';
   static const String price = 'قیمت';
@@ -87,19 +87,17 @@ class AppTexts {
   static const String amenities = 'امکانات';
   //comments
   static const String comments  =  'نظرات';
+  static const String yourComment = 'نظر شما';
   static const String noComments = 'نظری ثبت نشده است';
-
+  static const String sendComment  = 'ارسال نظر';
+  static const String editComment = 'ویرایش نظر';
   static const String supportedEvents  = 'رویداد های پشتیبانی شده';
 
   static const String search = 'جستجو';
-
-  static String initialize = 'در حال شروع فرایند بارگذاری';
 
   static const String status = 'وضعیت';
 
   static const String reservations = 'دوره‌ها و زمان‌بندی‌ها';
   static const String newReserve = 'افزودن رزرو';
   static const String operation = 'عملیات';
-
-
 }

@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:conference_system/data/models/courses.dart';
 import 'dart:convert';
 import 'package:conference_system/config/api_config.dart';
-import 'package:conference_system/data/models/course_filter.dart';
+import 'package:conference_system/data/DTOs/course_filter.dart';
 
 class CoursesRepository {
   Future<List<Course>> getCoursesList({
@@ -34,6 +34,18 @@ class CoursesRepository {
     } catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  Future<Course> getSingleCourse(int cid) async {
+    final url = GetUri.getSingleCourse(cid);
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Course.fromJson(data);
+    }
+
+    throw Exception('خطا در دریافت اطلاعات دوره (کد: ${response.statusCode})');
   }
 }
 

@@ -92,6 +92,9 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
             }
           },
           builder: (context, state) {
+            if(state is CourseInitial){
+              return Center(child: Text(AppTexts.initialize));
+            }
             if (state is CourseLoading) {
               return Center(child: const CircularProgressIndicator());
             } else if (state is CoursesLoaded) {
@@ -214,7 +217,7 @@ class _MyCoursesPageState extends State<MyCoursesPage> {
                 ),
               );
             }
-            return Center(child: Text(AppTexts.loading));
+            return SizedBox.shrink();
           }
       ),
     );

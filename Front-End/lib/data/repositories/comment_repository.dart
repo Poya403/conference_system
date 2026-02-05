@@ -4,7 +4,7 @@ import 'package:conference_system/enums/target_type.dart';
 import 'package:conference_system/providers/auth_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:conference_system/data/models/comment_create_dto.dart';
+import 'package:conference_system/data/DTOs/comment_create_dto.dart';
 
 class CommentRepository {
   CommentRepository();

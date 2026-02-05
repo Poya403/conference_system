@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:conference_system/utils/app_texts.dart';
 
-class CommentBox extends StatefulWidget {
+class CommentTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final TextDirection? textDirection;
@@ -11,7 +12,7 @@ class CommentBox extends StatefulWidget {
   final VoidCallback? suffixOnPressed;
   final VoidCallback? prefixOnPressed;
 
-  const CommentBox({
+  const CommentTextField({
     super.key,
     required this.controller,
     required this.hintText,
@@ -25,33 +26,34 @@ class CommentBox extends StatefulWidget {
   });
 
   @override
-  State<CommentBox> createState() => _CommentBoxState();
+  State<CommentTextField> createState() => _CommentTextFieldState();
 }
 
-class _CommentBoxState extends State<CommentBox> {
+class _CommentTextFieldState extends State<CommentTextField> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width ?? 300,
-      height: widget.height ?? 80,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: widget.width ?? 350,
+        maxWidth: widget.width ?? 350,
+        minHeight: 50,
+        maxHeight: 200, // حداکثر ارتفاع برای چند خط
+      ),
       child: Directionality(
         textDirection: widget.textDirection ?? TextDirection.rtl,
         child: TextField(
-          textAlign: TextAlign.right,
           controller: widget.controller,
-          maxLines: widget.maxLines ?? 1,
+          textAlign: TextAlign.right,
+          textDirection: widget.textDirection ?? TextDirection.rtl,
+          maxLines: widget.maxLines,
           minLines: widget.minLines,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.grey[100],
             hintText: widget.hintText,
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
-            hintTextDirection: widget.textDirection ?? TextDirection.rtl,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
@@ -72,10 +74,10 @@ class _CommentBoxState extends State<CommentBox> {
                 ? Material(
               color: Colors.transparent,
               child: IconButton(
-                icon: const Icon(Icons.send_outlined, color: Colors.deepPurple),
+                icon: const Icon(Icons.send_rounded, color: Colors.deepPurple),
                 onPressed: widget.suffixOnPressed,
                 splashRadius: 22,
-                tooltip: "ارسال نظر",
+                tooltip: AppTexts.sendComment,
               ),
             )
                 : null,
@@ -86,7 +88,7 @@ class _CommentBoxState extends State<CommentBox> {
                 icon: const Icon(Icons.cancel_outlined, color: Colors.grey),
                 onPressed: widget.prefixOnPressed,
                 splashRadius: 22,
-                tooltip: "حذف متن",
+                tooltip: AppTexts.cancel,
               ),
             )
                 : null,
@@ -96,5 +98,3 @@ class _CommentBoxState extends State<CommentBox> {
     );
   }
 }
-
-

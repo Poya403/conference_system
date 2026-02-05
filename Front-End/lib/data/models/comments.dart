@@ -1,5 +1,5 @@
 import 'package:conference_system/enums/target_type.dart';
-import 'comment_user.dart';
+import '../DTOs/comment_user.dart';
 
 class Comment {
   final int id;

@@ -1,4 +1,4 @@
-import 'package:conference_system/data/models/course_filter.dart';
+import 'package:conference_system/data/DTOs/course_filter.dart';
 import 'package:conference_system/enums/course_category.dart';
 import 'package:conference_system/widgets/custom_text_fields/text_form_field.dart';
 import 'package:conference_system/widgets/custom_text_fields/drop_down_field.dart';
