@@ -60,7 +60,7 @@ class _ReservationListState extends State<ReservationList> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 15,
-                  children:[
+                  children: [
                     TableConfig<Reservation>(
                       title: AppTexts.reservations,
                       data: reservations, // List<Reservation>
@@ -74,12 +74,11 @@ class _ReservationListState extends State<ReservationList> {
                         AppTexts.operation,
                       ],
                       rowBuilder: [
-                            (r) => Text(r.courseTitle),
-                            (r) => DateTimeStyle(
-                            dateInput:
-                            getPersianDate(r.holdingDate.toString())
+                        (r) => Text(r.courseTitle),
+                        (r) => DateTimeStyle(
+                          dateInput: getPersianDate(r.holdingDate.toString()),
                         ),
-                            (r) => Text(
+                        (r) => Text(
                           getPersianWeekday(r.holdingDate.toString()),
                           style: TextStyle(
                             fontSize: 14,
@@ -88,11 +87,11 @@ class _ReservationListState extends State<ReservationList> {
                           ),
                         ),
                         // Start Time
-                            (r) => Text(formatTime24(r.startTime)),
+                        (r) => Text(formatTime24(r.startTime)),
                         // End Time
-                            (r) => Text(formatTime24(r.endTime)),
-                            (r) => StatusLabelStyle(status: r.status),
-                            (r) => Row(
+                        (r) => Text(formatTime24(r.endTime)),
+                        (r) => StatusLabelStyle(status: r.status),
+                        (r) => Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
@@ -119,11 +118,8 @@ class _ReservationListState extends State<ReservationList> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: 150,
-                      child: AddButton(onPressed: (){})
-                    ),
-                  ]
+                    SizedBox(width: 150, child: AddButton(onPressed: () {})),
+                  ],
                 ),
               ),
             ),
@@ -155,17 +151,10 @@ class AddButton extends StatelessWidget {
         textDirection: TextDirection.rtl,
         spacing: 6,
         children: [
-          Icon(
-              Icons.add_circle,
-              color: Colors.white,
-              size: 18,
-          ),
+          Icon(Icons.add_circle, color: Colors.white, size: 18),
           Text(
             AppTexts.newReserve,
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 15
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 15),
           ),
         ],
       ),

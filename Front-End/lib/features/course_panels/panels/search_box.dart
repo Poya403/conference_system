@@ -1,12 +1,12 @@
 import 'package:conference_system/data/models/course_filter.dart';
 import 'package:conference_system/enums/course_category.dart';
-import 'package:conference_system/widgets/text_form_field.dart';
+import 'package:conference_system/widgets/custom_text_fields/text_form_field.dart';
+import 'package:conference_system/widgets/custom_text_fields/drop_down_field.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/bloc/courses/courses_bloc.dart';
 import 'package:conference_system/bloc/courses/courses_event.dart';
-import '../../../widgets/drop_down_field.dart';
 import 'package:conference_system/bloc/auth/auth_bloc.dart';
 import 'package:conference_system/bloc/auth/auth_state.dart';
 

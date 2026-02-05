@@ -1,3 +1,5 @@
+import 'package:conference_system/enums/target_type.dart';
+
 class GetUri {
   static const String baseUrl = 'http://localhost:5067';
 
@@ -29,6 +31,12 @@ class GetUri {
   // reservations
   static Uri get reservations => Uri.parse('$baseUrl/api/reservation');
   static Uri reservationOfHalls(int hid) => Uri.parse('$baseUrl/api/Reservation/api/v1/halls/$hid/reservations');
+  
+  //comments
+  static Uri getComments(int targetId, CommentTargetType type) =>
+      Uri.parse('$baseUrl/api/comments/?targetType=${type.name}&targetId=$targetId');
+  static Uri get postComment => Uri.parse('$baseUrl/api/comments');
+  static Uri deleteOrUpdateComment(int id) => Uri.parse('$baseUrl/api/comments/$id');
   // auth
   static Uri get login => Uri.parse('$baseUrl/api/login');
   static Uri get register => Uri.parse('$baseUrl/api/register');
