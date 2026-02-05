@@ -1,7 +1,13 @@
+import 'package:conference_system/bloc/auth/auth_bloc.dart';
+import 'package:conference_system/bloc/auth/auth_event.dart';
+import 'package:conference_system/bloc/auth/auth_state.dart';
+import 'package:conference_system/bloc/users/users_bloc.dart';
+import 'package:conference_system/bloc/users/users_event.dart';
+import 'package:conference_system/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'package:conference_system/server/services/auth_service.dart';
 import 'package:conference_system/widgets/text_field.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -11,98 +17,120 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final authRepository = AuthRepository();
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLogin = true;
-  bool _loading = false;
-
-  Future<void> _handleAuth() async {
-    setState(() => _loading = true);
-
-    await authenticate(
-      context: context,
-      fullName: _fullNameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-      isLogin: _isLogin,
-    );
-
-    setState(() => _loading = false);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            border: Border.all(
-              color: Colors.purple,
-              width: 2,
-            )
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50.0,vertical: 35),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _isLogin ? AppTexts.login : AppTexts.signUp,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthFailure) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
+          } else if (state is AuthSuccess) {
+            Navigator.pushReplacementNamed(context, '/home');
+            context.read<UsersBloc>().add(
+                GetCurrentUser(state.authResponse.userId ?? 0)
+            );
+          } else if(state is AuthUnauthenticated){
+            Navigator.pushReplacementNamed(context, '/auth');
+          }
+        },
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: Colors.purple, width: 2),
                 ),
-                const SizedBox(height: 50),
-                !_isLogin ?
-                  CustomTextField(
-                    controller: _fullNameController,
-                    labelText: AppTexts.fullName,
-                    isPassword: false,
-                  )
-                  : SizedBox.shrink(),
-                const SizedBox(height: 35),
-                CustomTextField(
-                  controller: _emailController,
-                  labelText: AppTexts.email,
-                ),
-                const SizedBox(height: 35),
-                CustomTextField(
-                  controller: _passwordController,
-                  labelText: AppTexts.password,
-                  isPassword: true,
-                ),
-                const SizedBox(height: 35),
-                ElevatedButton(
-                  onPressed: _loading ? null : _handleAuth,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 5,
-                    ),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    backgroundColor: Colors.purple,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50.0,
+                    vertical: 35,
                   ),
-                  child: Text(_isLogin ? AppTexts.login : AppTexts.signUp),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () => setState(() => _isLogin = !_isLogin),
-                  child: Text(
-                    _isLogin ? AppTexts.noAccountHint : AppTexts.haveAccountHint,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _isLogin ? AppTexts.login : AppTexts.signUp,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      if (!_isLogin) ...[
+                        CustomTextField(
+                          controller: _fullNameController,
+                          labelText: AppTexts.fullName,
+                          isPassword: false,
+                        ),
+                        const SizedBox(height: 35),
+                      ],
+                      CustomTextField(
+                        controller: _emailController,
+                        labelText: AppTexts.email,
+                      ),
+                      const SizedBox(height: 35),
+                      CustomTextField(
+                        controller: _passwordController,
+                        labelText: AppTexts.password,
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 35),
+                      ElevatedButton(
+                        onPressed: state is AuthLoading ? null : () {
+                          context.read<AuthBloc>().add(
+                              AuthSubmitted(
+                                  isLogin: _isLogin,
+                                  email: _emailController.text.trim(),
+                                  password: _passwordController.text.trim(),
+                                  fullName: _isLogin ?
+                                    null : _fullNameController.text.trim()
+                              )
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          backgroundColor: Colors.purple,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          _isLogin ? AppTexts.login : AppTexts.signUp,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () => setState(() => _isLogin = !_isLogin),
+                        child: Text(
+                          _isLogin
+                              ? AppTexts.noAccountHint
+                              : AppTexts.haveAccountHint,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

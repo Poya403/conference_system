@@ -3,12 +3,32 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool isPassword;
+  final TextDirection? textDirection;
+  final double? width;
+  final double? height;
+  final int? maxLines;
+  final int? minLines;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final double? radiusValue;
+  final bool readOnly;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
+    super.key,
     required this.controller,
     required this.labelText,
+    this.textDirection = TextDirection.rtl,
     this.isPassword = false,
-    super.key,
+    this.width,
+    this.height,
+    this.maxLines,
+    this.minLines = 1,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.radiusValue,
+    this.readOnly = false,
+    this.onChanged
   });
 
   @override
@@ -20,15 +40,29 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 250,
-      height: 43,
+      width: widget.width ?? 250,
+      height: widget.height ?? 42,
       child: TextField(
+        textDirection: widget.textDirection,
+        textAlign: widget.textDirection == TextDirection.rtl
+            ? TextAlign.right
+            : TextAlign.left,
+        readOnly: widget.readOnly,
         controller: widget.controller,
         obscureText: widget.isPassword ? _isHidden : false,
+        maxLines: widget.maxLines ?? 1,
+        minLines: widget.minLines,
+        onChanged: widget.onChanged,
         decoration: InputDecoration(
-          labelText: widget.labelText,
+          label: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              widget.labelText,
+              textDirection: TextDirection.rtl,
+            ),
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: BorderRadius.all(Radius.circular(widget.radiusValue ?? 5)),
             borderSide: BorderSide(color: Colors.grey, width: 1),
           ),
           focusedBorder: const OutlineInputBorder(
@@ -52,16 +86,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
               width: 1,
             ),
           ),
-          suffixIcon: widget.isPassword ? IconButton(
+          suffixIcon: widget.isPassword
+              ? IconButton(
             icon: Icon(
               _isHidden ? Icons.visibility_off : Icons.visibility,
             ),
             onPressed: () {
               setState(() {
-                _isHidden = !_isHidden; // 👈 تغییر وضعیت نمایش
+                _isHidden = !_isHidden;
               });
             },
-          ) : null,
+          ) : widget.suffixIcon,
         ),
       ),
     );
