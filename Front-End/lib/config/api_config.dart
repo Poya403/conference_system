@@ -32,6 +32,9 @@ class GetUri {
   static Uri get reservations => Uri.parse('$baseUrl/api/v1/reservation');
   static Uri reservationOfHalls(int hid) => Uri.parse('$baseUrl/api/v1/Reservation/api/v1/halls/$hid/reservations');
   
+  // enrollments
+  static Uri getEnrollments(int cid) => Uri.parse('$baseUrl/api/v1/Enrollment/$cid');
+  static Uri finalizeEnrollment(int cid,int uid) => Uri.parse('$baseUrl/api/v1/enrollment/finalize');
   //comments
   static Uri getComments(int targetId, CommentTargetType type) =>
       Uri.parse('$baseUrl/api/v1/comments/?targetType=${type.name}&targetId=$targetId');

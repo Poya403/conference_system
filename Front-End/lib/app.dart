@@ -1,11 +1,14 @@
 import 'package:conference_system/bloc/auth/auth_state.dart';
 import 'package:conference_system/bloc/comments/bloc/comment_bloc.dart';
 import 'package:conference_system/bloc/courses/courses_bloc.dart';
+import 'package:conference_system/bloc/enrollments/enrollments_bloc.dart';
 import 'package:conference_system/bloc/hall/hall_bloc.dart';
 import 'package:conference_system/bloc/reservations/reservation_bloc.dart';
 import 'package:conference_system/bloc/users/users_bloc.dart';
 import 'package:conference_system/data/repositories/comment_repository.dart';
+import 'package:conference_system/data/repositories/enrollments_repository.dart';
 import 'package:conference_system/data/repositories/user_repository.dart';
+import 'package:conference_system/features/course_panel/panels/enrollment_list.dart';
 import 'package:conference_system/services/courses_service.dart';
 import 'package:conference_system/services/hall_service.dart';
 import 'package:conference_system/services/user_service.dart';
@@ -45,7 +48,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => ReservationBloc(repository: ReservationRepository())),
         BlocProvider(
-            create: (context) => CommentBloc(repository: CommentRepository()))
+            create: (context) => CommentBloc(repository: CommentRepository())),
+        BlocProvider(
+            create: (context) => EnrollmentsBloc(repository: EnrollmentsRepository()))
       ],
       child: BlocListener<AuthBloc,AuthState>(
         listener: (context, state){

@@ -1,6 +1,7 @@
 import 'package:conference_system/bloc/reservations/reservation_bloc.dart';
 import 'package:conference_system/bloc/reservations/reservation_event.dart';
 import 'package:conference_system/bloc/reservations/reservation_state.dart';
+import 'package:conference_system/features/hall_panel/panels/edit_reservation.dart';
 import 'package:conference_system/utils/date_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/widgets/table_config.dart';
@@ -8,6 +9,8 @@ import 'package:conference_system/data/models/reservations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/widgets/no_data_widget.dart';
+import 'package:conference_system/bloc/users/users_bloc.dart';
+import 'package:conference_system/bloc/users/users_state.dart';
 
 class ReservationList extends StatefulWidget {
   const ReservationList({super.key, required this.hallId});
@@ -19,9 +22,21 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
+  bool isEditing = false;
+  String titleOpr = AppTexts.editInfo;
+  IconData iconOpr = Icons.edit_outlined;
+  late final String userRole;
+
   @override
   void initState() {
     super.initState();
+    final userState = context.read<UsersBloc>().state;
+
+    if (userState is UserLoaded) {
+      userRole = userState.user.role;
+    } else {
+      userRole = 'User';
+    }
     context.read<ReservationBloc>().add(FetchReservationsByHall(widget.hallId));
   }
 
@@ -47,88 +62,121 @@ class _ReservationListState extends State<ReservationList> {
             return Center(child: NoDataWidget());
           }
 
-          return Center(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: 450,
-              child: Card(
-                elevation: 4,
-                shadowColor: Colors.deepPurpleAccent,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+          return Column(
+            children: [
+              isEditing ? IconButton(
+                onPressed: () =>
+                    setState(() {
+                      isEditing = !isEditing;
+                    }),
+                icon: Icon(
+                  Icons.cancel_outlined,
+                  color: isEditing
+                      ? Colors.deepPurpleAccent
+                      : Colors.blueGrey,
                 ),
-                margin: const EdgeInsets.all(12),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 15,
-                    children:[
-                      TableConfig<Reservation>(
-                        title: AppTexts.reservations,
-                        data: reservations, // List<Reservation>
-                        columns: const [
-                          AppTexts.crsTitle,
-                          AppTexts.holdingDate,
-                          AppTexts.day,
-                          AppTexts.startTime,
-                          AppTexts.endTime,
-                          AppTexts.status,
-                          AppTexts.operation,
-                        ],
-                        rowBuilder: [
-                              (r) => Text(r.courseTitle),
-                              (r) => DateTimeStyle(
-                              dateInput:
-                              getPersianDate(r.holdingDate.toString())
-                          ),
-                              (r) => Text(
-                            getPersianWeekday(r.holdingDate.toString()),
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.blueGrey,
+              ) : SizedBox.shrink(),
+              !isEditing
+                  ? Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: 450,
+                  child: Card(
+                    elevation: 4,
+                    shadowColor: Colors.deepPurpleAccent,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 15,
+                      children: [
+                        TableConfig<Reservation>(
+                          title: AppTexts.reservations,
+                          data: reservations, // List<Reservation>
+                          columns: const [
+                            AppTexts.crsTitle,
+                            AppTexts.holdingDate,
+                            AppTexts.day,
+                            AppTexts.startTime,
+                            AppTexts.endTime,
+                            AppTexts.status,
+                            AppTexts.operation,
+                          ],
+                          rowBuilder: [
+                            (r) => Text(r.courseTitle),
+                            (r) => DateTimeStyle(
+                              dateInput: getPersianDate(r.holdingDate.toString()),
                             ),
-                          ),
-                          // Start Time
-                              (r) => Text(formatTime24(r.startTime)),
-                          // End Time
-                              (r) => Text(formatTime24(r.endTime)),
-                              (r) => StatusLabelStyle(status: r.status),
-                              (r) => Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.blueAccent,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  //editReservation(r);
-                                },
+                            (r) => Text(
+                              getPersianWeekday(r.holdingDate.toString()),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.blueGrey,
                               ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.redAccent,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  // deleteReservation(r);
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(
+                            ),
+                            // Start Time
+                            (r) => Text(formatTime24(r.startTime)),
+                            // End Time
+                            (r) => Text(formatTime24(r.endTime)),
+                            (r) => StatusLabelStyle(status: r.status),
+                            (r) => Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if(userRole == "Admin")...[
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.blueAccent,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        isEditing = !isEditing;
+                                        titleOpr = AppTexts.editInfo;
+                                        iconOpr = Icons.edit_outlined;
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.redAccent,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      // deleteReservation(r);
+                                    },
+                                  ),
+                                ]
+                              ],
+                            ),
+                          ],
+                        ),
+                        if(userRole == "Admin")...[
+                        SizedBox(
                           width: 150,
-                          child: AddButton(onPressed: (){})
-                      ),
-                    ]
+                          child: AddButton(
+                            onPressed: () => setState(() {
+                              isEditing = !isEditing;
+                              titleOpr = AppTexts.newReserve;
+                              iconOpr = Icons.add_circle;
+                            }),
+                          ),
+                        ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
+              ) : EditReservation(
+                  title: titleOpr,
+                  icon: iconOpr
               ),
-            ),
+            ],
           );
         }
         return const SizedBox.shrink();
@@ -157,17 +205,10 @@ class AddButton extends StatelessWidget {
         textDirection: TextDirection.rtl,
         spacing: 6,
         children: [
-          Icon(
-            Icons.add_circle,
-            color: Colors.white,
-            size: 18,
-          ),
+          Icon(Icons.add_circle, color: Colors.white, size: 18),
           Text(
             AppTexts.newReserve,
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 15
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 15),
           ),
         ],
       ),

@@ -1,3 +1,5 @@
+import 'package:conference_system/enums/course_category.dart';
+import 'package:conference_system/features/course_panel/panels/enrollment_list.dart';
 import 'package:conference_system/utils/format_price.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/bloc/courses/courses_bloc.dart';
@@ -7,25 +9,48 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:conference_system/data/models/courses.dart';
 import 'package:conference_system/widgets/no_data_widget.dart';
+import 'package:conference_system/bloc/users/users_bloc.dart';
+import 'package:conference_system/bloc/users/users_state.dart';
+import 'edit_form.dart';
 
 class CourseInfoScreen extends StatefulWidget {
-  const CourseInfoScreen({super.key, required this.cid});
+  const CourseInfoScreen({
+    super.key,
+    required this.cid,
+    required this.category,
+  });
 
   @override
   State<CourseInfoScreen> createState() => _CourseInfoScreenState();
   final int cid;
+  final CourseCategory category;
 }
 
 class _CourseInfoScreenState extends State<CourseInfoScreen> {
+  late final String userRole;
+  bool isEditing = false;
+
   @override
   void initState() {
     super.initState();
+
+    final userState = context.read<UsersBloc>().state;
+
+    if (userState is UserLoaded) {
+      userRole = userState.user.role;
+    } else {
+      userRole = 'User';
+    }
+
     context.read<CourseBloc>().add(GetSingleCourse(cid: widget.cid));
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
+    bool isDesktop = MediaQuery
+        .of(context)
+        .size
+        .width > 1500;
     return BlocConsumer<CourseBloc, CoursesState>(
       listener: (context, state) {
         if (state is CoursesError) {
@@ -35,42 +60,77 @@ class _CourseInfoScreenState extends State<CourseInfoScreen> {
         }
       },
       builder: (context, state) {
-        if(state is CourseInitial){
+        if (state is CourseInitial) {
           return Center(child: Text(AppTexts.initialize));
         } else if (state is CourseLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is SingleCourseLoaded) {
           final course = state.course;
-          return Container(
-            child: isDesktop
-                ? SingleChildScrollView(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                textDirection: TextDirection.rtl,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      CourseInfoBox(course: course),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      MainContent(course: course),
-                    ],
-                  ),
-                ],
-              ),
-            )
-                : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.rtl,
+          return SingleChildScrollView(
+            child: Column(
               children: [
-                CourseInfoBox(course: course),
+                isDesktop
+                    ? SingleChildScrollView(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          if(userRole == 'Admin')...[
+                            IconButton(
+                              onPressed: () =>
+                                  setState(() {
+                                    isEditing = !isEditing;
+                                  }),
+                              icon: Icon(
+                                isEditing ? Icons.cancel_outlined : Icons.edit_outlined,
+                                color: isEditing
+                                    ? Colors.deepPurpleAccent
+                                    : Colors.blueGrey,
+                              ),
+                            ),
+                          ],
+                          if(isEditing && userRole == "Admin")...[
+                            Center(child: EditCrsForm(course: course))
+                          ] else ...[
+                            Center(child: CourseInfoBox(course: course))
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+                    : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    if(userRole == "Admin")...[
+                      IconButton(
+                        onPressed: () =>
+                            setState(() {
+                              isEditing = !isEditing;
+                            }),
+                        icon: Icon(
+                          isEditing ? Icons.cancel_outlined : Icons.edit_outlined,
+                          color: isEditing ? Colors.blueGrey : Colors
+                              .deepPurpleAccent,
+                        ),
+                      ),
+                    ],
+                    if(isEditing && userRole == "Admin")...[
+                      Center(child: EditCrsForm(course: course))
+                    ] else ...[
+                      Center(child: CourseInfoBox(course: course))
+                    ],
+                  ],
+                ),
+                if (widget.category == CourseCategory.myCourses) ...[
+                  EnrollmentList(courseId: course.id),
+                ],
               ],
             ),
           );
@@ -92,19 +152,21 @@ class CourseInfoBox extends StatefulWidget {
 
 class _CourseInfoBoxState extends State<CourseInfoBox> {
   final TextStyle detailStyle = const TextStyle(
-    fontSize: 14,
-    color: Colors.blueGrey,
+    fontSize: 16,
+    color: Colors.deepPurple,
   );
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: SizedBox(
-          width: isDesktop ? 300 : 800,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width * 0.76,
           height: 400,
           child: Card(
             elevation: 4,
@@ -140,23 +202,54 @@ class _CourseInfoBoxState extends State<CourseInfoBox> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 6,
+                      spacing: 10,
                       children: [
                         SelectableText(
-                            '${AppTexts.deliveryType} : ${widget.course.deliveryType}',
-                            style: detailStyle
+                          '${AppTexts.deliveryType} : ${widget.course
+                              .deliveryType}',
+                          style: detailStyle,
                         ),
                         SelectableText(
-                            '${AppTexts.crsType} : ${widget.course.courseType.title}',
-                            style: detailStyle
+                          '${AppTexts.crsType} : ${widget.course.courseType
+                              ?.title}',
+                          style: detailStyle,
                         ),
                         SelectableText(
-                            '${AppTexts.phoneNumber} : \u200E${widget.course.contactPhone}',
-                            style: detailStyle
+                          '${AppTexts.phoneNumber} : \u200E${widget.course
+                              .contactPhone}',
+                          style: detailStyle,
                         ),
                         SelectableText(
-                            '${AppTexts.price} : \u200E${formatPrice(widget.course.cost)}',
-                            style: detailStyle
+                          '${AppTexts.price} : \u200E${formatPrice(
+                              widget.course.cost)}',
+                          style: detailStyle,
+                        ),
+                        Divider(thickness: 0.35),
+                        (widget.course.description != null &&
+                            widget.course.description!.isNotEmpty)
+                            ? Column(
+                          textDirection: TextDirection.rtl,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppTexts.details,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            SelectableText(
+                              widget.course.description ?? '',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        )
+                            : NoDataWidget(
+                          title: 'جزئیاتی جهت نمایش وجود ندارد.',
                         ),
                       ],
                     ),
@@ -171,77 +264,3 @@ class _CourseInfoBoxState extends State<CourseInfoBox> {
   }
 }
 
-class MainContent extends StatelessWidget {
-  const MainContent({super.key, required this.course});
-
-  final Course course;
-
-  @override
-  Widget build(BuildContext context) {
-    bool isDesktop = MediaQuery.of(context).size.width > 800;
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SizedBox(
-          width: isDesktop
-              ? MediaQuery.of(context).size.width * 0.55
-              : double.infinity,
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            color: Colors.white,
-            child: Column(
-              textDirection: TextDirection.rtl,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    textDirection: TextDirection.rtl,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          course.title,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.deepPurple,
-                          ),
-                        ),
-                      ),
-                      Divider(thickness: 0.35),
-                      (course.description != null && course.description!.isNotEmpty)
-                          ? Column(
-                        children: [
-                          SizedBox(height: 20),
-                          SelectableText(
-                            course.description ?? '',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                      )
-                          : Center(
-                        child: NoDataWidget(
-                          title: 'اطلاعاتی جهت نمایش یا چاپ وجود ندارد.',
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

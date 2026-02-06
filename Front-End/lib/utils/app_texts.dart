@@ -58,8 +58,10 @@ class AppTexts {
   static const String phoneNumber = 'شماره تماس';
   static const String createdAt = 'تاریخ پیوستن';
   static const String apply = 'اعمال تغییرات';
+  static const String details = 'جزئیات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
+  static const String crsCost = 'هزینه دوره';
   static const String completeCourseForm = 'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.';
   static const String completeIfInPrson = 'باتوجه به حضوری بودن دوره شما لطفا فیلد های زیر را پرکنید';
   static const String crsTitle = 'عنوان دوره';
@@ -100,4 +102,9 @@ class AppTexts {
   static const String reservations = 'دوره‌ها و زمان‌بندی‌ها';
   static const String newReserve = 'افزودن رزرو';
   static const String operation = 'عملیات';
+  //enrollments
+  static const String enrollments = 'لیست ثبت نام کنندگان';
+  static const String enrollDate = 'تاریخ ثبت نام';
+  static const String register = 'قطعی شدن ثبت نام';
+  static const String enrollTime = 'ساعت ثبت نام';
 }

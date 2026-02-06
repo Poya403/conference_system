@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:conference_system/features/hall_panel/panels/search_box.dart';
 
 class HallListScreen extends StatefulWidget {
   const HallListScreen({super.key});
@@ -49,14 +50,8 @@ class _HallListScreenState extends State<HallListScreen> {
             ),
             child: Column(
               children: <Widget>[
-                SizedBox(height: 30),
-                IconButton(
-                    onPressed: () {
-                      onChangedPage.call(0);
-                      context.read<HallBloc>().add(GetHallsList());
-                    },
-                    icon: Icon(Icons.arrow_back)
-                ),
+                SizedBox(height: 12),
+                SearchBox(),
                 currentPage,
                 SizedBox(height: 30),
               ],

@@ -2,7 +2,6 @@ import 'package:conference_system/widgets/custom_text_fields/text_form_field.dar
 import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:conference_system/widgets/custom_text_fields/drop_down_field.dart';
 import 'package:conference_system/bloc/auth/auth_bloc.dart';
 import 'package:conference_system/bloc/auth/auth_state.dart';
 
@@ -15,6 +14,8 @@ class SearchBox extends StatefulWidget {
 class _SearchBoxState extends State<SearchBox> {
   final titleController = TextEditingController();
   final phoneController = TextEditingController();
+  final capacityController = TextEditingController();
+  final cityController = TextEditingController();
   final maxPriceController = TextEditingController();
   final minPriceController = TextEditingController();
 
@@ -22,7 +23,6 @@ class _SearchBoxState extends State<SearchBox> {
   int? selectedCrsType;
   bool isExpanded = false;
   int? userId;
-
   @override
   void initState() {
     super.initState();
@@ -85,9 +85,7 @@ class _SearchBoxState extends State<SearchBox> {
                       Padding(
                         padding: const EdgeInsets.only(top: 25.0),
                         child: SearchButton(
-                          onPressed: () async {
-
-                          },
+                          onPressed: () async {},
                         ),
                       ),
                     ],
@@ -116,44 +114,19 @@ class _SearchBoxState extends State<SearchBox> {
                           textDirection: TextDirection.rtl,
                           spacing: 10,
                           children: [
-                            CustomDropdownField(
-                              labelText: AppTexts.deliveryType,
-                              items: [AppTexts.inPerson, AppTexts.online],
-                              value: selectedDeliveryType,
-                              onChanged: (val) {
-                                setState(() {
-                                  selectedDeliveryType = val;
-                                });
-                              },
-                              onPressed: selectedDeliveryType != null
-                                  ? () {
-                                setState(() {
-                                  selectedDeliveryType = null;
-                                });
-                              }
-                                  : null,
-                            ),
                             CustomTextFormField(
                               controller: phoneController,
                               labelText: AppTexts.phoneNumber,
                               width: isDesktop ? 200 : 100,
                             ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          textDirection: TextDirection.rtl,
-                          spacing: 10,
-                          children: [
                             CustomTextFormField(
-                              controller: minPriceController,
-                              labelText: AppTexts.minPrice,
+                              controller: capacityController,
+                              labelText: AppTexts.capacity,
                               width: isDesktop ? 200 : 100,
                             ),
                             CustomTextFormField(
-                              controller: maxPriceController,
-                              labelText: AppTexts.maxPrice,
+                              controller: cityController,
+                              labelText: AppTexts.city,
                               width: isDesktop ? 200 : 100,
                             ),
                           ],

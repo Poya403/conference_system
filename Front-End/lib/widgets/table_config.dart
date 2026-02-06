@@ -32,13 +32,17 @@ class TableConfig<T> extends StatelessWidget {
           textDirection: TextDirection.rtl,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: DataTable(
-                columns: columns.map((col) => DataColumn(label: Text(col))).toList(),
-                rows: data.map((item) {
-                  return DataRow(cells: rowBuilder.map((builder) => DataCell(builder(item))).toList());
-                }).toList(),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: DataTable(
+                  columnSpacing: 30,
+                  columns: columns.map((col) => DataColumn(label: Text(col))).toList(),
+                  rows: data.map((item) {
+                    return DataRow(cells: rowBuilder.map((builder) => DataCell(builder(item))).toList());
+                  }).toList(),
+                ),
               ),
             ),
           ),
@@ -92,7 +96,7 @@ class StatusLabelStyle extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      backgroundColor: status == 'Confirmed'
+      backgroundColor: status == 'Confirmed' || status == 'ثبت نام شده'
           ? Colors.green.shade400
           : Colors.orange.shade400,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

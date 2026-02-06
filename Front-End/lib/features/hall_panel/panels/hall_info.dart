@@ -1,3 +1,4 @@
+import 'package:conference_system/features/hall_panel/panels/search_box.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/bloc/hall/hall_bloc.dart';
 import 'package:conference_system/bloc/hall/hall_state.dart';
