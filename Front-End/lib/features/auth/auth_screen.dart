@@ -6,7 +6,7 @@ import 'package:conference_system/bloc/users/users_event.dart';
 import 'package:conference_system/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'package:conference_system/widgets/text_field.dart';
+import 'package:conference_system/widgets/custom_text_fields/text_field.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -21,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _repaidPasswordController = TextEditingController();
   bool _isLogin = true;
 
   @override
@@ -56,6 +57,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 35,
                     children: [
                       Text(
                         _isLogin ? AppTexts.login : AppTexts.signUp,
@@ -64,28 +66,35 @@ class _AuthScreenState extends State<AuthScreen> {
                           fontSize: 30,
                         ),
                       ),
-                      const SizedBox(height: 50),
                       if (!_isLogin) ...[
                         CustomTextField(
                           controller: _fullNameController,
                           labelText: AppTexts.fullName,
                           isPassword: false,
                         ),
-                        const SizedBox(height: 35),
                       ],
                       CustomTextField(
                         controller: _emailController,
                         labelText: AppTexts.email,
                       ),
-                      const SizedBox(height: 35),
                       CustomTextField(
                         controller: _passwordController,
                         labelText: AppTexts.password,
                         isPassword: true,
                       ),
-                      const SizedBox(height: 35),
+                      if(!_isLogin)...[
+                        CustomTextField(
+                          controller: _repaidPasswordController,
+                          labelText: AppTexts.repaidPassword,
+                          isPassword: true,
+                        ),
+                      ],
                       ElevatedButton(
                         onPressed: state is AuthLoading ? null : () {
+                          if(!_isLogin &&
+                              _passwordController.text.trim() != _repaidPasswordController.text){
+                            return;
+                          }
                           context.read<AuthBloc>().add(
                               AuthSubmitted(
                                   isLogin: _isLogin,
@@ -112,7 +121,6 @@ class _AuthScreenState extends State<AuthScreen> {
                           _isLogin ? AppTexts.login : AppTexts.signUp,
                         ),
                       ),
-                      SizedBox(height: 10),
                       TextButton(
                         onPressed: () => setState(() => _isLogin = !_isLogin),
                         child: Text(

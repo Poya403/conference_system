@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:conference_system/data/models/auth_response.dart';
+import 'package:conference_system/data/DTOs/auth_response.dart';
 
 abstract class AuthState extends Equatable {
   @override

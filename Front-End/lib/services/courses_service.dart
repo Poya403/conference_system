@@ -1,4 +1,4 @@
-import 'package:conference_system/data/models/course_filter.dart';
+import 'package:conference_system/data/DTOs/course_filter.dart';
 import 'package:conference_system/data/models/courses.dart';
 import 'package:conference_system/data/repositories/courses_repository.dart';
 
@@ -15,6 +15,10 @@ class CourseService {
       category: category,
       filter: filter
     );
+  }
+
+  Future<Course> getSingleCourse(int cid) async {
+    return await coursesRepository.getSingleCourse(cid);
   }
 }
 

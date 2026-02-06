@@ -1,4 +1,4 @@
-import 'package:conference_system/data/models/course_filter.dart';
+import 'package:conference_system/data/DTOs/course_filter.dart';
 import 'package:conference_system/enums/course_category.dart';
 import 'package:equatable/equatable.dart';
 
@@ -44,15 +44,15 @@ class SearchCourses extends CoursesEvent {
   });
 
   @override
-  List<Object?> get props => [uid, category, filterDTO ?? null];
+  List<Object?> get props => [uid, category, filterDTO];
 }
 
-// class GetSingleCourse extends CoursesEvent {
-//   final int cid;
-//
-//   GetSingleCourse(
-//     this.cid
-//   );
-//   @override
-//   List<Object?> get props => [cid];
-// }
+class GetSingleCourse extends CoursesEvent {
+  final int cid;
+
+  GetSingleCourse({
+    required this.cid
+  });
+  @override
+  List<Object?> get props => [cid];
+}

@@ -1,12 +1,12 @@
 import 'package:conference_system/bloc/users/users_event.dart';
-import 'package:conference_system/data/models/update_user_dto.dart';
+import 'package:conference_system/data/DTOs/update_user_dto.dart';
 import 'package:conference_system/utils/app_texts.dart';
-import 'package:conference_system/widgets/text_form_field.dart';
+import 'package:conference_system/widgets/custom_text_fields/text_form_field.dart';
+import 'package:conference_system/widgets/custom_text_fields/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:conference_system/bloc/users/users_bloc.dart';
 import 'package:conference_system/bloc/users/users_state.dart';
-import '../../../widgets/text_field.dart';
 
 class EditForm extends StatefulWidget {
   const EditForm({super.key});

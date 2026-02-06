@@ -22,4 +22,5 @@ class AuthSubmitted extends AuthEvent {
   List<Object?> get props => [isLogin, email, password, fullName];
 }
 
+class CheckAuthToken extends AuthEvent {}
 class AuthLogout extends AuthEvent {}

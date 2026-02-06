@@ -1,15 +1,13 @@
 import 'package:conference_system/enums/course_category.dart';
 import 'package:conference_system/features/control_panel/control_screen.dart';
-import 'package:conference_system/features/course_panels/courses_list_screen.dart';
+import 'package:conference_system/features/course_panel/courses_list_screen.dart';
 import 'package:conference_system/features/hall_panel/hall_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:conference_system/features/home/home_screen.dart';
-// import 'package:conference_system/features/hall_panel/hall_list_screen.dart';
-//import 'package:conference_system/features/course_panels/courses_list_screen.dart';
 import 'package:conference_system/features/about_us_page/about_us_screen.dart';
 import 'package:conference_system/widgets/button_navigator.dart';
-import 'package:conference_system/widgets/desktop_appbar.dart';
-import 'package:conference_system/widgets/mobile_appbar.dart';
+import 'package:conference_system/widgets/appbars/desktop_appbar.dart';
+import 'package:conference_system/widgets/appbars/mobile_appbar.dart';
 import 'package:conference_system/utils/app_texts.dart';
 
 class MainWrapper extends StatefulWidget {

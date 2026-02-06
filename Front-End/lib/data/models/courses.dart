@@ -10,7 +10,7 @@ class Course {
   final DateTime createdAt;
   final String contactPhone;
   final int uid;
-  final CourseType courseType;
+  final CourseType? courseType;
   int paymentStatus;
 
   Course({
@@ -23,7 +23,7 @@ class Course {
     DateTime? createdAt,
     required this.contactPhone,
     int? uid,
-    required this.courseType,
+    this.courseType,
     required this.paymentStatus,
   })  : createdAt = createdAt ?? DateTime.now(),
         uid = uid ?? 0;
@@ -40,8 +40,8 @@ class Course {
       description: json['description'] as String?,
       contactPhone: json['contactPhone'] as String? ?? '',
       courseType: CourseType(
-        id: json['courseTypeId'] as int? ?? 0,
-        title: json['courseTypeTitle'] as String? ?? '',
+        id: json['courseType']?['id'] as int? ?? 0,
+        title: json['courseType']?['title'] as String? ?? '',
       ),
       paymentStatus: _mapUserStatus(json['userStatus'] as String? ?? 'Available'),
     );
@@ -73,7 +73,7 @@ class Course {
       'createdAt': createdAt.toIso8601String(),
       'contactPhone': contactPhone,
       'uid': uid,
-      'courseType': courseType.toJson(),
+      'courseType': courseType?.toJson(),
       'paymentStatus': paymentStatus,
     };
   }

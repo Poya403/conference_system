@@ -1,5 +1,5 @@
 import 'package:conference_system/services/auth_service.dart';
-import 'package:conference_system/data/models/auth_response.dart';
+import 'package:conference_system/data/DTOs/auth_response.dart';
 
 class AuthRepository {
   final AuthService authService = AuthService();

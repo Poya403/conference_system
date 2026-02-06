@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import '../../data/repositories/auth_repository.dart';
-import 'package:conference_system/data/models/auth_response.dart';
+import 'package:conference_system/data/DTOs/auth_response.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -37,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(e.toString()));
     }
   }
+
 
   void _onAuthLogout(AuthLogout event, Emitter<AuthState> emit) {
     emit(AuthUnauthenticated());

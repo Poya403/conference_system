@@ -14,7 +14,7 @@ class AppTexts {
   static const String delete = 'حذف';
   static const String edit = 'ویرایش';
   static const String editInfo = 'ویرایش اطلاعات';
-  static const String loading = 'در حال بارگذاری...';
+  static const String initialize = 'در حال بارگذاری...';
   static const String cancel = 'انصراف';
   static const String hide = 'مخفی کردن';
   static const String price = 'قیمت';
@@ -58,8 +58,10 @@ class AppTexts {
   static const String phoneNumber = 'شماره تماس';
   static const String createdAt = 'تاریخ پیوستن';
   static const String apply = 'اعمال تغییرات';
+  static const String details = 'جزئیات';
   // courses
   static const String registrants = 'تعداد ثبت نام شدگان';
+  static const String crsCost = 'هزینه دوره';
   static const String completeCourseForm = 'جهت ثبت دوره، لطفاً فرم زیر را کامل کنید.';
   static const String completeIfInPrson = 'باتوجه به حضوری بودن دوره شما لطفا فیلد های زیر را پرکنید';
   static const String crsTitle = 'عنوان دوره';
@@ -87,19 +89,22 @@ class AppTexts {
   static const String amenities = 'امکانات';
   //comments
   static const String comments  =  'نظرات';
+  static const String yourComment = 'نظر شما';
   static const String noComments = 'نظری ثبت نشده است';
-
+  static const String sendComment  = 'ارسال نظر';
+  static const String editComment = 'ویرایش نظر';
   static const String supportedEvents  = 'رویداد های پشتیبانی شده';
 
   static const String search = 'جستجو';
-
-  static String initialize = 'در حال شروع فرایند بارگذاری';
 
   static const String status = 'وضعیت';
 
   static const String reservations = 'دوره‌ها و زمان‌بندی‌ها';
   static const String newReserve = 'افزودن رزرو';
   static const String operation = 'عملیات';
-
-
+  //enrollments
+  static const String enrollments = 'لیست ثبت نام کنندگان';
+  static const String enrollDate = 'تاریخ ثبت نام';
+  static const String register = 'قطعی شدن ثبت نام';
+  static const String enrollTime = 'ساعت ثبت نام';
 }

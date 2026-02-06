@@ -17,6 +17,13 @@ class CoursesLoaded extends CoursesState {
   @override
   List<Object?> get props => [courses];
 }
+class SingleCourseLoaded extends CoursesState {
+  final Course course;
+
+  SingleCourseLoaded(this.course);
+  @override
+  List<Object?> get props => [course];
+}
 
 class CoursesActionSuccess extends CoursesState {
   final String message;

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:conference_system/data/models/auth_response.dart';
+import 'package:conference_system/data/DTOs/auth_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:conference_system/config/api_config.dart';
 
