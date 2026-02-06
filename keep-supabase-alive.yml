@@ -1,0 +1,18 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # اجرا هر روز ساعت 08:00 UTC — در صورت نیاز تغییر بده
+  workflow_dispatch:     # امکان اجرای دستی از تب Actions
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase RPC
+        run: |
+          curl -X POST "https://ktaludfxeaqgrdsbunwc.supabase.co/rest/v1/rpc/ping" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
