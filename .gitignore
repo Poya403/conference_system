@@ -1,0 +1,80 @@
+# ==============================
+# .NET / C# / ASP.NET
+# ==============================
+bin/
+obj/
+Debug/
+Release/
+publish/
+out/
+
+*.dll
+*.exe
+*.pdb
+*.cache
+*.deps.json
+*.runtimeconfig.json
+*.sourcelink.json
+
+# Rider / VS Code C#
+.vs/
+.vscode/*.code-workspace
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+logs/
+*.log
+
+# ==============================
+# Database files
+# ==============================
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.sqlite
+*.db
+
+# Entity Framework
+Migrations/*Snapshot.cs
+
+# ==============================
+# Environment & Secrets
+# ==============================
+.env
+.env.*
+appsettings.Development.json
+appsettings.*.Local.json
+secrets.json
+
+# ==============================
+# Node (اگه فرانت هم کنارشه)
+# ==============================
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+
+# ==============================
+# OS generated
+# ==============================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==============================
+# Temporary files
+# ==============================
+*.tmp
+*.temp
+*.pid
+*.seed

@@ -1,0 +1,19 @@
+CREATE TABLE users (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+
+    full_name NVARCHAR(150) NOT NULL,
+
+    email NVARCHAR(255) UNIQUE NULL,
+
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+
+    password_hash NVARCHAR(255) NOT NULL,
+
+    [role] NVARCHAR(50) NOT NULL DEFAULT 'user',
+
+    is_active BIT NOT NULL DEFAULT 1,
+
+    created_at DATETIME NOT NULL DEFAULT GETDATE(),
+
+    last_login DATETIME NULL
+);
